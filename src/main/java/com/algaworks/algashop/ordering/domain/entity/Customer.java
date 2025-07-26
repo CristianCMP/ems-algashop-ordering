@@ -48,7 +48,6 @@ public class Customer {
     }
 
     public void addLoyaltyPoints(Integer points) {
-        this.loyaltyPoints += points;
     }
 
     public void archive() {
