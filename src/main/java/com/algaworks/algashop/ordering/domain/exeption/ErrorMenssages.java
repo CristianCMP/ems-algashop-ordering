@@ -7,4 +7,7 @@ public class ErrorMenssages {
     public static final String VALIDATION_ERROR_FULLNAME_IS_BLANK = "FullName cannot be blank";
 
     public static final String VALIDATION_ERROR_EMAIL_IS_INVALID = "Email is invalid";
+
+
+    public static final String ERROR_CUSTOMER_ARQUIVED= "Customer is arquived it connot be changed";
 }

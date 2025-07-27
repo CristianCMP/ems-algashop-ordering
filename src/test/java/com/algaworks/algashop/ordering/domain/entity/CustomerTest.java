@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.utitly.IdGenerator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -72,7 +73,44 @@ class CustomerTest {
                 c -> assertThat(c.email()).isNotEqualTo("cristian.puhl@test.com"),
                 c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
                 c -> assertThat(c.document()).isEqualTo("000-00-0000"),
-                c -> assertThat(c.birthDate()).isNull()
+                c -> assertThat(c.birthDate()).isNull(),
+                c -> assertThat(c.isPromotionNotificationsAllower()).isFalse()
         );
+    }
+
+    @Test
+    @DisplayName("Should throw CustomerArquivedExeption when trying to update an already archived Customer")
+    void given_arquivedCustomer_whenTryToUpdate_shouldGenerateException() {
+        Customer customer = new Customer(
+                IdGenerator.generateTimeBasedUUID(),
+                "Anonymous",
+                null,
+                "anonymous@anonymous.com",
+                "000-000-000",
+                "000-00-0000",
+                false,
+                true,
+                OffsetDateTime.now(),
+                OffsetDateTime.now(),
+                10
+        );
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(customer::archive);
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(customer::enablePromotionNotifications);
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(customer::disablePromotionNotifications);
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(() -> customer.changeEmail("email@test.com"));
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(() -> customer.changeName("Cristian Puhl"));
+
+        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+                .isThrownBy(() -> customer.changePhone("123-456-789"));
     }
 }

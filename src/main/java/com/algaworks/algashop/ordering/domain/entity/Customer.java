@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.utitly.validator.FieldValidations;
 import lombok.EqualsAndHashCode;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -55,9 +56,12 @@ public class Customer {
     }
 
     public void addLoyaltyPoints(Integer points) {
+        verifyIfChangeable();
     }
 
     public void archive() {
+        verifyIfChangeable();
+
         this.setArchived(true);
         this.setArquivedAt(OffsetDateTime.now());
         this.setFullName("Anonymous");
@@ -65,25 +69,37 @@ public class Customer {
         this.setDocument("000-00-0000");
         this.setEmail(UUID.randomUUID() + "@anonymous.com");
         this.setBirthDate(null);
+        this.setPromotionNotificationsAllower(false);
+    }
+
+    private void verifyIfChangeable() {
+        if(this.archived){
+            throw new CustomerArquivedExeption();
+        }
     }
 
     public void enablePromotionNotifications() {
+        verifyIfChangeable();
         this.setPromotionNotificationsAllower(true);
     }
 
     public void disablePromotionNotifications() {
+        verifyIfChangeable();
         this.setPromotionNotificationsAllower(false);
     }
 
     public void changeName(String fullName) {
+        verifyIfChangeable();
         this.setFullName(fullName);
     }
 
     public void changeEmail(String email) {
+        verifyIfChangeable();
         this.setEmail(email);
     }
 
     public void changePhone(String phone) {
+        verifyIfChangeable();
         this.setPhone(phone);
     }
 
