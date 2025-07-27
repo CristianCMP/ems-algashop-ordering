@@ -24,7 +24,7 @@ class CustomerTest {
                             new CustomerId(),
                             new FullName("Cristian", "Puhl"),
                             new BirthDate(LocalDate.of(1998, 1, 29)),
-                            "invalid",
+                            new Email("invalid"),
                             "123-456-789",
                             new Document("123-45-6789"),
                             true,
@@ -40,7 +40,7 @@ class CustomerTest {
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
-                "cristian.puhl@test.com",
+                new Email("cristian.puhl@test.com"),
                 "123-456-789",
                 new Document("123-45-6789"),
                 true,
@@ -48,7 +48,7 @@ class CustomerTest {
         );
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> customer.changeEmail("invalid"));
+                .isThrownBy(() -> customer.changeEmail(new Email("invalid")));
     }
 
     @Test
@@ -58,7 +58,7 @@ class CustomerTest {
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
-                "cristian.puhl@test.com",
+                new Email("cristian.puhl@test.com"),
                 "123-456-789",
                 new Document("123-45-6789"),
                 true,
@@ -69,9 +69,9 @@ class CustomerTest {
 
         Assertions.assertWith(customer,
                 c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
-                c -> assertThat(c.email()).isNotEqualTo("cristian.puhl@test.com"),
+                c -> assertThat(c.email()).isNotEqualTo(new Email("cristian.puhl@test.com")),
                 c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
-                c -> assertThat(c.document()).isEqualTo( new Document("000-00-0000")),
+                c -> assertThat(c.document()).isEqualTo(new Document("000-00-0000")),
                 c -> assertThat(c.birthDate()).isNull(),
                 c -> assertThat(c.isPromotionNotificationsAllower()).isFalse()
         );
@@ -84,7 +84,7 @@ class CustomerTest {
                 new CustomerId(),
                 new FullName("Anonymous", "Anonymous"),
                 null,
-                "anonymous@anonymous.com",
+                new Email("anonymous@anonymous.com"),
                 "000-000-000",
                 new Document("000-00-0000"),
                 false,
@@ -104,7 +104,7 @@ class CustomerTest {
                 .isThrownBy(customer::disablePromotionNotifications);
 
         Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
-                .isThrownBy(() -> customer.changeEmail("email@test.com"));
+                .isThrownBy(() -> customer.changeEmail(new Email("email@test.com")));
 
         Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
                 .isThrownBy(() -> customer.changeName(new FullName("Cristian", "Puhl")));
@@ -120,7 +120,7 @@ class CustomerTest {
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
-                "cristian.puhl@test.com",
+                new Email("cristian.puhl@test.com"),
                 "123-456-789",
                 new Document("123-45-6789"),
                 true,
@@ -140,7 +140,7 @@ class CustomerTest {
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
-                "cristian.puhl@test.com",
+                new Email("cristian.puhl@test.com"),
                 "123-456-789",
                 new Document("123-45-6789"),
                 true,

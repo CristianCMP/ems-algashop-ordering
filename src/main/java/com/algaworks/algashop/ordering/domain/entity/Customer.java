@@ -19,7 +19,7 @@ public class Customer {
     private CustomerId id;
     private FullName fullName;
     private BirthDate birthDate;
-    private String email;
+    private Email email;
     private String phone;
     private Document document;
     private Boolean promotionNotificationsAllower;
@@ -28,7 +28,7 @@ public class Customer {
     private OffsetDateTime arquivedAt;
     private LoyaltyPoints loyaltyPoints;
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, String phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -41,7 +41,7 @@ public class Customer {
         this.setLoyaltyPoints(LoyaltyPoints.ZERO);
     }
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, String phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -68,7 +68,7 @@ public class Customer {
         this.setFullName(new FullName("Anonymous", "Anonymous"));
         this.setPhone("000-000-0000");
         this.setDocument(new Document("000-00-0000"));
-        this.setEmail(UUID.randomUUID() + "@anonymous.com");
+        this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
         this.setBirthDate(null);
         this.setPromotionNotificationsAllower(false);
     }
@@ -88,7 +88,7 @@ public class Customer {
         this.setFullName(fullName);
     }
 
-    public void changeEmail(String email) {
+    public void changeEmail(Email email) {
         verifyIfChangeable();
         this.setEmail(email);
     }
@@ -110,7 +110,7 @@ public class Customer {
         return birthDate;
     }
 
-    public String email() {
+    public Email email() {
         return email;
     }
 
@@ -161,8 +161,8 @@ public class Customer {
         this.birthDate = birthDate;
     }
 
-    private void setEmail(String email) {
-        FieldValidations.requiresValidEmail(email, VALIDATION_ERROR_EMAIL_IS_INVALID);
+    private void setEmail(Email email) {
+        FieldValidations.requiresValidEmail(email.value(), VALIDATION_ERROR_EMAIL_IS_INVALID);
         this.email = email;
     }
 
