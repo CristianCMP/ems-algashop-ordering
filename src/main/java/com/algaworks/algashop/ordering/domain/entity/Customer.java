@@ -2,17 +2,18 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
+import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.*;
+import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.VALIDATION_ERROR_EMAIL_IS_INVALID;
+import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Customer {
@@ -20,7 +21,7 @@ public class Customer {
     @EqualsAndHashCode.Include
     private CustomerId id;
     private FullName fullName;
-    private LocalDate birthDate;
+    private BirthDate birthDate;
     private String email;
     private String phone;
     private String document;
@@ -30,7 +31,7 @@ public class Customer {
     private OffsetDateTime arquivedAt;
     private LoyaltyPoints loyaltyPoints;
 
-    public Customer(CustomerId id, FullName fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -43,7 +44,7 @@ public class Customer {
         this.setLoyaltyPoints(LoyaltyPoints.ZERO);
     }
 
-    public Customer(CustomerId id, FullName fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -108,7 +109,7 @@ public class Customer {
         return fullName;
     }
 
-    public LocalDate birthDate() {
+    public BirthDate birthDate() {
         return birthDate;
     }
 
@@ -154,14 +155,10 @@ public class Customer {
         this.fullName = fullName;
     }
 
-    private void setBirthDate(LocalDate birthDate) {
+    private void setBirthDate(BirthDate birthDate) {
         if (birthDate == null) {
             this.birthDate = null;
             return;
-        }
-
-        if (birthDate.isAfter(LocalDate.now())) {
-            throw new IllegalArgumentException(VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST);
         }
 
         this.birthDate = birthDate;

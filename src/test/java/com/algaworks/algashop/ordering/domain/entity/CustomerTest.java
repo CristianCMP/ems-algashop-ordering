@@ -1,10 +1,12 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
+import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
 import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +26,7 @@ class CustomerTest {
                     new Customer(
                             new CustomerId(),
                             new FullName("Cristian", "Puhl"),
-                            LocalDate.of(1998, 1, 29),
+                            new BirthDate(LocalDate.of(1998, 1, 29)),
                             "invalid",
                             "123-456-789",
                             "123-45-6789",
@@ -40,7 +42,7 @@ class CustomerTest {
         Customer customer = new Customer(
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
-                LocalDate.of(1998, 1, 29),
+                new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
                 "123-45-6789",
@@ -58,7 +60,7 @@ class CustomerTest {
         Customer customer = new Customer(
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
-                LocalDate.of(1998, 1, 29),
+                new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
                 "123-45-6789",
@@ -69,7 +71,7 @@ class CustomerTest {
         customer.archive();
 
         Assertions.assertWith(customer,
-                c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous","Anonymous")),
+                c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
                 c -> assertThat(c.email()).isNotEqualTo("cristian.puhl@test.com"),
                 c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
                 c -> assertThat(c.document()).isEqualTo("000-00-0000"),
@@ -120,7 +122,7 @@ class CustomerTest {
         Customer customer = new Customer(
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
-                LocalDate.of(1998, 1, 29),
+                new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
                 "123-45-6789",
@@ -140,7 +142,7 @@ class CustomerTest {
         Customer customer = new Customer(
                 new CustomerId(),
                 new FullName("Cristian", "Puhl"),
-                LocalDate.of(1998, 1, 29),
+                new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
                 "123-45-6789",
