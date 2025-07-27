@@ -20,7 +20,7 @@ public class Customer {
     private FullName fullName;
     private BirthDate birthDate;
     private Email email;
-    private String phone;
+    private Phone phone;
     private Document document;
     private Boolean promotionNotificationsAllower;
     private Boolean archived;
@@ -28,7 +28,7 @@ public class Customer {
     private OffsetDateTime arquivedAt;
     private LoyaltyPoints loyaltyPoints;
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, String phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -41,7 +41,7 @@ public class Customer {
         this.setLoyaltyPoints(LoyaltyPoints.ZERO);
     }
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, String phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -66,7 +66,7 @@ public class Customer {
         this.setArchived(true);
         this.setArquivedAt(OffsetDateTime.now());
         this.setFullName(new FullName("Anonymous", "Anonymous"));
-        this.setPhone("000-000-0000");
+        this.setPhone(new Phone("000-000-0000"));
         this.setDocument(new Document("000-00-0000"));
         this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
         this.setBirthDate(null);
@@ -93,7 +93,7 @@ public class Customer {
         this.setEmail(email);
     }
 
-    public void changePhone(String phone) {
+    public void changePhone(Phone phone) {
         verifyIfChangeable();
         this.setPhone(phone);
     }
@@ -114,7 +114,7 @@ public class Customer {
         return email;
     }
 
-    public String phone() {
+    public Phone phone() {
         return phone;
     }
 
@@ -162,11 +162,11 @@ public class Customer {
     }
 
     private void setEmail(Email email) {
-        FieldValidations.requiresValidEmail(email.value(), VALIDATION_ERROR_EMAIL_IS_INVALID);
+        FieldValidations.requiresValidEmail(email.value());
         this.email = email;
     }
 
-    private void setPhone(String phone) {
+    private void setPhone(Phone phone) {
         Objects.requireNonNull(phone);
         this.phone = phone;
     }
@@ -187,7 +187,6 @@ public class Customer {
     }
 
     private void setRegisteredAt(OffsetDateTime registeredAt) {
-        Objects.requireNonNull(registeredAt);
         this.registeredAt = registeredAt;
     }
 

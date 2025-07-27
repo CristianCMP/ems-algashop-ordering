@@ -25,7 +25,7 @@ class CustomerTest {
                             new FullName("Cristian", "Puhl"),
                             new BirthDate(LocalDate.of(1998, 1, 29)),
                             new Email("invalid"),
-                            "123-456-789",
+                            new Phone("123-456-789"),
                             new Document("123-45-6789"),
                             true,
                             OffsetDateTime.now()
@@ -41,7 +41,7 @@ class CustomerTest {
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 new Email("cristian.puhl@test.com"),
-                "123-456-789",
+                new Phone("123-456-789"),
                 new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
@@ -59,7 +59,7 @@ class CustomerTest {
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 new Email("cristian.puhl@test.com"),
-                "123-456-789",
+                new Phone("123-456-789"),
                 new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
@@ -70,7 +70,7 @@ class CustomerTest {
         Assertions.assertWith(customer,
                 c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
                 c -> assertThat(c.email()).isNotEqualTo(new Email("cristian.puhl@test.com")),
-                c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
+                c -> assertThat(c.phone()).isEqualTo(new Phone("000-000-0000")),
                 c -> assertThat(c.document()).isEqualTo(new Document("000-00-0000")),
                 c -> assertThat(c.birthDate()).isNull(),
                 c -> assertThat(c.isPromotionNotificationsAllower()).isFalse()
@@ -85,7 +85,7 @@ class CustomerTest {
                 new FullName("Anonymous", "Anonymous"),
                 null,
                 new Email("anonymous@anonymous.com"),
-                "000-000-000",
+                new Phone("000-000-000"),
                 new Document("000-00-0000"),
                 false,
                 true,
@@ -110,7 +110,7 @@ class CustomerTest {
                 .isThrownBy(() -> customer.changeName(new FullName("Cristian", "Puhl")));
 
         Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
-                .isThrownBy(() -> customer.changePhone("123-456-789"));
+                .isThrownBy(() -> customer.changePhone(new Phone("123-456-789")));
     }
 
     @Test
@@ -121,7 +121,7 @@ class CustomerTest {
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 new Email("cristian.puhl@test.com"),
-                "123-456-789",
+                new Phone("123-456-789"),
                 new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
@@ -141,7 +141,7 @@ class CustomerTest {
                 new FullName("Cristian", "Puhl"),
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 new Email("cristian.puhl@test.com"),
-                "123-456-789",
+                new Phone("123-456-789"),
                 new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
