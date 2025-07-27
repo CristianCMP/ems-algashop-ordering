@@ -55,8 +55,14 @@ public class Customer {
         this.setLoyaltyPoints(loyaltyPoints);
     }
 
-    public void addLoyaltyPoints(Integer points) {
+    public void addLoyaltyPoints(Integer loyaltyPointsAdd) {
         verifyIfChangeable();
+
+        if (loyaltyPointsAdd <= 0){
+            throw new IllegalArgumentException();
+        }
+
+        this.setLoyaltyPoints(this.loyaltyPoints + loyaltyPointsAdd);
     }
 
     public void archive() {
@@ -70,12 +76,6 @@ public class Customer {
         this.setEmail(UUID.randomUUID() + "@anonymous.com");
         this.setBirthDate(null);
         this.setPromotionNotificationsAllower(false);
-    }
-
-    private void verifyIfChangeable() {
-        if(this.archived){
-            throw new CustomerArquivedExeption();
-        }
     }
 
     public void enablePromotionNotifications() {
@@ -152,7 +152,7 @@ public class Customer {
     }
 
     private void setFullName(String fullName) {
-        Objects.requireNonNull(fullName,VALIDATION_ERROR_FULLNAME_IS_NULL);
+        Objects.requireNonNull(fullName, VALIDATION_ERROR_FULLNAME_IS_NULL);
 
         if (fullName.isBlank()) {
             throw new IllegalArgumentException(VALIDATION_ERROR_FULLNAME_IS_BLANK);
@@ -210,6 +210,17 @@ public class Customer {
 
     private void setLoyaltyPoints(Integer loyaltyPoints) {
         Objects.requireNonNull(loyaltyPoints);
+
+        if (loyaltyPoints < 0) {
+            throw new IllegalArgumentException();
+        }
+
         this.loyaltyPoints = loyaltyPoints;
+    }
+
+    private void verifyIfChangeable() {
+        if (this.archived) {
+            throw new CustomerArquivedExeption();
+        }
     }
 }

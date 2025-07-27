@@ -47,9 +47,7 @@ class CustomerTest {
         );
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> {
-                    customer.changeEmail("invalid");
-                });
+                .isThrownBy(() -> customer.changeEmail("invalid"));
     }
 
     @Test
@@ -112,5 +110,46 @@ class CustomerTest {
 
         Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
                 .isThrownBy(() -> customer.changePhone("123-456-789"));
+    }
+
+    @Test
+    @DisplayName("Should sum points when adding loyalty points to a new Customer")
+    void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
+        Customer customer = new Customer(
+                IdGenerator.generateTimeBasedUUID(),
+                "Cristian Puhl",
+                LocalDate.of(1998, 1, 29),
+                "cristian.puhl@test.com",
+                "123-456-789",
+                "123-45-6789",
+                true,
+                OffsetDateTime.now()
+        );
+
+        customer.addLoyaltyPoints(10);
+        customer.addLoyaltyPoints(20);
+
+        Assertions.assertThat(customer.loyaltyPoints()).isEqualTo(30);
+    }
+
+    @Test
+    @DisplayName("Should throw IllegalArgumentException when adding invalid loyalty points to a new Customer")
+    void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerationExeption() {
+        Customer customer = new Customer(
+                IdGenerator.generateTimeBasedUUID(),
+                "Cristian Puhl",
+                LocalDate.of(1998, 1, 29),
+                "cristian.puhl@test.com",
+                "123-456-789",
+                "123-45-6789",
+                true,
+                OffsetDateTime.now()
+        );
+
+        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> customer.addLoyaltyPoints(0));
+
+        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> customer.addLoyaltyPoints(-10));
     }
 }
