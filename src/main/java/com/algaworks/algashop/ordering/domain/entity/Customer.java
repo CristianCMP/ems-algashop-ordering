@@ -2,6 +2,9 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
+import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.FullName;
+import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
 import lombok.EqualsAndHashCode;
 
 import java.time.LocalDate;
@@ -15,8 +18,8 @@ import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.*;
 public class Customer {
 
     @EqualsAndHashCode.Include
-    private UUID id;
-    private String fullName;
+    private CustomerId id;
+    private FullName fullName;
     private LocalDate birthDate;
     private String email;
     private String phone;
@@ -25,9 +28,9 @@ public class Customer {
     private Boolean archived;
     private OffsetDateTime registeredAt;
     private OffsetDateTime arquivedAt;
-    private Integer loyaltyPoints;
+    private LoyaltyPoints loyaltyPoints;
 
-    public Customer(UUID id, String fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
+    public Customer(CustomerId id, FullName fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -37,10 +40,10 @@ public class Customer {
         this.setPromotionNotificationsAllower(promotionNotificationsAllower);
         this.setRegisteredAt(registeredAt);
         this.setArchived(false);
-        this.setLoyaltyPoints(0);
+        this.setLoyaltyPoints(LoyaltyPoints.ZERO);
     }
 
-    public Customer(UUID id, String fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, Integer loyaltyPoints) {
+    public Customer(CustomerId id, FullName fullName, LocalDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -54,14 +57,9 @@ public class Customer {
         this.setLoyaltyPoints(loyaltyPoints);
     }
 
-    public void addLoyaltyPoints(Integer loyaltyPointsAdd) {
+    public void addLoyaltyPoints(LoyaltyPoints loyaltyPointsAdded) {
         verifyIfChangeable();
-
-        if (loyaltyPointsAdd <= 0){
-            throw new IllegalArgumentException();
-        }
-
-        this.setLoyaltyPoints(this.loyaltyPoints + loyaltyPointsAdd);
+        this.setLoyaltyPoints(this.loyaltyPoints().add(loyaltyPointsAdded));
     }
 
     public void archive() {
@@ -69,7 +67,7 @@ public class Customer {
 
         this.setArchived(true);
         this.setArquivedAt(OffsetDateTime.now());
-        this.setFullName("Anonymous");
+        this.setFullName(new FullName("Anonymous", "Anonymous"));
         this.setPhone("000-000-0000");
         this.setDocument("000-00-0000");
         this.setEmail(UUID.randomUUID() + "@anonymous.com");
@@ -87,7 +85,7 @@ public class Customer {
         this.setPromotionNotificationsAllower(false);
     }
 
-    public void changeName(String fullName) {
+    public void changeName(FullName fullName) {
         verifyIfChangeable();
         this.setFullName(fullName);
     }
@@ -102,11 +100,11 @@ public class Customer {
         this.setPhone(phone);
     }
 
-    public UUID id() {
+    public CustomerId id() {
         return id;
     }
 
-    public String fullName() {
+    public FullName fullName() {
         return fullName;
     }
 
@@ -142,21 +140,17 @@ public class Customer {
         return arquivedAt;
     }
 
-    public Integer loyaltyPoints() {
+    public LoyaltyPoints loyaltyPoints() {
         return loyaltyPoints;
     }
 
-    private void setId(UUID id) {
+    private void setId(CustomerId id) {
+        Objects.requireNonNull(id);
         this.id = id;
     }
 
-    private void setFullName(String fullName) {
+    private void setFullName(FullName fullName) {
         Objects.requireNonNull(fullName, VALIDATION_ERROR_FULLNAME_IS_NULL);
-
-        if (fullName.isBlank()) {
-            throw new IllegalArgumentException(VALIDATION_ERROR_FULLNAME_IS_BLANK);
-        }
-
         this.fullName = fullName;
     }
 
@@ -207,13 +201,8 @@ public class Customer {
         this.arquivedAt = arquivedAt;
     }
 
-    private void setLoyaltyPoints(Integer loyaltyPoints) {
+    private void setLoyaltyPoints(LoyaltyPoints loyaltyPoints) {
         Objects.requireNonNull(loyaltyPoints);
-
-        if (loyaltyPoints < 0) {
-            throw new IllegalArgumentException();
-        }
-
         this.loyaltyPoints = loyaltyPoints;
     }
 
