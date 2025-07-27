@@ -2,10 +2,7 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
-import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
-import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.FullName;
-import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
+import com.algaworks.algashop.ordering.domain.valueobject.*;
 import lombok.EqualsAndHashCode;
 
 import java.time.OffsetDateTime;
@@ -24,14 +21,14 @@ public class Customer {
     private BirthDate birthDate;
     private String email;
     private String phone;
-    private String document;
+    private Document document;
     private Boolean promotionNotificationsAllower;
     private Boolean archived;
     private OffsetDateTime registeredAt;
     private OffsetDateTime arquivedAt;
     private LoyaltyPoints loyaltyPoints;
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -44,7 +41,7 @@ public class Customer {
         this.setLoyaltyPoints(LoyaltyPoints.ZERO);
     }
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, String document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
+    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, String email, String phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
@@ -70,7 +67,7 @@ public class Customer {
         this.setArquivedAt(OffsetDateTime.now());
         this.setFullName(new FullName("Anonymous", "Anonymous"));
         this.setPhone("000-000-0000");
-        this.setDocument("000-00-0000");
+        this.setDocument(new Document("000-00-0000"));
         this.setEmail(UUID.randomUUID() + "@anonymous.com");
         this.setBirthDate(null);
         this.setPromotionNotificationsAllower(false);
@@ -121,7 +118,7 @@ public class Customer {
         return phone;
     }
 
-    public String document() {
+    public Document document() {
         return document;
     }
 
@@ -174,7 +171,7 @@ public class Customer {
         this.phone = phone;
     }
 
-    private void setDocument(String document) {
+    private void setDocument(Document document) {
         Objects.requireNonNull(document);
         this.document = document;
     }

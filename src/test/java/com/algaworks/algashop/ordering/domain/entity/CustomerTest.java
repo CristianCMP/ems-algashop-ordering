@@ -1,10 +1,7 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
-import com.algaworks.algashop.ordering.domain.valueobject.BirthDate;
-import com.algaworks.algashop.ordering.domain.valueobject.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.FullName;
-import com.algaworks.algashop.ordering.domain.valueobject.LoyaltyPoints;
+import com.algaworks.algashop.ordering.domain.valueobject.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +26,7 @@ class CustomerTest {
                             new BirthDate(LocalDate.of(1998, 1, 29)),
                             "invalid",
                             "123-456-789",
-                            "123-45-6789",
+                            new Document("123-45-6789"),
                             true,
                             OffsetDateTime.now()
                     );
@@ -45,7 +42,7 @@ class CustomerTest {
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
-                "123-45-6789",
+                new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
         );
@@ -63,7 +60,7 @@ class CustomerTest {
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
-                "123-45-6789",
+                new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
         );
@@ -74,7 +71,7 @@ class CustomerTest {
                 c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous", "Anonymous")),
                 c -> assertThat(c.email()).isNotEqualTo("cristian.puhl@test.com"),
                 c -> assertThat(c.phone()).isEqualTo("000-000-0000"),
-                c -> assertThat(c.document()).isEqualTo("000-00-0000"),
+                c -> assertThat(c.document()).isEqualTo( new Document("000-00-0000")),
                 c -> assertThat(c.birthDate()).isNull(),
                 c -> assertThat(c.isPromotionNotificationsAllower()).isFalse()
         );
@@ -89,7 +86,7 @@ class CustomerTest {
                 null,
                 "anonymous@anonymous.com",
                 "000-000-000",
-                "000-00-0000",
+                new Document("000-00-0000"),
                 false,
                 true,
                 OffsetDateTime.now(),
@@ -125,7 +122,7 @@ class CustomerTest {
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
-                "123-45-6789",
+                new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
         );
@@ -145,7 +142,7 @@ class CustomerTest {
                 new BirthDate(LocalDate.of(1998, 1, 29)),
                 "cristian.puhl@test.com",
                 "123-456-789",
-                "123-45-6789",
+                new Document("123-45-6789"),
                 true,
                 OffsetDateTime.now()
         );
