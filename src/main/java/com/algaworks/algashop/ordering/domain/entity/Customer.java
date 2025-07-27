@@ -1,9 +1,8 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
-import com.algaworks.algashop.ordering.domain.utitly.validator.FieldValidations;
+import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.validator.routines.EmailValidator;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;

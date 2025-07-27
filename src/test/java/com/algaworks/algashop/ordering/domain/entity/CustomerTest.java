@@ -113,7 +113,7 @@ class CustomerTest {
     }
 
     @Test
-    @DisplayName("Should sum points when adding loyalty points to a new Customer")
+    @DisplayName("Should sum value when adding loyalty value to a new Customer")
     void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
         Customer customer = new Customer(
                 IdGenerator.generateTimeBasedUUID(),
@@ -133,7 +133,7 @@ class CustomerTest {
     }
 
     @Test
-    @DisplayName("Should throw IllegalArgumentException when adding invalid loyalty points to a new Customer")
+    @DisplayName("Should throw IllegalArgumentException when adding invalid loyalty value to a new Customer")
     void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerationExeption() {
         Customer customer = new Customer(
                 IdGenerator.generateTimeBasedUUID(),
