@@ -29,21 +29,40 @@ public class Customer {
     private LoyaltyPoints loyaltyPoints;
     private Address address;
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, OffsetDateTime registeredAt, Address address) {
-        this.setId(id);
-        this.setFullName(fullName);
-        this.setBirthDate(birthDate);
-        this.setEmail(email);
-        this.setPhone(phone);
-        this.setDocument(document);
-        this.setPromotionNotificationsAllower(promotionNotificationsAllower);
-        this.setRegisteredAt(registeredAt);
-        this.setArchived(false);
-        this.setLoyaltyPoints(LoyaltyPoints.ZERO);
-        this.setAddress(address);
+    public static Customer brandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Address address) {
+        return new Customer(new CustomerId(),
+                fullName,
+                birthDate,
+                email,
+                phone,
+                document,
+                promotionNotificationsAllower,
+                false,
+                OffsetDateTime.now(),
+                null,
+                LoyaltyPoints.ZERO,
+                address
+        );
     }
 
-    public Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
+    public static Customer existing(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
+        return new Customer(
+                id,
+                fullName,
+                birthDate,
+                email,
+                phone,
+                document,
+                promotionNotificationsAllower,
+                archived,
+                registeredAt,
+                arquivedAt,
+                loyaltyPoints,
+                address
+        );
+    }
+
+    private Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
         this.setId(id);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
