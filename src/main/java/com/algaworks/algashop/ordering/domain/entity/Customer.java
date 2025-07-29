@@ -3,6 +3,7 @@ package com.algaworks.algashop.ordering.domain.entity;
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
 import java.time.OffsetDateTime;
@@ -29,7 +30,8 @@ public class Customer {
     private LoyaltyPoints loyaltyPoints;
     private Address address;
 
-    public static Customer brandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Address address) {
+    @Builder(builderClassName = "BrandNewCustumerBuild", builderMethodName = "brandNew")
+    private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Address address) {
         return new Customer(new CustomerId(),
                 fullName,
                 birthDate,
@@ -45,23 +47,7 @@ public class Customer {
         );
     }
 
-    public static Customer existing(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
-        return new Customer(
-                id,
-                fullName,
-                birthDate,
-                email,
-                phone,
-                document,
-                promotionNotificationsAllower,
-                archived,
-                registeredAt,
-                arquivedAt,
-                loyaltyPoints,
-                address
-        );
-    }
-
+    @Builder(builderClassName = "ExistingCustumerBuild", builderMethodName = "existing")
     private Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
         this.setId(id);
         this.setFullName(fullName);
