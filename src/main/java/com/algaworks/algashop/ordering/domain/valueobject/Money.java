@@ -24,16 +24,16 @@ public record Money(BigDecimal value) implements Comparable<Money> {
         }
     }
 
-//    public Money multuply(Quantity quantity) {
-//        Objects.requireNonNull(quantity);
-//
-//        if (quantity.value() < 1) {
-//            throw new IllegalArgumentException();
-//        }
-//
-//        BigDecimal multiply = this.value.multiply(new BigDecimal(quantity.value()));
-//        return new Money(multiply));
-//    }
+    public Money multiply(Quantity quantity) {
+        Objects.requireNonNull(quantity);
+
+        if (quantity.value() < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        BigDecimal multiply = this.value.multiply(new BigDecimal(quantity.value()));
+        return new Money(multiply);
+    }
 
     public Money add(Money other) {
         Objects.requireNonNull(other);

@@ -71,4 +71,23 @@ class MoneyTest {
 
         Assertions.assertThat(money.value()).isEqualTo(expected);
     }
+
+    @Test
+    void shouldMultiplyValue() {
+        Money money = new Money(BigDecimal.TEN);
+
+        Money moneyMultiplied = money.multiply(new Quantity(10));
+
+        Assertions.assertThat(moneyMultiplied.value()).isEqualTo(new BigDecimal(100).setScale(2, RoundingMode.HALF_UP));
+    }
+
+    @Test
+    void shouldNotMultiplyValue() {
+        Money money = new Money(BigDecimal.TEN);
+
+        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> money.multiply(Quantity.ZERO));
+
+        Assertions.assertThat(money.value()).isEqualTo(expected);
+    }
 }
