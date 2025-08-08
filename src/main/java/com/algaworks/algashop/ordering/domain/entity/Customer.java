@@ -3,6 +3,7 @@ package com.algaworks.algashop.ordering.domain.entity;
 import com.algaworks.algashop.ordering.domain.exeption.CustomerArquivedExeption;
 import com.algaworks.algashop.ordering.domain.validator.FieldValidations;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
+import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
@@ -10,7 +11,6 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.VALIDATION_ERROR_EMAIL_IS_INVALID;
 import static com.algaworks.algashop.ordering.domain.exeption.ErrorMenssages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
