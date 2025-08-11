@@ -23,7 +23,7 @@ public class IdGenerator {
      * TSID_NODE
      * TSID_NODE_COUNT
      */
-    public static TSID generateTimeBasedTSID() {
+    public static TSID generateTSID() {
         return TSID_FACTORY.generate();
     }
 }
