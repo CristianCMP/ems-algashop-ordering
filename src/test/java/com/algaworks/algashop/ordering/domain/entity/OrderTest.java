@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
 import com.algaworks.algashop.ordering.domain.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
@@ -64,7 +65,7 @@ class OrderTest {
     }
 
     @Test
-    public void shouldCalculateTotals(){
+    public void shouldCalculateTotals() {
         Order order = Order.draft(new CustomerId());
 
         ProductId productId = new ProductId();
@@ -85,5 +86,19 @@ class OrderTest {
 
         assertThat(order.totalAmount()).isEqualTo(new Money("250"));
         assertThat(order.totalItems()).isEqualTo(new Quantity(3));
+    }
+
+    @Test
+    public void givinDraftOrder_whenPlace_shouldChangetoPlaced() {
+        Order order = Order.draft(new CustomerId());
+        order.place();
+        assertThat(order.isPlaced()).isTrue();
+    }
+    @Test
+    public void givinPlacedOrder_whenTryToPlace_shouldGenerateException() {
+        Order order = Order.draft(new CustomerId());
+        order.place();
+        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+                .isThrownBy(order::place);
     }
 }
