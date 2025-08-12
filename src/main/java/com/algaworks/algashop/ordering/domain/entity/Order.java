@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.exeption.OrderCannotBePlacedExeption;
 import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliveryDateExeption;
 import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
@@ -29,8 +30,8 @@ public class Order {
     private OffsetDateTime canceledAt;
     private OffsetDateTime readyAt;
 
-    private BillingInfo billingInfo;
-    private ShippingInfo shippingInfo;
+    private BillingInfo billing;
+    private ShippingInfo shipping;
 
     private OrderStatus status;
     private PaymentMethod paymentMethod;
@@ -44,7 +45,7 @@ public class Order {
     public Order(
             OrderId id, CustomerId customerId, Money totalAmount, Quantity totalItems,
             OffsetDateTime placedAt, OffsetDateTime paidAt, OffsetDateTime canceledAt,
-            OffsetDateTime readyAt, BillingInfo billingInfo, ShippingInfo shippingInfo, OrderStatus status,
+            OffsetDateTime readyAt, BillingInfo billing, ShippingInfo shipping, OrderStatus status,
             PaymentMethod paymentMethod, Money shippingCost, LocalDate expectedDeliveryDate, Set<OrderItem> items
     ) {
         this.setId(id);
@@ -55,8 +56,8 @@ public class Order {
         this.setPaidAt(paidAt);
         this.setCanceledAt(canceledAt);
         this.setReadyAt(readyAt);
-        this.setBillingInfo(billingInfo);
-        this.setShippingInfo(shippingInfo);
+        this.setBilling(billing);
+        this.setShipping(shipping);
         this.setStatus(status);
         this.setPaymentMethod(paymentMethod);
         this.setShippingCost(shippingCost);
@@ -104,8 +105,19 @@ public class Order {
     }
 
     public void place() {
-        // TODo business rules!
+        Objects.requireNonNull(this.shipping());
+        Objects.requireNonNull(this.billing());
+        Objects.requireNonNull(this.expectedDeliveryDate());
+        Objects.requireNonNull(this.shippingCost());
+        Objects.requireNonNull(this.paymentMethod());
+        Objects.requireNonNull(this.items());
+
+        if(this.items().isEmpty()) {
+            throw new OrderCannotBePlacedExeption(this.id());
+        }
+
         this.changeStatus(OrderStatus.PLACED);
+        this.setPaidAt(OffsetDateTime.now());
     }
 
     public void changePaymentMethod(PaymentMethod paymentMethod) {
@@ -115,7 +127,7 @@ public class Order {
 
     public void changeBilling(BillingInfo billingnfo) {
         Objects.requireNonNull(billingnfo);
-        this.setBillingInfo(billingnfo);
+        this.setBilling(billingnfo);
     }
 
     public void changeShipping(ShippingInfo shipping, Money shippingCost, LocalDate expectedDeliveryDate) {
@@ -127,7 +139,7 @@ public class Order {
             throw new OrderInvalidShippingDeliveryDateExeption(this.id());
         }
 
-        this.setShippingInfo(shipping);
+        this.setShipping(shipping);
         this.setShippingCost(shippingCost);
         this.setExpectedDeliveryDate(expectedDeliveryDate);
     }
@@ -172,12 +184,12 @@ public class Order {
         return readyAt;
     }
 
-    public BillingInfo billingInfo() {
-        return billingInfo;
+    public BillingInfo billing() {
+        return billing;
     }
 
-    public ShippingInfo shippingInfo() {
-        return shippingInfo;
+    public ShippingInfo shipping() {
+        return shipping;
     }
 
     public OrderStatus status() {
@@ -192,7 +204,7 @@ public class Order {
         return shippingCost;
     }
 
-    public LocalDate expectDeliveryDate() {
+    public LocalDate expectedDeliveryDate() {
         return expectedDeliveryDate;
     }
 
@@ -213,7 +225,7 @@ public class Order {
 
         BigDecimal shippingCost;
 
-        if (this.shippingInfo == null) {
+        if (this.shipping == null) {
             shippingCost = BigDecimal.ZERO;
         } else {
             shippingCost = this.shippingCost.value();
@@ -269,12 +281,12 @@ public class Order {
         this.readyAt = readyAt;
     }
 
-    private void setBillingInfo(BillingInfo billingInfo) {
-        this.billingInfo = billingInfo;
+    private void setBilling(BillingInfo billing) {
+        this.billing = billing;
     }
 
-    private void setShippingInfo(ShippingInfo shippingInfo) {
-        this.shippingInfo = shippingInfo;
+    private void setShipping(ShippingInfo shipping) {
+        this.shipping = shipping;
     }
 
     private void setStatus(OrderStatus status) {

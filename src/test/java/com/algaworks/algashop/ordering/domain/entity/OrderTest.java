@@ -111,7 +111,7 @@ class OrderTest {
     }
 
     @Test
-    public void givenDraftOrder_whenChangeBillingInfo_shouldAllowChange() {
+    public void givenDraftOrder_whenChangeBilling_shouldAllowChange() {
         Address address = Address.builder()
                 .state("Bourbon Street")
                 .number("1234")
@@ -133,11 +133,11 @@ class OrderTest {
 
         order.changeBilling(billingInfo);
 
-        assertThat(order.billingInfo()).isEqualTo(billingInfo);
+        assertThat(order.billing()).isEqualTo(billingInfo);
     }
 
     @Test
-    public void givenDraftOrder_whenChangeShippingInfo_shouldAllowChange() {
+    public void givenDraftOrder_whenChangeShipping_shouldAllowChange() {
         Address address = Address.builder()
                 .state("Bourbon Street")
                 .number("1234")
@@ -162,14 +162,14 @@ class OrderTest {
         order.changeShipping(shippingInfo, shippingCost, expectedDeliveryDate);
 
         assertWith(order,
-                o -> assertThat(order.shippingInfo()).isEqualTo(shippingInfo),
+                o -> assertThat(order.shipping()).isEqualTo(shippingInfo),
                 o -> assertThat(order.shippingCost()).isEqualTo(shippingCost),
-                o -> assertThat(order.expectDeliveryDate()).isEqualTo(expectedDeliveryDate)
+                o -> assertThat(order.expectedDeliveryDate()).isEqualTo(expectedDeliveryDate)
         );
     }
 
     @Test
-    public void givenDraftOrderAndDeliveryDateInThePast_whenChangeShippingInfo_shouldNotAllowChange() {
+    public void givenDraftOrderAndDeliveryDateInThePast_whenChangeShipping_shouldNotAllowChange() {
         Address address = Address.builder()
                 .state("Bourbon Street")
                 .number("1234")
