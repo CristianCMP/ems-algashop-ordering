@@ -11,4 +11,6 @@ public class ErrorMenssages {
 
     public static final String ERROR_CUSTOMER_ARQUIVED= "Customer is arquived it connot be changed";
     public static final String ERROR_ORDER_STATUS_CANNOT_BE_CHANGE= "Connot change order %s status from %s to %s";
+
+    public static final String ERROR_ORDER_DELIVERY_DATE_CANNOT_IN_THE_PAST= "Order %s expected delivery date cannot be in the past";
 }
