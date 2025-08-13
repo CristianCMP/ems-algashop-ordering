@@ -2,8 +2,6 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
-import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
-import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 
 import java.time.LocalDate;
 
@@ -13,10 +11,7 @@ public class OrderTestDataBuilder {
 
     private PaymentMethod paymentMethod = PaymentMethod.GATEWAY_BALANCE;
 
-    private Money shippingCost = new Money("10.00");
-    private LocalDate expectedDeliveryDate = LocalDate.now().plusWeeks(1);
-
-    private ShippingInfo shippingInfo = aShippingInfo();
+    private Shipping shipping = aShipping();
     private BillingInfo billingInfo = aBillingIngo();
 
     private boolean withItems = true;
@@ -32,7 +27,7 @@ public class OrderTestDataBuilder {
 
     public Order build() {
         Order order = Order.draft(customerId);
-        order.changeShipping(shippingInfo, shippingCost, expectedDeliveryDate);
+        order.changeShipping(shipping);
         order.changeBilling(billingInfo);
         order.changePaymentMethod(paymentMethod);
 
@@ -60,12 +55,29 @@ public class OrderTestDataBuilder {
         return order;
     }
 
-    public static ShippingInfo aShippingInfo() {
-        return ShippingInfo.builder()
+    public static Shipping aShipping() {
+        return Shipping.builder()
+                .cost(new Money("10"))
+                .expectedDate(LocalDate.now().plusWeeks(1))
                 .address(anAddress())
-                .document(new Document("123-45-6789"))
-                .phone(new Phone("123-456-7890"))
-                .fullName(new FullName("Cristian", "Puhl"))
+                .recipient(Recipient.builder()
+                        .document(new Document("123-45-6789"))
+                        .phone(new Phone("12-345-6789"))
+                        .fullName(new FullName("Cristian", "Puhl"))
+                        .build())
+                .build();
+    }
+
+    public static Shipping aShippingAlt() {
+        return Shipping.builder()
+                .cost(new Money("20.00"))
+                .expectedDate(LocalDate.now().plusWeeks(2))
+                .address(anAddressAlt())
+                .recipient(Recipient.builder()
+                        .fullName(new FullName("Mary", "Jones"))
+                        .document(new Document("555-11-4333"))
+                        .phone(new Phone("54-445-1140"))
+                        .build())
                 .build();
     }
 
@@ -73,20 +85,32 @@ public class OrderTestDataBuilder {
         return BillingInfo.builder()
                 .address(anAddress())
                 .document(new Document("123-45-6789"))
-                .phone(new Phone("123-456-7890"))
+                .phone(new Phone("12-345-6789"))
                 .fullName(new FullName("Cristian", "Puhl"))
                 .build();
     }
 
     public static Address anAddress() {
         return Address.builder()
-                .state("Bourbon Street")
+                .street("Bourbon Street")
                 .number("1234")
                 .neighborhood("North Ville")
                 .city("York")
-                .street("South California")
+                .state("South California")
                 .zipCode(new ZipCode("12345"))
                 .complement("Apt. 114")
+                .build();
+    }
+
+    public static Address anAddressAlt() {
+        return Address.builder()
+                .street("Sansome Street")
+                .number("875")
+                .neighborhood("Sansome")
+                .city("San Francisco")
+                .state("California")
+                .zipCode(new ZipCode("08040"))
+                .complement("House number 241")
                 .build();
     }
 
@@ -100,18 +124,8 @@ public class OrderTestDataBuilder {
         return this;
     }
 
-    public OrderTestDataBuilder shippingCost(Money shippingCost) {
-        this.shippingCost = shippingCost;
-        return this;
-    }
-
-    public OrderTestDataBuilder expectedDeliveryDate(LocalDate expectedDeliveryDate) {
-        this.expectedDeliveryDate = expectedDeliveryDate;
-        return this;
-    }
-
-    public OrderTestDataBuilder shippingInfo(ShippingInfo shippingInfo) {
-        this.shippingInfo = shippingInfo;
+    public OrderTestDataBuilder shippingInfo(Shipping shipping) {
+        this.shipping = shipping;
         return this;
     }
 
