@@ -4,6 +4,7 @@ import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliv
 import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import org.junit.jupiter.api.Test;
 
@@ -81,7 +82,7 @@ class OrderTest {
     }
 
     @Test
-    public void givenPlacedOrder_whenMackAsPaid_shouldChangeToPaid(){
+    public void givenPlacedOrder_whenMackAsPaid_shouldChangeToPaid() {
         Order order = OrderTestDataBuilder.anOrder().status(OrderStatus.PLACED).build();
         order.markAsPaid();
 
@@ -187,5 +188,26 @@ class OrderTest {
 
         assertThatExceptionOfType(OrderInvalidShippingDeliveryDateExeption.class)
                 .isThrownBy(() -> order.changeShipping(shippingInfo, shippingCost, expectedDeliveryDate));
+    }
+
+    @Test
+    public void givenDraftOrder_whenChangeItem_shouldAllowChange() {
+        Order order = Order.draft(new CustomerId());
+
+        order.addItem(
+                new ProductId(),
+                new ProductName("Desktop X11"),
+                new Money("10.00"),
+                new Quantity(3)
+        );
+
+        OrderItem orderItem = order.items().iterator().next();
+
+        order.changeItemQuantity(orderItem.id(), new Quantity(5));
+
+        assertWith(order,
+                (o) -> assertThat(o.totalAmount()).isEqualTo(new Money("50")),
+                (o) -> assertThat(o.totalItems()).isEqualTo(new Quantity(5))
+        );
     }
 }

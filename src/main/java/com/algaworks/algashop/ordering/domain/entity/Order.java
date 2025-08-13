@@ -1,11 +1,13 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.OrderCannotBePlacedExeption;
+import com.algaworks.algashop.ordering.domain.exeption.OrderDoesNotContainOrderItemException;
 import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliveryDateExeption;
 import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -151,6 +153,16 @@ public class Order {
         return OrderStatus.PAID.equals(this.status());
     }
 
+    public void changeItemQuantity(OrderItemId orderItemId, Quantity quantity) {
+        Objects.requireNonNull(orderItemId);
+        Objects.requireNonNull(quantity);
+
+        OrderItem orderItem = findOrderItem(orderItemId);
+        orderItem.changeQuantity(quantity);
+
+        this.recalculateTotals();
+    }
+
     public OrderId id() {
         return id;
     }
@@ -263,6 +275,15 @@ public class Order {
         if (this.items().isEmpty()) {
             throw OrderCannotBePlacedExeption.noItems(this.id());
         }
+    }
+
+    private OrderItem findOrderItem(OrderItemId orderItemId) {
+        Objects.requireNonNull(orderItemId);
+        return this.items()
+                .stream()
+                .filter(i -> i.id().equals(orderItemId))
+                .findFirst()
+                .orElseThrow(() -> new OrderDoesNotContainOrderItemException(this.id(), orderItemId));
     }
 
     private void setId(OrderId id) {
