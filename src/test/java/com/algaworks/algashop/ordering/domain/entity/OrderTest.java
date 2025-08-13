@@ -2,9 +2,11 @@ package com.algaworks.algashop.ordering.domain.entity;
 
 import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliveryDateExeption;
 import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
+import com.algaworks.algashop.ordering.domain.exeption.ProductOutOfStockException;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -196,5 +198,14 @@ class OrderTest {
                 (o) -> assertThat(o.totalAmount()).isEqualTo(new Money("500")),
                 (o) -> assertThat(o.totalItems()).isEqualTo(new Quantity(5))
         );
+    }
+
+    @Test
+    public void givenOutOfStockProduct_whenTryToAddToAnOrder_shouldNotAllow() {
+        Order order = Order.draft(new CustomerId());
+
+        ThrowableAssert.ThrowingCallable addItemTask = () -> order.addItem(ProductTestDataBuilder.aProductUnavailable().build(), new Quantity(1));
+
+        assertThatExceptionOfType(ProductOutOfStockException.class).isThrownBy(addItemTask);
     }
 }
