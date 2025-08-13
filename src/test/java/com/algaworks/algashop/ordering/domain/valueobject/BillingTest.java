@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class BillingInfoTest {
+class BillingTest {
 
     private FullName validFullName() {
         return new FullName("Cristian", "Puhl");
@@ -16,6 +16,10 @@ class BillingInfoTest {
 
     private Phone validPhone() {
         return new Phone("123-456-789");
+    }
+
+    private Email validEmail() {
+        return new Email("cristian@teste.com");
     }
 
     private Address validAddress() {
@@ -33,27 +37,29 @@ class BillingInfoTest {
     @Test
     @DisplayName("Should create BillingInfo successfully with all valid values")
     void given_validBillingInfo_whenCreate_shouldCreateSuccessfully() {
-        BillingInfo billingInfo = new BillingInfo(
+        Billing billing = new Billing(
                 validFullName(),
                 validDocument(),
                 validPhone(),
+                validEmail(),
                 validAddress()
         );
 
-        Assertions.assertThat(billingInfo.fullName()).isEqualTo(validFullName());
-        Assertions.assertThat(billingInfo.document()).isEqualTo(validDocument());
-        Assertions.assertThat(billingInfo.phone()).isEqualTo(validPhone());
-        Assertions.assertThat(billingInfo.address()).isEqualTo(validAddress());
+        Assertions.assertThat(billing.fullName()).isEqualTo(validFullName());
+        Assertions.assertThat(billing.document()).isEqualTo(validDocument());
+        Assertions.assertThat(billing.phone()).isEqualTo(validPhone());
+        Assertions.assertThat(billing.address()).isEqualTo(validAddress());
     }
 
     @Test
     @DisplayName("Should throw NullPointerException when FullName is null")
     void given_nullFullName_whenCreate_shouldThrowException() {
         Assertions.assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new BillingInfo(
+                .isThrownBy(() -> new Billing(
                         null,
                         validDocument(),
                         validPhone(),
+                        validEmail(),
                         validAddress()
                 ));
     }
@@ -62,10 +68,11 @@ class BillingInfoTest {
     @DisplayName("Should throw NullPointerException when Document is null")
     void given_nullDocument_whenCreate_shouldThrowException() {
         Assertions.assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new BillingInfo(
+                .isThrownBy(() -> new Billing(
                         validFullName(),
                         null,
                         validPhone(),
+                        validEmail(),
                         validAddress()
                 ));
     }
@@ -74,9 +81,23 @@ class BillingInfoTest {
     @DisplayName("Should throw NullPointerException when Phone is null")
     void given_nullPhone_whenCreate_shouldThrowException() {
         Assertions.assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new BillingInfo(
+                .isThrownBy(() -> new Billing(
                         validFullName(),
                         validDocument(),
+                        null,
+                        validEmail(),
+                        validAddress()
+                ));
+    }
+
+    @Test
+    @DisplayName("Should throw NullPointerException when Email is null")
+    void given_nullEmail_whenCreate_shouldThrowException() {
+        Assertions.assertThatExceptionOfType(NullPointerException.class)
+                .isThrownBy(() -> new Billing(
+                        validFullName(),
+                        validDocument(),
+                        validPhone(),
                         null,
                         validAddress()
                 ));
@@ -86,10 +107,11 @@ class BillingInfoTest {
     @DisplayName("Should throw NullPointerException when Address is null")
     void given_nullAddress_whenCreate_shouldThrowException() {
         Assertions.assertThatExceptionOfType(NullPointerException.class)
-                .isThrownBy(() -> new BillingInfo(
+                .isThrownBy(() -> new Billing(
                         validFullName(),
                         validDocument(),
                         validPhone(),
+                        validEmail(),
                         null
                 ));
     }

@@ -31,7 +31,7 @@ public class Order {
     private OffsetDateTime canceledAt;
     private OffsetDateTime readyAt;
 
-    private BillingInfo billing;
+    private Billing billing;
     private Shipping shipping;
 
     private OrderStatus status;
@@ -43,8 +43,8 @@ public class Order {
     public Order(
             OrderId id, CustomerId customerId, Money totalAmount, Quantity totalItems,
             OffsetDateTime placedAt, OffsetDateTime paidAt, OffsetDateTime canceledAt,
-            OffsetDateTime readyAt, BillingInfo billing, Shipping shipping, OrderStatus status,
-            PaymentMethod paymentMethod,Set<OrderItem> items
+            OffsetDateTime readyAt, Billing billing, Shipping shipping, OrderStatus status,
+            PaymentMethod paymentMethod, Set<OrderItem> items
     ) {
         this.setId(id);
         this.setCustomerId(customerId);
@@ -116,7 +116,7 @@ public class Order {
         this.setPaymentMethod(paymentMethod);
     }
 
-    public void changeBilling(BillingInfo billingnfo) {
+    public void changeBilling(Billing billingnfo) {
         Objects.requireNonNull(billingnfo);
         this.setBilling(billingnfo);
     }
@@ -186,7 +186,7 @@ public class Order {
         return readyAt;
     }
 
-    public BillingInfo billing() {
+    public Billing billing() {
         return billing;
     }
 
@@ -299,7 +299,7 @@ public class Order {
         this.readyAt = readyAt;
     }
 
-    private void setBilling(BillingInfo billing) {
+    private void setBilling(Billing billing) {
         this.billing = billing;
     }
 
