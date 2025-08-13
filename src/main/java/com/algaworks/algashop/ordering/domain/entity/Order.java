@@ -1,9 +1,6 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-import com.algaworks.algashop.ordering.domain.exeption.OrderCannotBePlacedExeption;
-import com.algaworks.algashop.ordering.domain.exeption.OrderDoesNotContainOrderItemException;
-import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliveryDateExeption;
-import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
+import com.algaworks.algashop.ordering.domain.exeption.*;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
@@ -80,6 +77,7 @@ public class Order {
     }
 
     public void addItem(Product product, Quantity quantity) {
+        verifyIfChangeable();
         Objects.requireNonNull(product);
         Objects.requireNonNull(quantity);
 
@@ -113,16 +111,19 @@ public class Order {
 
     public void changePaymentMethod(PaymentMethod paymentMethod) {
         Objects.requireNonNull(paymentMethod);
+        verifyIfChangeable();
         this.setPaymentMethod(paymentMethod);
     }
 
     public void changeBilling(Billing billingnfo) {
         Objects.requireNonNull(billingnfo);
+        verifyIfChangeable();
         this.setBilling(billingnfo);
     }
 
     public void changeShipping(Shipping newShipping) {
         Objects.requireNonNull(newShipping);
+        verifyIfChangeable();
 
         if (newShipping.expectedDate().isBefore(LocalDate.now())) {
             throw new OrderInvalidShippingDeliveryDateExeption(this.id());
@@ -147,6 +148,7 @@ public class Order {
     public void changeItemQuantity(OrderItemId orderItemId, Quantity quantity) {
         Objects.requireNonNull(orderItemId);
         Objects.requireNonNull(quantity);
+        verifyIfChangeable();
 
         OrderItem orderItem = findOrderItem(orderItemId);
         orderItem.changeQuantity(quantity);
@@ -251,6 +253,12 @@ public class Order {
         }
         if (this.items().isEmpty()) {
             throw OrderCannotBePlacedExeption.noItems(this.id());
+        }
+    }
+
+    private void verifyIfChangeable () {
+        if (!this.isDraft()) {
+             throw new OrderCannotBeEditedException(this.id(), this.status());
         }
     }
 
