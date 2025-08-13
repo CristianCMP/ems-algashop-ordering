@@ -17,8 +17,26 @@ import static org.assertj.core.api.Assertions.*;
 class OrderTest {
 
     @Test
-    public void shouldGenerate() {
-        Order draft = Order.draft(new CustomerId());
+    public void shouldGenerateDraftOrder() {
+        CustomerId customerId = new CustomerId();
+        Order order = Order.draft(customerId);
+
+        assertWith(order,
+                o -> assertThat(o.id()).isNotNull(),
+                o -> assertThat(o.customerId()).isEqualTo(customerId),
+                o -> assertThat(o.totalAmount()).isEqualTo(Money.ZERO),
+                o -> assertThat(o.totalItems()).isEqualTo(Quantity.ZERO),
+                o -> assertThat(o.isDraft()).isTrue(),
+                o -> assertThat(o.items()).isEmpty(),
+
+                o -> assertThat(o.placedAt()).isNull(),
+                o -> assertThat(o.paidAt()).isNull(),
+                o -> assertThat(o.canceledAt()).isNull(),
+                o -> assertThat(o.readyAt()).isNull(),
+                o -> assertThat(o.billing()).isNull(),
+                o -> assertThat(o.shipping()).isNull(),
+                o -> assertThat(o.paymentMethod()).isNull()
+        );
     }
 
     @Test
@@ -100,7 +118,7 @@ class OrderTest {
 
     @Test
     public void givenDraftOrder_whenChangeBilling_shouldAllowChange() {
-       Billing billing = OrderTestDataBuilder.aBilling();
+        Billing billing = OrderTestDataBuilder.aBilling();
 
         Order order = Order.draft(new CustomerId());
         order.changeBilling(billing);

@@ -1,17 +1,34 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
+import com.algaworks.algashop.ordering.domain.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.valueobject.Quantity;
 import com.algaworks.algashop.ordering.domain.valueobject.id.OrderId;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertWith;
+
 class OrderItemTest {
 
     @Test
-    public void shouldGenerate() {
-        OrderItem.brandNew()
-                .product(ProductTestDataBuilder.aProduct().build())
-                .quantity(new Quantity(1))
-                .orderId(new OrderId())
+    public void shouldGenerateBrandNewOrderItem() {
+        Product product = ProductTestDataBuilder.aProduct().build();
+        Quantity quantity = new Quantity(1);
+        OrderId orderId = new OrderId();
+
+        OrderItem orderItem = OrderItem.brandNew()
+                .product(product)
+                .quantity(quantity)
+                .orderId(orderId)
                 .build();
+
+        assertWith(orderItem,
+                o -> assertThat(o.id()).isNotNull(),
+                o -> assertThat(o.productId()).isEqualTo(product.id()),
+                o -> assertThat(o.productName()).isEqualTo(product.name()),
+                o -> assertThat(o.price()).isEqualTo(product.price()),
+                o -> assertThat(o.quantity()).isEqualTo(quantity),
+                o -> assertThat(o.orderId()).isEqualTo(orderId)
+        );
     }
 }
