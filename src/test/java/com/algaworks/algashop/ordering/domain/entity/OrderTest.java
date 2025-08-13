@@ -66,7 +66,7 @@ class OrderTest {
 
     @Test
     public void shouldCalculateTotals() {
-        Order order = OrderTestDataBuilder.anOrder().build();
+        Order order = OrderTestDataBuilder.anOrder().shippingCost(Money.ZERO).build();
 
         assertThat(order.totalAmount()).isEqualTo(new Money("6200"));
         assertThat(order.totalItems()).isEqualTo(new Quantity(3));
