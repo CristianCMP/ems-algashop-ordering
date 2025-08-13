@@ -112,12 +112,17 @@ public class Order {
         Objects.requireNonNull(this.paymentMethod());
         Objects.requireNonNull(this.items());
 
-        if(this.items().isEmpty()) {
+        if (this.items().isEmpty()) {
             throw new OrderCannotBePlacedExeption(this.id());
         }
 
         this.changeStatus(OrderStatus.PLACED);
         this.setPaidAt(OffsetDateTime.now());
+    }
+
+    public void markAsPaid() {
+        this.setPaidAt(OffsetDateTime.now());
+        this.setStatus(OrderStatus.PAID);
     }
 
     public void changePaymentMethod(PaymentMethod paymentMethod) {
@@ -135,7 +140,7 @@ public class Order {
         Objects.requireNonNull(shippingCost);
         Objects.requireNonNull(expectedDeliveryDate);
 
-        if(expectedDeliveryDate.isBefore(LocalDate.now())) {
+        if (expectedDeliveryDate.isBefore(LocalDate.now())) {
             throw new OrderInvalidShippingDeliveryDateExeption(this.id());
         }
 
@@ -150,6 +155,10 @@ public class Order {
 
     public boolean isPlaced() {
         return OrderStatus.PLACED.equals(this.status());
+    }
+
+    public boolean isPaid() {
+        return OrderStatus.PAID.equals(this.status());
     }
 
     public OrderId id() {
