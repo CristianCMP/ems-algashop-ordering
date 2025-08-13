@@ -1,11 +1,9 @@
 package com.algaworks.algashop.ordering.domain.entity;
 
-import com.algaworks.algashop.ordering.domain.exeption.OrderCannotBeEditedException;
-import com.algaworks.algashop.ordering.domain.exeption.OrderInvalidShippingDeliveryDateExeption;
-import com.algaworks.algashop.ordering.domain.exeption.OrderStatusCannotBeChangeExeption;
-import com.algaworks.algashop.ordering.domain.exeption.ProductOutOfStockException;
+import com.algaworks.algashop.ordering.domain.exeption.*;
 import com.algaworks.algashop.ordering.domain.valueobject.*;
 import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.valueobject.id.OrderItemId;
 import com.algaworks.algashop.ordering.domain.valueobject.id.ProductId;
 import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
@@ -187,5 +185,51 @@ class OrderTest {
 
         assertThatExceptionOfType(OrderCannotBeEditedException.class)
                 .isThrownBy(() -> order.addItem(product, new Quantity(3)));
+    }
+
+    @Test
+    public void giveOrder_whenRemoveItem_shouldAllowChange() {
+        Order order = Order.draft(new CustomerId());
+        Product product = ProductTestDataBuilder.aProductAltMousePad().build();
+
+        order.addItem(product, new Quantity(1));
+
+        assertThat(order.items().size()).isEqualTo(1);
+
+        OrderItem orderItem = order.items().iterator().next();
+
+        order.removeItem(orderItem.id());
+
+        assertWith(order,
+                (o) -> assertThat(o.items()).isEmpty(),
+                (o) -> assertThat(o.totalItems()).isEqualTo(Quantity.ZERO),
+                (o) -> assertThat(o.totalAmount()).isEqualTo(Money.ZERO)
+        );
+    }
+
+    @Test
+    public void giveOrder_whenRemoveItemNonexistent_shouldNotAllowChange() {
+        Order order = Order.draft(new CustomerId());
+        Product product = ProductTestDataBuilder.aProductAltMousePad().build();
+
+        order.addItem(product, new Quantity(1));
+
+        assertThat(order.items().size()).isEqualTo(1);
+        assertThatExceptionOfType(OrderDoesNotContainOrderItemException.class)
+                .isThrownBy(() -> order.removeItem(new OrderItemId()));
+    }
+
+    @Test
+    public void givenPlaceOrder_whenRemoveItem_shouldNotAllowChange() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+        Product product = ProductTestDataBuilder.aProductAltMousePad().build();
+
+        order.addItem(product, new Quantity(1));
+        order.place();
+
+        OrderItem orderItem = order.items().iterator().next();
+
+        assertThatExceptionOfType(OrderCannotBeEditedException.class)
+                .isThrownBy(() -> order.removeItem(orderItem.id()));
     }
 }
