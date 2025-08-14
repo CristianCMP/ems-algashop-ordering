@@ -9,6 +9,8 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
@@ -274,5 +276,59 @@ class OrderTest {
 
         assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
                 .isThrownBy(order::markAsReady);
+    }
+
+    @Test
+    public void givenOrderInDraftPlacedPaidOrReady_whenCancel_shouldChangeToCanceled() {
+        OrderStatus[] allowedStatuses = {
+                OrderStatus.DRAFT,
+                OrderStatus.PLACED,
+                OrderStatus.PAID,
+                OrderStatus.READY
+        };
+
+        for (OrderStatus status : allowedStatuses) {
+            Order order = OrderTestDataBuilder.anOrder().status(status).build();
+            order.cancel();
+
+            assertWith(order,
+                    o -> assertThat(o.isCanceled()).isTrue(),
+                    o -> assertThat(o.status()).isEqualTo(OrderStatus.CANCELED),
+                    o -> assertThat(o.canceledAt()).isNotNull()
+            );
+        }
+    }
+
+    @Test
+    public void givenCanceledOrder_whenCancelAgain_shouldThrowException() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+
+        order.cancel();
+
+        OffsetDateTime canceledAtBefore = order.canceledAt();
+
+        assertWith(order,
+                o -> assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class).isThrownBy(order::cancel),
+                o -> assertThat(o.status()).isEqualTo(OrderStatus.CANCELED),
+                o -> assertThat(o.canceledAt()).isEqualTo(canceledAtBefore)
+        );
+    }
+
+    @Test
+    public void isCanceled_shouldReturnTrueOnlyWhenStatusIsCanceled() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+        assertThat(order.isCanceled()).isFalse();
+
+        order.place();
+        assertThat(order.isCanceled()).isFalse();
+
+        order.markAsPaid();
+        assertThat(order.isCanceled()).isFalse();
+
+        order.markAsReady();
+        assertThat(order.isCanceled()).isFalse();
+
+        order.cancel();
+        assertThat(order.isCanceled()).isTrue();
     }
 }
