@@ -11,12 +11,11 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id")
 public class ShoppingCartItem {
 
     private ShoppingCartItemId id;
     private ShoppingCartId shoppingCartId;
-    @EqualsAndHashCode.Include
     private ProductId productId;
     private ProductName productName;
     private Money price;
