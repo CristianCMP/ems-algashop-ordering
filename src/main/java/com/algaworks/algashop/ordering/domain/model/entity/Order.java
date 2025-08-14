@@ -14,7 +14,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Order {
+public class Order implements AggregateRoot<OrderId> {
 
     @EqualsAndHashCode.Include
     private OrderId id;

@@ -14,7 +14,7 @@ import java.util.UUID;
 import static com.algaworks.algashop.ordering.domain.model.exeption.ErrorMenssages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Customer {
+public class Customer implements AggregateRoot<CustomerId> {
 
     @EqualsAndHashCode.Include
     private CustomerId id;
