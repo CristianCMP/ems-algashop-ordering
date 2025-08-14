@@ -15,11 +15,11 @@ public class OrderCannotBePlacedExeption extends DomainExeption {
     }
 
     public static OrderCannotBePlacedExeption noShippingInfo(OrderId orderId) {
-        return new OrderCannotBePlacedExeption(String.format(ERROR_ORDER_CANNOT_BE_PLACED_HAS_NO_SHIPPING_INFO, orderId));
+        return new OrderCannotBePlacedExeption(String.format(ERROR_ORDER_CANNOT_BE_PLACED_HAS_NO_SHIPPING, orderId));
     }
 
     public static OrderCannotBePlacedExeption noBillingInfo(OrderId orderId) {
-        return new OrderCannotBePlacedExeption(String.format(ERROR_ORDER_CANNOT_BE_PLACED_HAS_NO_BILLING_INFO, orderId));
+        return new OrderCannotBePlacedExeption(String.format(ERROR_ORDER_CANNOT_BE_PLACED_HAS_NO_BILLING, orderId));
     }
 
     public static OrderCannotBePlacedExeption noPaymentMethod(OrderId orderId) {

@@ -232,4 +232,47 @@ class OrderTest {
         assertThatExceptionOfType(OrderCannotBeEditedException.class)
                 .isThrownBy(() -> order.removeItem(orderItem.id()));
     }
+
+    @Test
+    public void givePlacedOrder_whenMarkAsPaid_shouldAllowChange() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+
+        order.place();
+        order.markAsPaid();
+
+        assertWith(order,
+                (o) -> assertThat(o.isPaid()).isTrue(),
+                (o) -> assertThat(o.paidAt()).isNotNull()
+        );
+    }
+
+    @Test
+    public void givePlacedOrder_whenMarkAsPaid_shouldNotAllowChange() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+
+        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+                .isThrownBy(order::markAsPaid);
+    }
+
+    @Test
+    public void givePaidOrder_whenMarkAsPaid_shouldAllowChange() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+
+        order.place();
+        order.markAsPaid();
+        order.markAsReady();
+
+        assertWith(order,
+                (o) -> assertThat(o.isReady()).isTrue(),
+                (o) -> assertThat(o.readyAt()).isNotNull()
+        );
+    }
+
+    @Test
+    public void givePaidOrder_whenMarkAsPaid_shouldNotAllowChange() {
+        Order order = OrderTestDataBuilder.anOrder().build();
+
+        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+                .isThrownBy(order::markAsReady);
+    }
 }

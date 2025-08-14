@@ -115,8 +115,18 @@ public class Order {
     }
 
     public void markAsPaid() {
+        this.changeStatus(OrderStatus.PAID);
         this.setPaidAt(OffsetDateTime.now());
-        this.setStatus(OrderStatus.PAID);
+    }
+
+    public void markAsReady() {
+        this.changeStatus(OrderStatus.READY);
+        this.setReadyAt(OffsetDateTime.now());
+    }
+
+    public void cancel() {
+        this.changeStatus(OrderStatus.CANCELED);
+        this.setCanceledAt(OffsetDateTime.now());
     }
 
     public void changePaymentMethod(PaymentMethod paymentMethod) {
@@ -153,6 +163,14 @@ public class Order {
 
     public boolean isPaid() {
         return OrderStatus.PAID.equals(this.status());
+    }
+
+    public boolean isReady() {
+        return OrderStatus.READY.equals(this.status());
+    }
+
+    public boolean isCanceled() {
+        return OrderStatus.CANCELED.equals(this.status());
     }
 
     public void changeItemQuantity(OrderItemId orderItemId, Quantity quantity) {
@@ -266,9 +284,9 @@ public class Order {
         }
     }
 
-    private void verifyIfChangeable () {
+    private void verifyIfChangeable() {
         if (!this.isDraft()) {
-             throw new OrderCannotBeEditedException(this.id(), this.status());
+            throw new OrderCannotBeEditedException(this.id(), this.status());
         }
     }
 
