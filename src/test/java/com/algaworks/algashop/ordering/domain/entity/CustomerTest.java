@@ -15,14 +15,14 @@ class CustomerTest {
     void give_invalidEmail_whenTryCreateCustomer_shouldGenerateExeption() {
         Assertions
                 .assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> CustomerTestDataBuilde.brandNewCustomer()
+                .isThrownBy(() -> CustomerTestDataBuilder.brandNewCustomer()
                         .email(new Email("invalid")).build());
     }
 
     @Test
     @DisplayName("Should throw IllegalArgumentException when updating Customer email with invalid value")
     void given_invalidEmail_whenTryUpdatedCustomerEmail_shouldGenerateException() {
-        Customer customer = CustomerTestDataBuilde.brandNewCustomer().build();
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> customer.changeEmail(new Email("invalid")));
@@ -31,7 +31,7 @@ class CustomerTest {
     @Test
     @DisplayName("Should anonymize Customer data when an unarchived Customer is archived")
     void given_unarquivedCustomer_whenArquived_shouldAnonymize() {
-        Customer customer = CustomerTestDataBuilde.existingCustomer().build();
+        Customer customer = CustomerTestDataBuilder.existingCustomer().build();
 
         customer.archive();
 
@@ -58,7 +58,7 @@ class CustomerTest {
     @Test
     @DisplayName("Should throw CustomerArquivedExeption when trying to update an already archived Customer")
     void given_arquivedCustomer_whenTryToUpdate_shouldGenerateException() {
-        Customer customer = CustomerTestDataBuilde.existingAnonymizedCustomer().build();
+        Customer customer = CustomerTestDataBuilder.existingAnonymizedCustomer().build();
 
         Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
                 .isThrownBy(customer::archive);
@@ -82,7 +82,7 @@ class CustomerTest {
     @Test
     @DisplayName("Should sum value when adding loyalty value to a new Customer")
     void given_brandNewCustomer_whenAddLoyaltyPoints_shouldSumPoints() {
-        Customer customer = CustomerTestDataBuilde.brandNewCustomer().build();
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
         customer.addLoyaltyPoints(new LoyaltyPoints(10));
         customer.addLoyaltyPoints(new LoyaltyPoints(20));
@@ -93,7 +93,7 @@ class CustomerTest {
     @Test
     @DisplayName("Should throw IllegalArgumentException when adding invalid loyalty value to a new Customer")
     void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerationExeption() {
-        Customer customer = CustomerTestDataBuilde.brandNewCustomer().build();
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> customer.addLoyaltyPoints(LoyaltyPoints.ZERO));

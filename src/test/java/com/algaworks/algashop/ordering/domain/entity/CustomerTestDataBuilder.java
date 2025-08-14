@@ -6,9 +6,9 @@ import com.algaworks.algashop.ordering.domain.valueobject.id.CustomerId;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
-public class CustomerTestDataBuilde {
+public class CustomerTestDataBuilder {
 
-    private CustomerTestDataBuilde() {
+    private CustomerTestDataBuilder() {
     }
 
     public static Customer.BrandNewCustumerBuild brandNewCustomer() {

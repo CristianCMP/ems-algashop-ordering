@@ -19,6 +19,9 @@ public class ErrorMenssages {
     public static final String ERROR_ORDER_CANNOT_BE_PLACED_HAS_NO_PAYMENT_METHOD = "Order %s cannot be placed, it has no payment method";
 
     public static final String ERROR_ORDER_DOES_NOT_CONTAIN_ITEM = "Order %s does not contain item %s";
+    public static final String ERROR_SHOPPING_CAR_DOES_NOT_CONTAIN_ITEM = "Shopping car %s does not contain item %s";
+    public static final String ERROR_SHOPPING_CART_DOES_NOT_CONTAIN_PRODUCT = "Shopping Cart %s does not contain product %s";
+    public static final String ERROR_SHOPPING_CART_ITEM_INCOMPATIBLE_PRODUCT = "Shopping Cart %s cannot be updated, incompatible product %s";
 
     public static final String ERROR_PRODUCT_IS_OUT_STOCK = "Product %s is out of stock";
 

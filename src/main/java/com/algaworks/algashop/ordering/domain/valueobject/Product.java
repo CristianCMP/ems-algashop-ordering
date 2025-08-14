@@ -6,7 +6,7 @@ import lombok.Builder;
 
 import java.util.Objects;
 
-@Builder
+@Builder(toBuilder = true)
 public record Product(
         ProductId id,
         ProductName name,

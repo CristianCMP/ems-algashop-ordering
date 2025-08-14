@@ -42,7 +42,7 @@ public class OrderItem {
         this.setTotalAmount(totalAmount);
     }
 
-    @Builder(builderClassName = "BrandNewOrderItemBuilde", builderMethodName = "brandNew")
+    @Builder(builderClassName = "BrandNewOrderItemBuilder", builderMethodName = "brandNew")
     private static OrderItem createBrandNew(OrderId orderId, Product product, Quantity quantity) {
         Objects.requireNonNull(orderId);
         Objects.requireNonNull(product);
