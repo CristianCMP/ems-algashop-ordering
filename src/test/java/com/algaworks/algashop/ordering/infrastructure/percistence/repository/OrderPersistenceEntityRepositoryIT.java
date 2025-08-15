@@ -4,6 +4,8 @@ import com.algaworks.algashop.ordering.domain.model.utitly.IdGenerator;
 import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +14,10 @@ import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@Transactional
+//@SpringBootTest // load the full Spring application context and all beans.
+//@Transactional  // @DataJpaTest has @Transactional inside by default.
+@DataJpaTest  // configuration only JPA.
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // do not change the database's configure.
 class OrderPersistenceEntityRepositoryIT {
 
     private final OrderPersistenceEntityRepository orderPersistenceEntityRepository;
@@ -42,7 +46,7 @@ class OrderPersistenceEntityRepositoryIT {
     }
 
     @Test
-    public void shouldCount(){
+    public void shouldCount() {
         long ordersCoung = orderPersistenceEntityRepository.count();
         assertThat(ordersCoung).isZero();
     }
