@@ -2,6 +2,7 @@ package com.algaworks.algashop.ordering.infrastructure.percistence.repository;
 
 import com.algaworks.algashop.ordering.domain.model.utitly.IdGenerator;
 import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceTestDataBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -29,16 +30,8 @@ class OrderPersistenceEntityRepositoryIT {
 
     @Test
     public void shouldPersist() {
-        long orderId = IdGenerator.generateTSID().toLong();
-        OrderPersistenceEntity entity = OrderPersistenceEntity.builder()
-                .id(orderId)
-                .customerId(IdGenerator.generateTimeBasedUUID())
-                .totalItems(2)
-                .totalAmount(new BigDecimal(1000))
-                .status("DRAFT")
-                .paymentMethod("CREDIT_CARD")
-                .placedAt(OffsetDateTime.now())
-                .build();
+        OrderPersistenceEntity entity = OrderPersistenceTestDataBuilder.existingOrder().build();
+        long orderId = entity.getId();
 
         orderPersistenceEntityRepository.saveAndFlush(entity);
 

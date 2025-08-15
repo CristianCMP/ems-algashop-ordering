@@ -36,7 +36,7 @@ public class Order implements AggregateRoot<OrderId> {
 
     private Set<OrderItem> items;
 
-    @Builder(builderClassName = "ExistingOrderBuilder", buildMethodName = "existing")
+    @Builder(builderClassName = "ExistingOrderBuilder", builderMethodName = "existing")
     public Order(
             OrderId id, CustomerId customerId, Money totalAmount, Quantity totalItems,
             OffsetDateTime placedAt, OffsetDateTime paidAt, OffsetDateTime canceledAt,
