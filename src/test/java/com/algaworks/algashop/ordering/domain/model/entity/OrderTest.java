@@ -105,7 +105,7 @@ class OrderTest {
     public void givenPlacedOrder_whenTryToPlace_shouldGenerateException() {
         Order order = OrderTestDataBuilder.anOrder().status(OrderStatus.PLACED).build();
 
-        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+        assertThatExceptionOfType(OrderStatusCannotBeChangeException.class)
                 .isThrownBy(order::place);
     }
 
@@ -147,7 +147,7 @@ class OrderTest {
 
         Order order = Order.draft(new CustomerId());
 
-        assertThatExceptionOfType(OrderInvalidShippingDeliveryDateExeption.class)
+        assertThatExceptionOfType(OrderInvalidShippingDeliveryDateException.class)
                 .isThrownBy(() -> order.changeShipping(shipping));
     }
 
@@ -251,7 +251,7 @@ class OrderTest {
     public void givePlacedOrder_whenMarkAsPaid_shouldNotAllowChange() {
         Order order = OrderTestDataBuilder.anOrder().build();
 
-        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+        assertThatExceptionOfType(OrderStatusCannotBeChangeException.class)
                 .isThrownBy(order::markAsPaid);
     }
 
@@ -273,7 +273,7 @@ class OrderTest {
     public void givePaidOrder_whenMarkAsPaid_shouldNotAllowChange() {
         Order order = OrderTestDataBuilder.anOrder().build();
 
-        assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class)
+        assertThatExceptionOfType(OrderStatusCannotBeChangeException.class)
                 .isThrownBy(order::markAsReady);
     }
 
@@ -307,7 +307,7 @@ class OrderTest {
         OffsetDateTime canceledAtBefore = order.canceledAt();
 
         assertWith(order,
-                o -> assertThatExceptionOfType(OrderStatusCannotBeChangeExeption.class).isThrownBy(order::cancel),
+                o -> assertThatExceptionOfType(OrderStatusCannotBeChangeException.class).isThrownBy(order::cancel),
                 o -> assertThat(o.status()).isEqualTo(OrderStatus.CANCELED),
                 o -> assertThat(o.canceledAt()).isEqualTo(canceledAtBefore)
         );

@@ -22,7 +22,6 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @EntityListeners(AuditingEntityListener.class)
 public class OrderPersistenceEntity {
-
     @Id
     @EqualsAndHashCode.Include
     private Long id; //TSID
@@ -40,8 +39,11 @@ public class OrderPersistenceEntity {
 
     @CreatedBy
     private UUID createdByUserId;
+
     @LastModifiedDate
     private OffsetDateTime lastModifiedAt;
+
     @LastModifiedBy
     private UUID lastModifiedByUserId;
+
 }
