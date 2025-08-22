@@ -34,11 +34,14 @@ class OrderPersistenceEntityRepositoryIT {
     @Test
     public void shouldPersist() {
         OrderPersistenceEntity entity = OrderPersistenceTestDataBuilder.existingOrder().build();
-        long orderId = entity.getId();
 
         orderPersistenceEntityRepository.saveAndFlush(entity);
 
-        assertThat(orderPersistenceEntityRepository.existsById(orderId)).isTrue();
+        assertThat(orderPersistenceEntityRepository.existsById(entity.getId())).isTrue();
+
+        OrderPersistenceEntity savedEntity = orderPersistenceEntityRepository.findById(entity.getId()).orElseThrow();
+
+        assertThat(savedEntity.getItems()).isNotEmpty();
     }
 
     @Test
