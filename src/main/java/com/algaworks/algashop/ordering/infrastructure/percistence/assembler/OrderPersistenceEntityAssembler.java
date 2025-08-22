@@ -72,6 +72,7 @@ public class OrderPersistenceEntityAssembler {
     }
 
     private static RecipientEmbeddable convertRecipientToEmbeddable(Recipient recipient) {
+        if (recipient == null) return null;
         return RecipientEmbeddable.builder()
                 .firstName(recipient.fullName().firstName())
                 .lastName(recipient.fullName().lastName())
