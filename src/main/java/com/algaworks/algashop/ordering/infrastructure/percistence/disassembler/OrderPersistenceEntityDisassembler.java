@@ -31,23 +31,23 @@ public class OrderPersistenceEntityDisassembler {
                 .canceledAt(persistenceEntity.getCanceledAt())
                 .readyAt(persistenceEntity.getReadyAt())
                 .items(new HashSet<>())
-                .shipping(convertShippingEmbeddableToShipping(persistenceEntity.getShipping()))
-                .billing(convertBillingEmbeddableToBilling(persistenceEntity.getBilling()))
+                .shipping(toShippingValueObject(persistenceEntity.getShipping()))
+                .billing(toBillingValueObject(persistenceEntity.getBilling()))
                 .version(persistenceEntity.getVersion())
                 .build();
     }
 
-    public static Billing convertBillingEmbeddableToBilling(BillingEmbeddable billing) {
+    public static Billing toBillingValueObject(BillingEmbeddable billing) {
         if (billing == null) return null;
         return Billing.builder()
                 .phone(new Phone(billing.getPhone()))
                 .email(new Email(billing.getEmail()))
                 .fullName(new FullName(billing.getFirstName(), billing.getLastName()))
-                .address(convertAddressEmbeddableToAddress(billing.getAddress()))
+                .address(toAddressValueObject(billing.getAddress()))
                 .build();
     }
 
-    public static Address convertAddressEmbeddableToAddress(AddressEmbeddable address) {
+    public static Address toAddressValueObject(AddressEmbeddable address) {
         if (address == null) return null;
         return Address.builder()
                 .city(address.getCity())
@@ -60,17 +60,17 @@ public class OrderPersistenceEntityDisassembler {
                 .build();
     }
 
-    public static Shipping convertShippingEmbeddableToShipping(ShippingEmbeddable shipping) {
+    public static Shipping toShippingValueObject(ShippingEmbeddable shipping) {
         if (shipping == null) return null;
         return Shipping.builder()
                 .expectedDate(shipping.getExpectedDate())
                 .cost(new Money(shipping.getCost()))
-                .address(convertAddressEmbeddableToAddress(shipping.getAddress()))
-                .recipient(convertRecipientEmbeddableToRecipient(shipping.getRecipient()))
+                .address(toAddressValueObject(shipping.getAddress()))
+                .recipient(toRecipientValueObject(shipping.getRecipient()))
                 .build();
     }
 
-    private static Recipient convertRecipientEmbeddableToRecipient(RecipientEmbeddable recipient) {
+    private static Recipient toRecipientValueObject(RecipientEmbeddable recipient) {
         if (recipient == null) return null;
         return Recipient.builder()
                 .fullName(new FullName(recipient.getFirstName(), recipient.getLastName()))

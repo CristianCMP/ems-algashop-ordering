@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.infrastructure.percistence.assembler;
 
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
+import com.algaworks.algashop.ordering.domain.model.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Address;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Recipient;
@@ -9,8 +10,14 @@ import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.Add
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.BillingEmbeddable;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.RecipientEmbeddable;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.ShippingEmbeddable;
+import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderItemPersistenceEntity;
 import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderPersistenceEntityAssembler {
@@ -30,25 +37,74 @@ public class OrderPersistenceEntityAssembler {
         orderPersistenceEntity.setPaidAt(order.paidAt());
         orderPersistenceEntity.setCanceledAt(order.canceledAt());
         orderPersistenceEntity.setReadyAt(order.readyAt());
-        orderPersistenceEntity.setBilling(convertBillingToEmbeddable(order.billing()));
-        orderPersistenceEntity.setShipping(convertShippingToEmbeddable(order.shipping()));
+        orderPersistenceEntity.setBilling(toBillingEmbeddable(order.billing()));
+        orderPersistenceEntity.setShipping(toShippingEmbeddable(order.shipping()));
         orderPersistenceEntity.setVersion(order.version()); //Here it is optional
+        Set<OrderItemPersistenceEntity> mergedItem = mergeItems(order, orderPersistenceEntity);
+        orderPersistenceEntity.replaceItems(mergedItem);
 
         return orderPersistenceEntity;
     }
 
-    public static BillingEmbeddable convertBillingToEmbeddable(Billing billing) {
+    private Set<OrderItemPersistenceEntity> mergeItems(Order order, OrderPersistenceEntity orderPersistenceEntity) {
+        Set<OrderItem> newOrUpdatedItems = order.items();
+
+        if (newOrUpdatedItems == null || newOrUpdatedItems.isEmpty()) {
+            return new HashSet<>();
+        }
+
+        Set<OrderItemPersistenceEntity> existingItems = orderPersistenceEntity.getItems();
+        if (existingItems == null || existingItems.isEmpty()) {
+            return newOrUpdatedItems
+                    .stream()
+                    .map(this::fromDomain)
+                    .collect(Collectors.toSet());
+        }
+
+        Map<Long, OrderItemPersistenceEntity> existingItemsMap = existingItems
+                .stream()
+                .collect(Collectors.toMap(OrderItemPersistenceEntity::getId, item -> item));
+
+        return newOrUpdatedItems
+                .stream()
+                .map(orderItem -> {
+                    OrderItemPersistenceEntity itemPersistence = existingItemsMap.getOrDefault(
+                            orderItem.id().value().toLong(), new OrderItemPersistenceEntity()
+                    );
+
+                    return merge(itemPersistence, orderItem);
+                })
+                .collect(Collectors.toSet());
+
+    }
+
+    public OrderItemPersistenceEntity fromDomain(OrderItem orderItem) {
+        return merge(new OrderItemPersistenceEntity(), orderItem);
+    }
+
+    private OrderItemPersistenceEntity merge(OrderItemPersistenceEntity orderItemPersistenceEntity, OrderItem orderItem) {
+        orderItemPersistenceEntity.setId(orderItem.id().value().toLong());
+        orderItemPersistenceEntity.setProductId(orderItem.productId().value());
+        orderItemPersistenceEntity.setProductName(orderItem.productName().value());
+        orderItemPersistenceEntity.setPrice(orderItem.price().value());
+        orderItemPersistenceEntity.setQuantity(orderItem.quantity().value());
+        orderItemPersistenceEntity.setTotalAmount(orderItem.totalAmount().value());
+
+        return orderItemPersistenceEntity;
+    }
+
+    public static BillingEmbeddable toBillingEmbeddable(Billing billing) {
         if (billing == null) return null;
         return BillingEmbeddable.builder()
                 .firstName(billing.fullName().firstName())
                 .lastName(billing.fullName().lastName())
                 .phone(billing.phone().value())
                 .document(billing.document().value())
-                .address(convertAddressToEmbeddable(billing.address()))
+                .address(toAddressEmbeddable(billing.address()))
                 .build();
     }
 
-    public static AddressEmbeddable convertAddressToEmbeddable(Address address) {
+    public static AddressEmbeddable toAddressEmbeddable(Address address) {
         if (address == null) return null;
         return AddressEmbeddable.builder()
                 .city(address.city())
@@ -61,17 +117,17 @@ public class OrderPersistenceEntityAssembler {
                 .build();
     }
 
-    public static ShippingEmbeddable convertShippingToEmbeddable(Shipping shipping) {
+    public static ShippingEmbeddable toShippingEmbeddable(Shipping shipping) {
         if (shipping == null) return null;
         return ShippingEmbeddable.builder()
                 .expectedDate(shipping.expectedDate())
                 .cost(shipping.cost().value())
-                .address(convertAddressToEmbeddable(shipping.address()))
-                .recipient(convertRecipientToEmbeddable(shipping.recipient()))
+                .address(toAddressEmbeddable(shipping.address()))
+                .recipient(toRecipientEmbeddable(shipping.recipient()))
                 .build();
     }
 
-    private static RecipientEmbeddable convertRecipientToEmbeddable(Recipient recipient) {
+    private static RecipientEmbeddable toRecipientEmbeddable(Recipient recipient) {
         if (recipient == null) return null;
         return RecipientEmbeddable.builder()
                 .firstName(recipient.fullName().firstName())
