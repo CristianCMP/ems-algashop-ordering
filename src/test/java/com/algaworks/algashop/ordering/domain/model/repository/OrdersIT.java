@@ -12,10 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @Import({
@@ -86,12 +88,13 @@ class OrdersIT {
         orders.add(orderT1);
 
         orderT2.cancel();
-        orders.add(orderT2);
+
+        assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
+                .isThrownBy(()-> orders.add(orderT2));
 
         Order savedOrder = orders.ofId(order.id()).orElseThrow();
 
+        assertThat(savedOrder.canceledAt()).isNull();
         assertThat(savedOrder.paidAt()).isNotNull();
-        assertThat(savedOrder.canceledAt()).isNotNull();
     }
-
 }

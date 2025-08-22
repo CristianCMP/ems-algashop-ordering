@@ -46,4 +46,7 @@ public class OrderPersistenceEntity {
     @LastModifiedBy
     private UUID lastModifiedByUserId;
 
+    @Version
+    private Long version;
+
 }
