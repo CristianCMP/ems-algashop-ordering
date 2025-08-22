@@ -1,19 +1,23 @@
 package com.algaworks.algashop.ordering.infrastructure.percistence.disassembler;
 
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
+import com.algaworks.algashop.ordering.domain.model.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderStatus;
 import com.algaworks.algashop.ordering.domain.model.entity.PaymentMethod;
 import com.algaworks.algashop.ordering.domain.model.valueobject.*;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.ProductId;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.AddressEmbeddable;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.BillingEmbeddable;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.RecipientEmbeddable;
 import com.algaworks.algashop.ordering.infrastructure.percistence.embeddable.ShippingEmbeddable;
+import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderItemPersistenceEntity;
 import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderPersistenceEntityDisassembler {
@@ -30,9 +34,9 @@ public class OrderPersistenceEntityDisassembler {
                 .paidAt(persistenceEntity.getPaidAt())
                 .canceledAt(persistenceEntity.getCanceledAt())
                 .readyAt(persistenceEntity.getReadyAt())
-                .items(new HashSet<>())
                 .shipping(toShippingValueObject(persistenceEntity.getShipping()))
                 .billing(toBillingValueObject(persistenceEntity.getBilling()))
+                .items(toOrderItem(persistenceEntity.getItems()))
                 .version(persistenceEntity.getVersion())
                 .build();
     }
@@ -77,5 +81,21 @@ public class OrderPersistenceEntityDisassembler {
                 .document(new Document(recipient.getDocument()))
                 .phone(new Phone(recipient.getPhone()))
                 .build();
+    }
+
+    private Set<OrderItem> toOrderItem(Set<OrderItemPersistenceEntity> items) {
+        return items
+                .stream()
+                .map(i -> OrderItem.brandNew()
+                        .orderId(new OrderId(i.getOrderId()))
+                        .quantity(new Quantity(i.getQuantity()))
+                        .product(new Product(
+                                new ProductId(i.getProductId()),
+                                new ProductName(i.getProductName()),
+                                new Money(i.getPrice()),
+                                true
+                        ))
+                        .build())
+                .collect(Collectors.toSet());
     }
 }
