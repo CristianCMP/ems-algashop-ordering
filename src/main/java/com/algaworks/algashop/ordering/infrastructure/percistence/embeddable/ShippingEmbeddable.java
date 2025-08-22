@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.infrastructure.percistence.embeddable;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.Embedded;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,9 @@ import java.time.LocalDate;
 @Builder
 @Data
 public class ShippingEmbeddable {
+    @Column(name = "shipping_cost")
     private BigDecimal cost;
+    @Column(name = "shipping_expected_date")
     private LocalDate expectedDate;
     @Embedded
     private AddressEmbeddable address;
