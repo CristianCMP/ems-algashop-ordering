@@ -33,36 +33,37 @@ public class OrdersPersistenceProvider implements Orders {
     }
 
     @Override
-    public boolean exists(OrderId orderId) {
-        return false;
-    }
-
-    @Override
     public void add(Order aggregateRoot) {
         long orderId = aggregateRoot.id().value().toLong();
 
         persistenceRepository.findById(orderId)
                 .ifPresentOrElse(
-                        (persistenceEntity) -> {
-                            update(aggregateRoot, persistenceEntity);
-                        },
-                        ()-> {
-                            insert(aggregateRoot);
-                        }
+                        (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
+                        () -> insert(aggregateRoot)
                 );
+    }
+
+    @Override
+    public boolean exists(OrderId orderId) {
+        return persistenceRepository.existsById(orderId.value().toLong());
+    }
+
+    @Override
+    public long count() {
+        return persistenceRepository.count();
     }
 
     private void update(Order aggregateRoot, OrderPersistenceEntity persistenceEntity) {
         persistenceEntity = assembler.merge(persistenceEntity, aggregateRoot);
         entityManager.detach(persistenceEntity);
         persistenceEntity = persistenceRepository.saveAndFlush(persistenceEntity);
-        updateVersion(aggregateRoot,persistenceEntity);
+        updateVersion(aggregateRoot, persistenceEntity);
     }
 
     private void insert(Order aggregateRoot) {
         OrderPersistenceEntity persistenceEntity = assembler.fromDomain(aggregateRoot);
         persistenceRepository.saveAndFlush(persistenceEntity);
-        updateVersion(aggregateRoot,persistenceEntity);
+        updateVersion(aggregateRoot, persistenceEntity);
     }
 
     @SneakyThrows
@@ -73,10 +74,5 @@ public class OrdersPersistenceProvider implements Orders {
         ReflectionUtils.setField(version, aggregateRoot, persistenceEntity.getVersion());
 
         version.setAccessible(false);
-    }
-
-    @Override
-    public int count() {
-        return 0;
     }
 }

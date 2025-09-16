@@ -97,4 +97,9 @@ class OrdersIT {
         assertThat(savedOrder.canceledAt()).isNull();
         assertThat(savedOrder.paidAt()).isNotNull();
     }
+
+    @Test
+    public void should(){
+
+    }
 }
