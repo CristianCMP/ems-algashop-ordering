@@ -27,7 +27,7 @@ public class OrderItem {
 
     private Money totalAmount;
 
-    @Builder(builderClassName = "ExistingOrderItemBuilder", buildMethodName = "existing")
+    @Builder(builderClassName = "ExistingOrderItemBuilder", builderMethodName = "existing")
     public OrderItem(
             OrderItemId id, OrderId orderId, ProductId productId, ProductName productName,
             Money price, Quantity quantity, Money totalAmount

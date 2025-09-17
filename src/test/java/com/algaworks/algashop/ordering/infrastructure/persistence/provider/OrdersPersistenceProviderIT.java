@@ -1,18 +1,19 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence.provider;
+package com.algaworks.algashop.ordering.infrastructure.persistence.provider;
 
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderStatus;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderTestDataBuilder;
-import com.algaworks.algashop.ordering.infrastructure.percistence.assembler.OrderPersistenceEntityAssembler;
-import com.algaworks.algashop.ordering.infrastructure.percistence.config.SpringDataAuditingConfig;
-import com.algaworks.algashop.ordering.infrastructure.percistence.disassembler.OrderPersistenceEntityDisassembler;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.percistence.repository.OrderPersistenceEntityRepository;
-import org.assertj.core.api.Assertions;
+import com.algaworks.algashop.ordering.infrastructure.persistence.assembler.OrderPersistenceEntityAssembler;
+import com.algaworks.algashop.ordering.infrastructure.persistence.config.SpringDataAuditingConfig;
+import com.algaworks.algashop.ordering.infrastructure.persistence.disassembler.OrderPersistenceEntityDisassembler;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.repository.OrderPersistenceEntityRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -23,13 +24,13 @@ import static org.assertj.core.api.Assertions.*;
         OrderPersistenceEntityDisassembler.class,
         SpringDataAuditingConfig.class
 })
-class OrdersPersistenceProviderTest {
+class OrdersPersistenceProviderIT {
 
     private final OrdersPersistenceProvider persistenceProvider;
     private final OrderPersistenceEntityRepository entityRepository;
 
     @Autowired
-    public OrdersPersistenceProviderTest(OrdersPersistenceProvider persistenceProvider, OrderPersistenceEntityRepository entityRepository) {
+    public OrdersPersistenceProviderIT(OrdersPersistenceProvider persistenceProvider, OrderPersistenceEntityRepository entityRepository) {
         this.persistenceProvider = persistenceProvider;
         this.entityRepository = entityRepository;
     }
@@ -60,5 +61,16 @@ class OrdersPersistenceProviderTest {
         assertThat(persistenceEntity.getCreatedByUserId()).isNotNull();
         assertThat(persistenceEntity.getLastModifiedByUserId()).isNotNull();
         assertThat(persistenceEntity.getLastModifiedAt()).isNotNull();
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void shouldAddFindAndNotFailWhenNoTransaction(){
+        Order order = OrderTestDataBuilder.anOrder().build();
+        persistenceProvider.add(order);
+
+        Order savedOrder = persistenceProvider.ofId(order.id()).orElseThrow();
+
+        assertThat(savedOrder).isNotNull();
     }
 }

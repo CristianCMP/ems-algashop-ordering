@@ -1,8 +1,4 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence;
-import org.hibernate.boot.model.naming.ImplicitNamingStrategy;
-import org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+package com.algaworks.algashop.ordering.infrastructure.persistence;
 
 //@Configuration
 public class HibernateConfiguration {

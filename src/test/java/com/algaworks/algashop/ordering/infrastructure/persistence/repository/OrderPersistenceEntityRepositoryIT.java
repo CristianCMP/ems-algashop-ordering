@@ -1,19 +1,13 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence.repository;
+package com.algaworks.algashop.ordering.infrastructure.persistence.repository;
 
-import com.algaworks.algashop.ordering.domain.model.utitly.IdGenerator;
-import com.algaworks.algashop.ordering.infrastructure.percistence.config.SpringDataAuditingConfig;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.config.SpringDataAuditingConfig;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceTestDataBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

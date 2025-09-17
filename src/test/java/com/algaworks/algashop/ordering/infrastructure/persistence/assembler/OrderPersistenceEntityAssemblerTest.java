@@ -1,12 +1,12 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence.assembler;
+package com.algaworks.algashop.ordering.infrastructure.persistence.assembler;
 
 
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderTestDataBuilder;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderItemPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderItemPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceTestDataBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;

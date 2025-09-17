@@ -1,16 +1,17 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence.provider;
+package com.algaworks.algashop.ordering.infrastructure.persistence.provider;
 
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
 import com.algaworks.algashop.ordering.domain.model.repository.Orders;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
-import com.algaworks.algashop.ordering.infrastructure.percistence.assembler.OrderPersistenceEntityAssembler;
-import com.algaworks.algashop.ordering.infrastructure.percistence.disassembler.OrderPersistenceEntityDisassembler;
-import com.algaworks.algashop.ordering.infrastructure.percistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.percistence.repository.OrderPersistenceEntityRepository;
+import com.algaworks.algashop.ordering.infrastructure.persistence.assembler.OrderPersistenceEntityAssembler;
+import com.algaworks.algashop.ordering.infrastructure.persistence.disassembler.OrderPersistenceEntityDisassembler;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.repository.OrderPersistenceEntityRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -18,6 +19,7 @@ import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OrdersPersistenceProvider implements Orders {
 
     private final OrderPersistenceEntityRepository persistenceRepository;
@@ -33,6 +35,7 @@ public class OrdersPersistenceProvider implements Orders {
     }
 
     @Override
+    @Transactional
     public void add(Order aggregateRoot) {
         long orderId = aggregateRoot.id().value().toLong();
 

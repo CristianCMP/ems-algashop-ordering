@@ -1,4 +1,4 @@
-package com.algaworks.algashop.ordering.infrastructure.percistence.embeddable;
+package com.algaworks.algashop.ordering.infrastructure.persistence.embeddable;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
