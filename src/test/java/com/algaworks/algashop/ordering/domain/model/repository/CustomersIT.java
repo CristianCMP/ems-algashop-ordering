@@ -16,7 +16,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.Optional;
+import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
@@ -61,8 +63,8 @@ class CustomersIT {
 
         Customer savedCustomer = customers.ofId(customer.id()).orElseThrow();
 
-        Assertions.assertThat(savedCustomer.archivedAt()).isNotNull();
-        Assertions.assertThat(savedCustomer.isArchived()).isTrue();
+        assertThat(savedCustomer.archivedAt()).isNotNull();
+        assertThat(savedCustomer.isArchived()).isTrue();
 
     }
 
@@ -79,19 +81,19 @@ class CustomersIT {
 
         customerT2.changeName(new FullName("Alex","Silva"));
 
-        Assertions.assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
+        assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
                 .isThrownBy(()-> customers.add(customerT2));
 
         Customer savedCustomer = customers.ofId(customer.id()).orElseThrow();
 
-        Assertions.assertThat(savedCustomer.archivedAt()).isNotNull();
-        Assertions.assertThat(savedCustomer.isArchived()).isTrue();
+        assertThat(savedCustomer.archivedAt()).isNotNull();
+        assertThat(savedCustomer.isArchived()).isTrue();
 
     }
 
     @Test
     public void shouldCountExistingOrders() {
-        Assertions.assertThat(customers.count()).isZero();
+        assertThat(customers.count()).isZero();
 
         Customer customer1 = CustomerTestDataBuilder.brandNewCustomer().build();
         customers.add(customer1);
@@ -99,7 +101,7 @@ class CustomersIT {
         Customer customer2 = CustomerTestDataBuilder.brandNewCustomer().build();
         customers.add(customer2);
 
-        Assertions.assertThat(customers.count()).isEqualTo(2L);
+        assertThat(customers.count()).isEqualTo(2L);
     }
 
     @Test
@@ -107,28 +109,34 @@ class CustomersIT {
         Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
         customers.add(customer);
 
-        Assertions.assertThat(customers.exists(customer.id())).isTrue();
-        Assertions.assertThat(customers.exists(new CustomerId())).isFalse();
+        assertThat(customers.exists(customer.id())).isTrue();
+        assertThat(customers.exists(new CustomerId())).isFalse();
     }
 
-//    @Test
-//    public void shouldFindByEmail() {
-//        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
-//        customers.add(customer);
-//
-//        Optional<Customer> customerOptional = customers.ofEmail(customer.email());
-//
-//        Assertions.assertThat(customerOptional).isPresent();
-//    }
+    @Test
+    public void shouldFindByEmail() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer);
 
+        Optional<Customer> customerOptional = customers.ofEmail(customer.email());
+
+        assertThat(customerOptional).isPresent();
+    }
+
+    @Test
+    public void shouldNotFindByEmailIfNoCustomerExistsWithEmail() {
+        Optional<Customer> customerOptional = customers.ofEmail(new Email(UUID.randomUUID() + "@email.com"));
+        assertThat(customerOptional).isNotPresent();
+    }
+    
 //    @Test
 //    public void shouldReturnIfEmailIsInUse() {
 //        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 //        customers.add(customer);
 //
-//        Assertions.assertThat(customers.isEmailUnique(customer.email(), customer.id())).isTrue();
-//        Assertions.assertThat(customers.isEmailUnique(customer.email(), new CustomerId())).isFalse();
-//        Assertions.assertThat(customers.isEmailUnique(new Email("alex@gmail.com"), new CustomerId())).isTrue();
+//        assertThat(customers.isEmailUnique(customer.email(), customer.id())).isTrue();
+//        assertThat(customers.isEmailUnique(customer.email(), new CustomerId())).isFalse();
+//        assertThat(customers.isEmailUnique(new Email("alex@gmail.com"), new CustomerId())).isTrue();
 //    }
 
 }

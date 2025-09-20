@@ -58,11 +58,11 @@ public class CustomersPersistenceProvider implements Customers {
         return persistenceRepository.count();
     }
 
-//    @Override
-//    public Optional<Customer> ofEmail(Email email) {
-//        return persistenceRepository.findByEmail(email.value())
-//                .map(disassembler::toDomainEntity);
-//    }
+    @Override
+    public Optional<Customer> ofEmail(Email email) {
+        return persistenceRepository.findByEmail(email.value())
+                .map(disassembler::toDomainEntity);
+    }
 
 //    @Override
 //    public boolean isEmailUnique(Email email, CustomerId exceptCustomerId) {
