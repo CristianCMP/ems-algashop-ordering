@@ -4,20 +4,44 @@ package com.algaworks.algashop.ordering.infrastructure.persistence.assembler;
 import com.algaworks.algashop.ordering.domain.model.entity.Order;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderItem;
 import com.algaworks.algashop.ordering.domain.model.entity.OrderTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntityTestDataBuilder;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderItemPersistenceEntity;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntityTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.repository.CustomerPersistenceEntityRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ExtendWith(MockitoExtension.class)
 class OrderPersistenceEntityAssemblerTest {
 
-    private final OrderPersistenceEntityAssembler assembler = new OrderPersistenceEntityAssembler();
+    @Mock
+    private CustomerPersistenceEntityRepository customerPersistenceEntityRepository;
+
+    @InjectMocks
+    private OrderPersistenceEntityAssembler assembler;
+
+    @BeforeEach
+    public void setUp() {
+        Mockito
+                .when(customerPersistenceEntityRepository.getReferenceById(Mockito.any(UUID.class)))
+                .then(a -> {
+                    UUID customerId = a.getArgument(0, UUID.class);
+                    return CustomerPersistenceEntityTestDataBuilder.aCustomer().id(customerId).build();
+                });
+    }
 
     @Test
     void shouldToDomain() {
@@ -41,7 +65,7 @@ class OrderPersistenceEntityAssemblerTest {
     @Test
     void givenOrderWithNotItems_shouldRemovePersistenceEntityItems() {
         Order order = OrderTestDataBuilder.anOrder().withItems(false).build();
-        OrderPersistenceEntity orderPersistenceEntity = OrderPersistenceTestDataBuilder.existingOrder().build();
+        OrderPersistenceEntity orderPersistenceEntity = OrderPersistenceEntityTestDataBuilder.existingOrder().build();
 
         assertThat(order.items()).isEmpty();
         assertThat(orderPersistenceEntity.getItems()).isNotEmpty();
@@ -54,7 +78,7 @@ class OrderPersistenceEntityAssemblerTest {
     @Test
     void givenOrderWithItems_shouldAddToPersistenceEntityItems() {
         Order order = OrderTestDataBuilder.anOrder().withItems(true).build();
-        OrderPersistenceEntity orderPersistenceEntity = OrderPersistenceTestDataBuilder.existingOrder().items(new HashSet<>()).build();
+        OrderPersistenceEntity orderPersistenceEntity = OrderPersistenceEntityTestDataBuilder.existingOrder().items(new HashSet<>()).build();
 
         assertThat(order.items()).isNotEmpty();
         assertThat(orderPersistenceEntity.getItems()).isEmpty();
@@ -76,7 +100,7 @@ class OrderPersistenceEntityAssemblerTest {
                 .map(assembler::fromDomain)
                 .collect(Collectors.toSet());
 
-        OrderPersistenceEntity persistenceEntity = OrderPersistenceTestDataBuilder.existingOrder()
+        OrderPersistenceEntity persistenceEntity = OrderPersistenceEntityTestDataBuilder.existingOrder()
                 .items(orderItemPersistenceEntities)
                 .build();
 

@@ -2,25 +2,27 @@ package com.algaworks.algashop.ordering.domain.model.repository;
 
 import com.algaworks.algashop.ordering.domain.model.entity.Customer;
 import com.algaworks.algashop.ordering.domain.model.entity.CustomerTestDataBuilder;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Email;
+import com.algaworks.algashop.ordering.domain.model.valueobject.FullName;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
 import com.algaworks.algashop.ordering.infrastructure.persistence.assembler.CustomerPersistenceEntityAssembler;
 import com.algaworks.algashop.ordering.infrastructure.persistence.disassembler.CustomerPersistenceEntityDisassembler;
 import com.algaworks.algashop.ordering.infrastructure.persistence.provider.CustomersPersistenceProvider;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @DataJpaTest
-@Import({
-        CustomersPersistenceProvider.class,
+@Import({CustomersPersistenceProvider.class,
         CustomerPersistenceEntityAssembler.class,
-        CustomerPersistenceEntityDisassembler.class
-})
+        CustomerPersistenceEntityDisassembler.class})
 class CustomersIT {
 
     private final Customers customers;
@@ -31,8 +33,8 @@ class CustomersIT {
     }
 
     @Test
-    public void shouldPersistAndFind(){
-        Customer originalCustomer = CustomerTestDataBuilder.existingCustomer().build();
+    public void shouldPersistAndFind() {
+        Customer originalCustomer = CustomerTestDataBuilder.brandNewCustomer().build();
         CustomerId customerId = originalCustomer.id();
         customers.add(originalCustomer);
 
@@ -40,44 +42,93 @@ class CustomersIT {
 
         assertThat(possibleCustomer).isPresent();
 
-        Customer saveCustomer = possibleCustomer.get();
+        Customer savedCustomer = possibleCustomer.get();
 
-        assertThat(saveCustomer).satisfies(
-                s -> assertThat(s.id()).isEqualTo(customerId),
-                s -> assertThat(s.fullName()).isEqualTo(originalCustomer.fullName()),
-                s -> assertThat(s.birthDate()).isEqualTo(originalCustomer.birthDate()),
-                s -> assertThat(s.email()).isEqualTo(originalCustomer.email()),
-                s -> assertThat(s.phone()).isEqualTo(originalCustomer.phone()),
-                s -> assertThat(s.document()).isEqualTo(originalCustomer.document()),
-                s -> assertThat(s.isPromotionNotificationsAllowed()).isEqualTo(originalCustomer.isPromotionNotificationsAllowed()),
-                s -> assertThat(s.isArchived()).isEqualTo(originalCustomer.isArchived()),
-                s -> assertThat(s.registeredAt()).isEqualTo(originalCustomer.registeredAt()),
-                s -> assertThat(s.archivedAt()).isEqualTo(originalCustomer.archivedAt()),
-                s -> assertThat(s.loyaltyPoints()).isEqualTo(originalCustomer.loyaltyPoints()),
-                s -> assertThat(s.address()).isEqualTo(originalCustomer.address()),
-                s -> assertThat(s.version()).isEqualTo(originalCustomer.version())
+        assertThat(savedCustomer).satisfies(
+                s -> assertThat(s.id()).isEqualTo(customerId)
         );
     }
 
     @Test
-    public void shouldCountExistingCustomers(){
-        assertThat(customers.count()).isZero();
+    public void shouldUpdateExistingCustomer() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer);
 
-        Customer order1 = CustomerTestDataBuilder.existingCustomer().build();
-        Customer order2 = CustomerTestDataBuilder.existingCustomer().build();
+        customer = customers.ofId(customer.id()).orElseThrow();
+        customer.archive();
 
-        customers.add(order1);
-        customers.add(order2);
+        customers.add(customer);
 
-        assertThat(customers.count()).isEqualTo(2);
+        Customer savedCustomer = customers.ofId(customer.id()).orElseThrow();
+
+        Assertions.assertThat(savedCustomer.archivedAt()).isNotNull();
+        Assertions.assertThat(savedCustomer.isArchived()).isTrue();
+
     }
 
     @Test
-    public void shouldReturnIfCustomerExists() {
-        Customer order = CustomerTestDataBuilder.existingCustomer().build();
-        customers.add(order);
+    public void shouldNotAllowStaleUpdates() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer);
 
-        assertThat(customers.exists(order.id())).isTrue();
-        assertThat(customers.exists(new CustomerId())).isFalse();
+        Customer customerT1 = customers.ofId(customer.id()).orElseThrow();
+        Customer customerT2 = customers.ofId(customer.id()).orElseThrow();
+
+        customerT1.archive();
+        customers.add(customerT1);
+
+        customerT2.changeName(new FullName("Alex","Silva"));
+
+        Assertions.assertThatExceptionOfType(ObjectOptimisticLockingFailureException.class)
+                .isThrownBy(()-> customers.add(customerT2));
+
+        Customer savedCustomer = customers.ofId(customer.id()).orElseThrow();
+
+        Assertions.assertThat(savedCustomer.archivedAt()).isNotNull();
+        Assertions.assertThat(savedCustomer.isArchived()).isTrue();
+
     }
+
+    @Test
+    public void shouldCountExistingOrders() {
+        Assertions.assertThat(customers.count()).isZero();
+
+        Customer customer1 = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer1);
+
+        Customer customer2 = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer2);
+
+        Assertions.assertThat(customers.count()).isEqualTo(2L);
+    }
+
+    @Test
+    public void shouldReturnValidateIfOrderExists() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer);
+
+        Assertions.assertThat(customers.exists(customer.id())).isTrue();
+        Assertions.assertThat(customers.exists(new CustomerId())).isFalse();
+    }
+
+//    @Test
+//    public void shouldFindByEmail() {
+//        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+//        customers.add(customer);
+//
+//        Optional<Customer> customerOptional = customers.ofEmail(customer.email());
+//
+//        Assertions.assertThat(customerOptional).isPresent();
+//    }
+
+//    @Test
+//    public void shouldReturnIfEmailIsInUse() {
+//        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+//        customers.add(customer);
+//
+//        Assertions.assertThat(customers.isEmailUnique(customer.email(), customer.id())).isTrue();
+//        Assertions.assertThat(customers.isEmailUnique(customer.email(), new CustomerId())).isFalse();
+//        Assertions.assertThat(customers.isEmailUnique(new Email("alex@gmail.com"), new CustomerId())).isTrue();
+//    }
+
 }

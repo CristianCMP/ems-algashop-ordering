@@ -2,7 +2,7 @@ package com.algaworks.algashop.ordering.infrastructure.persistence.repository;
 
 import com.algaworks.algashop.ordering.infrastructure.persistence.config.SpringDataAuditingConfig;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntityTestDataBuilder;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -27,7 +27,7 @@ class CustomerPersistenceEntityRepositoryIT {
 
     @Test
     public void shouldPersist() {
-        CustomerPersistenceEntity entity = CustomerPersistenceTestDataBuilder.existingCustomer().build();
+        CustomerPersistenceEntity entity = CustomerPersistenceEntityTestDataBuilder.aCustomer().build();
 
         customerPersistenceEntityRepository.saveAndFlush(entity);
 
@@ -46,7 +46,7 @@ class CustomerPersistenceEntityRepositoryIT {
 
     @Test
     public void shouldSetAuditingValues() {
-        CustomerPersistenceEntity entity = CustomerPersistenceTestDataBuilder.existingCustomer().build();
+        CustomerPersistenceEntity entity = CustomerPersistenceEntityTestDataBuilder.aCustomer().build();
 
         entity = customerPersistenceEntityRepository.saveAndFlush(entity);
 

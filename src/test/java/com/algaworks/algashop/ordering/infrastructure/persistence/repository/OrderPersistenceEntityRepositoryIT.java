@@ -1,57 +1,79 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.repository;
 
+import com.algaworks.algashop.ordering.domain.model.entity.CustomerTestDataBuilder;
 import com.algaworks.algashop.ordering.infrastructure.persistence.config.SpringDataAuditingConfig;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntity;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntityTestDataBuilder;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntity;
-import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceTestDataBuilder;
+import com.algaworks.algashop.ordering.infrastructure.persistence.entity.OrderPersistenceEntityTestDataBuilder;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.UUID;
 
-//@SpringBootTest // load the full Spring application context and all beans.
-//@Transactional  // @DataJpaTest has @Transactional inside by default.
-@DataJpaTest  // configuration only JPA.
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // do not change the database's configure.
+@DataJpaTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(SpringDataAuditingConfig.class)
 class OrderPersistenceEntityRepositoryIT {
 
     private final OrderPersistenceEntityRepository orderPersistenceEntityRepository;
+    private final CustomerPersistenceEntityRepository customerPersistenceEntityRepository;
+
+    private CustomerPersistenceEntity customerPersistenceEntity;
 
     @Autowired
-    public OrderPersistenceEntityRepositoryIT(OrderPersistenceEntityRepository orderPersistenceEntityRepository) {
+    public OrderPersistenceEntityRepositoryIT(OrderPersistenceEntityRepository orderPersistenceEntityRepository,
+                                              CustomerPersistenceEntityRepository customerPersistenceEntityRepository) {
         this.orderPersistenceEntityRepository = orderPersistenceEntityRepository;
+        this.customerPersistenceEntityRepository = customerPersistenceEntityRepository;
+    }
+
+    @BeforeEach
+    public void setup() {
+        UUID customerId = CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value();
+        if (!customerPersistenceEntityRepository.existsById(customerId)) {
+            customerPersistenceEntity = customerPersistenceEntityRepository.saveAndFlush(
+                    CustomerPersistenceEntityTestDataBuilder.aCustomer().build()
+            );
+        }
     }
 
     @Test
     public void shouldPersist() {
-        OrderPersistenceEntity entity = OrderPersistenceTestDataBuilder.existingOrder().build();
+        OrderPersistenceEntity entity = OrderPersistenceEntityTestDataBuilder.existingOrder()
+                .customer(customerPersistenceEntity)
+                .build();
 
         orderPersistenceEntityRepository.saveAndFlush(entity);
-
-        assertThat(orderPersistenceEntityRepository.existsById(entity.getId())).isTrue();
+        Assertions.assertThat(orderPersistenceEntityRepository.existsById(entity.getId())).isTrue();
 
         OrderPersistenceEntity savedEntity = orderPersistenceEntityRepository.findById(entity.getId()).orElseThrow();
 
-        assertThat(savedEntity.getItems()).isNotEmpty();
+        Assertions.assertThat(savedEntity.getItems()).isNotEmpty();
     }
 
     @Test
     public void shouldCount() {
-        long ordersCoung = orderPersistenceEntityRepository.count();
-        assertThat(ordersCoung).isZero();
+        long ordersCount = orderPersistenceEntityRepository.count();
+        Assertions.assertThat(ordersCount).isZero();
     }
 
     @Test
     public void shouldSetAuditingValues() {
-        OrderPersistenceEntity entity = OrderPersistenceTestDataBuilder.existingOrder().build();
-
+        OrderPersistenceEntity entity = OrderPersistenceEntityTestDataBuilder.existingOrder()
+                .customer(customerPersistenceEntity)
+                .build();
         entity = orderPersistenceEntityRepository.saveAndFlush(entity);
 
-        assertThat(entity.getCreatedByUserId()).isNotNull();
-        assertThat(entity.getLastModifiedAt()).isNotNull();
-        assertThat(entity.getLastModifiedByUserId()).isNotNull();
+        Assertions.assertThat(entity.getCreatedByUserId()).isNotNull();
+
+        Assertions.assertThat(entity.getLastModifiedAt()).isNotNull();
+        Assertions.assertThat(entity.getLastModifiedByUserId()).isNotNull();
     }
+
 }

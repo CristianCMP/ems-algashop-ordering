@@ -30,20 +30,9 @@ public class OrdersPersistenceProvider implements Orders {
 
     @Override
     public Optional<Order> ofId(OrderId orderId) {
-        Optional<OrderPersistenceEntity> possibleEntity = persistenceRepository.findById(orderId.value().toLong());
+        Optional<OrderPersistenceEntity> possibleEntity = persistenceRepository.findById(
+                orderId.value().toLong());
         return possibleEntity.map(disassembler::toDomainEntity);
-    }
-
-    @Override
-    @Transactional
-    public void add(Order aggregateRoot) {
-        long orderId = aggregateRoot.id().value().toLong();
-
-        persistenceRepository.findById(orderId)
-                .ifPresentOrElse(
-                        (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
-                        () -> insert(aggregateRoot)
-                );
     }
 
     @Override
@@ -54,6 +43,18 @@ public class OrdersPersistenceProvider implements Orders {
     @Override
     public long count() {
         return persistenceRepository.count();
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void add(Order aggregateRoot) {
+        long orderId = aggregateRoot.id().value().toLong();
+
+        persistenceRepository.findById(orderId)
+                .ifPresentOrElse(
+                        (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
+                        ()-> insert(aggregateRoot)
+                );
     }
 
     private void update(Order aggregateRoot, OrderPersistenceEntity persistenceEntity) {
@@ -73,9 +74,7 @@ public class OrdersPersistenceProvider implements Orders {
     private void updateVersion(Order aggregateRoot, OrderPersistenceEntity persistenceEntity) {
         Field version = aggregateRoot.getClass().getDeclaredField("version");
         version.setAccessible(true);
-
         ReflectionUtils.setField(version, aggregateRoot, persistenceEntity.getVersion());
-
         version.setAccessible(false);
     }
 }
