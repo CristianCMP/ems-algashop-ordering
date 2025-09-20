@@ -129,14 +129,14 @@ class CustomersIT {
         assertThat(customerOptional).isNotPresent();
     }
     
-//    @Test
-//    public void shouldReturnIfEmailIsInUse() {
-//        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
-//        customers.add(customer);
-//
-//        assertThat(customers.isEmailUnique(customer.email(), customer.id())).isTrue();
-//        assertThat(customers.isEmailUnique(customer.email(), new CustomerId())).isFalse();
-//        assertThat(customers.isEmailUnique(new Email("alex@gmail.com"), new CustomerId())).isTrue();
-//    }
+    @Test
+    public void shouldReturnIfEmailIsInUse() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        customers.add(customer);
+
+        assertThat(customers.isEmailUnique(customer.email(), customer.id())).isTrue();
+        assertThat(customers.isEmailUnique(customer.email(), new CustomerId())).isFalse();
+        assertThat(customers.isEmailUnique(new Email("teste@teste.com"), new CustomerId())).isTrue();
+    }
 
 }

@@ -64,10 +64,10 @@ public class CustomersPersistenceProvider implements Customers {
                 .map(disassembler::toDomainEntity);
     }
 
-//    @Override
-//    public boolean isEmailUnique(Email email, CustomerId exceptCustomerId) {
-//        return !persistenceRepository.existsByEmailAndIdNot(email.value(), exceptCustomerId.value());
-//    }
+    @Override
+    public boolean isEmailUnique(Email email, CustomerId exceptCustomerId) {
+        return !persistenceRepository.existsByEmailAndIdNot(email.value(), exceptCustomerId.value());
+    }
 
     private void update(Customer aggregateRoot, CustomerPersistenceEntity persistenceEntity) {
         persistenceEntity = assembler.merge(persistenceEntity, aggregateRoot);
