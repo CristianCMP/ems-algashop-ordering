@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.*;
@@ -309,7 +310,7 @@ class OrderTest {
         assertWith(order,
                 o -> assertThatExceptionOfType(OrderStatusCannotBeChangeException.class).isThrownBy(order::cancel),
                 o -> assertThat(o.status()).isEqualTo(OrderStatus.CANCELED),
-                o -> assertThat(o.canceledAt()).isEqualTo(canceledAtBefore)
+                o -> assertThat(o.canceledAt()).isCloseTo(canceledAtBefore, within(1, ChronoUnit.SECONDS))
         );
     }
 

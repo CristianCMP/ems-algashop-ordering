@@ -23,22 +23,24 @@ public class Customer implements AggregateRoot<CustomerId> {
     private Email email;
     private Phone phone;
     private Document document;
-    private Boolean promotionNotificationsAllower;
+    private Boolean promotionNotificationsAllowed;
     private Boolean archived;
     private OffsetDateTime registeredAt;
-    private OffsetDateTime arquivedAt;
+    private OffsetDateTime archivedAt;
     private LoyaltyPoints loyaltyPoints;
     private Address address;
+    private Long version;
 
     @Builder(builderClassName = "BrandNewCustumerBuild", builderMethodName = "brandNew")
-    private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Address address) {
+    private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Address address) {
         return new Customer(new CustomerId(),
+                null,
                 fullName,
                 birthDate,
                 email,
                 phone,
                 document,
-                promotionNotificationsAllower,
+                promotionNotificationsAllowed,
                 false,
                 OffsetDateTime.now(),
                 null,
@@ -48,17 +50,18 @@ public class Customer implements AggregateRoot<CustomerId> {
     }
 
     @Builder(builderClassName = "ExistingCustumerBuild", builderMethodName = "existing")
-    private Customer(CustomerId id, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllower, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime arquivedAt, LoyaltyPoints loyaltyPoints, Address address) {
+    private Customer(CustomerId id, Long version, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime archivedAt, LoyaltyPoints loyaltyPoints, Address address) {
         this.setId(id);
+        this.setVersion(version);
         this.setFullName(fullName);
         this.setBirthDate(birthDate);
         this.setEmail(email);
         this.setPhone(phone);
         this.setDocument(document);
-        this.setPromotionNotificationsAllower(promotionNotificationsAllower);
+        this.setPromotionNotificationsAllowed(promotionNotificationsAllowed);
         this.setArchived(archived);
         this.setRegisteredAt(registeredAt);
-        this.setArquivedAt(arquivedAt);
+        this.setArchivedAt(archivedAt);
         this.setLoyaltyPoints(loyaltyPoints);
         this.setAddress(address);
     }
@@ -72,13 +75,13 @@ public class Customer implements AggregateRoot<CustomerId> {
         verifyIfChangeable();
 
         this.setArchived(true);
-        this.setArquivedAt(OffsetDateTime.now());
+        this.setArchivedAt(OffsetDateTime.now());
         this.setFullName(new FullName("Anonymous", "Anonymous"));
         this.setPhone(new Phone("000-000-0000"));
         this.setDocument(new Document("000-00-0000"));
         this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
         this.setBirthDate(null);
-        this.setPromotionNotificationsAllower(false);
+        this.setPromotionNotificationsAllowed(false);
         this.setAddress(this.address().toBuilder()
                 .number("Anonymized")
                 .complement(null).build());
@@ -86,12 +89,12 @@ public class Customer implements AggregateRoot<CustomerId> {
 
     public void enablePromotionNotifications() {
         verifyIfChangeable();
-        this.setPromotionNotificationsAllower(true);
+        this.setPromotionNotificationsAllowed(true);
     }
 
     public void disablePromotionNotifications() {
         verifyIfChangeable();
-        this.setPromotionNotificationsAllower(false);
+        this.setPromotionNotificationsAllowed(false);
     }
 
     public void changeName(FullName fullName) {
@@ -139,8 +142,8 @@ public class Customer implements AggregateRoot<CustomerId> {
         return document;
     }
 
-    public Boolean isPromotionNotificationsAllower() {
-        return promotionNotificationsAllower;
+    public Boolean isPromotionNotificationsAllowed() {
+        return promotionNotificationsAllowed;
     }
 
     public Boolean isArchived() {
@@ -151,8 +154,8 @@ public class Customer implements AggregateRoot<CustomerId> {
         return registeredAt;
     }
 
-    public OffsetDateTime arquivedAt() {
-        return arquivedAt;
+    public OffsetDateTime archivedAt() {
+        return archivedAt;
     }
 
     public LoyaltyPoints loyaltyPoints() {
@@ -161,6 +164,14 @@ public class Customer implements AggregateRoot<CustomerId> {
 
     public Address address() {
         return address;
+    }
+
+    public Long version() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     private void setId(CustomerId id) {
@@ -197,9 +208,9 @@ public class Customer implements AggregateRoot<CustomerId> {
         this.document = document;
     }
 
-    private void setPromotionNotificationsAllower(Boolean promotionNotificationsAllower) {
-        Objects.requireNonNull(promotionNotificationsAllower);
-        this.promotionNotificationsAllower = promotionNotificationsAllower;
+    private void setPromotionNotificationsAllowed(Boolean promotionNotificationsAllowed) {
+        Objects.requireNonNull(promotionNotificationsAllowed);
+        this.promotionNotificationsAllowed = promotionNotificationsAllowed;
     }
 
     private void setArchived(Boolean archived) {
@@ -211,8 +222,8 @@ public class Customer implements AggregateRoot<CustomerId> {
         this.registeredAt = registeredAt;
     }
 
-    private void setArquivedAt(OffsetDateTime arquivedAt) {
-        this.arquivedAt = arquivedAt;
+    private void setArchivedAt(OffsetDateTime archivedAt) {
+        this.archivedAt = archivedAt;
     }
 
     private void setLoyaltyPoints(LoyaltyPoints loyaltyPoints) {
