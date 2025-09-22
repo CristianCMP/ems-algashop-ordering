@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.model.entity;
 
-import com.algaworks.algashop.ordering.domain.model.exeption.CustomerArquivedExeption;
+import com.algaworks.algashop.ordering.domain.model.exception.CustomerArquivedException;
 import com.algaworks.algashop.ordering.domain.model.valueobject.*;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -60,22 +60,22 @@ class CustomerTest {
     void given_arquivedCustomer_whenTryToUpdate_shouldGenerateException() {
         Customer customer = CustomerTestDataBuilder.existingAnonymizedCustomer().build();
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(customer::archive);
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(customer::enablePromotionNotifications);
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(customer::disablePromotionNotifications);
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(() -> customer.changeEmail(new Email("email@test.com")));
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(() -> customer.changeName(new FullName("Cristian", "Puhl")));
 
-        Assertions.assertThatExceptionOfType(CustomerArquivedExeption.class)
+        Assertions.assertThatExceptionOfType(CustomerArquivedException.class)
                 .isThrownBy(() -> customer.changePhone(new Phone("123-456-789")));
     }
 

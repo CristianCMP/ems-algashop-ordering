@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.model.valueobject.id;
 
-import com.algaworks.algashop.ordering.domain.model.utitly.IdGenerator;
+import com.algaworks.algashop.ordering.domain.model.utility.IdGenerator;
 import io.hypersistence.tsid.TSID;
 
 import java.util.Objects;

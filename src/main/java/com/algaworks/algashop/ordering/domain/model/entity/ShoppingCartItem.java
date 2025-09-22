@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.model.entity;
 
-import com.algaworks.algashop.ordering.domain.model.exeption.ShoppingCartItemIncompatibleProductException;
+import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartItemIncompatibleProductException;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.model.valueobject.ProductName;
@@ -15,19 +15,18 @@ import java.util.Objects;
 
 @EqualsAndHashCode(of = "id")
 public class ShoppingCartItem {
-
     private ShoppingCartItemId id;
     private ShoppingCartId shoppingCartId;
     private ProductId productId;
-    private ProductName productName;
+    private ProductName name;
     private Money price;
     private Quantity quantity;
-    private Money totalAmount;
     private Boolean available;
+    private Money totalAmount;
 
-    @Builder(builderClassName = "ExistingShoppingCartItemBuilder", builderMethodName = "existing")
+    @Builder(builderClassName = "ExistingShoppingCartItem", builderMethodName = "existing")
     public ShoppingCartItem(ShoppingCartItemId id, ShoppingCartId shoppingCartId, ProductId productId, ProductName productName,
-                            Money price, Quantity quantity, Money totalAmount, Boolean available) {
+                            Money price, Quantity quantity, Boolean available, Money totalAmount) {
         this.setId(id);
         this.setShoppingCartId(shoppingCartId);
         this.setProductId(productId);
@@ -38,26 +37,35 @@ public class ShoppingCartItem {
         this.setTotalAmount(totalAmount);
     }
 
-    @Builder(builderClassName = "BrandNewShoppingCartItemBuilder", builderMethodName = "brandNew")
-    private static ShoppingCartItem createBrandNew(ShoppingCartId shoppingCartId, Product product, Quantity quantity) {
-        Objects.requireNonNull(shoppingCartId);
+    @Builder(builderClassName = "BrandNewShoppingCartItem", builderMethodName = "brandNew")
+    public ShoppingCartItem(ShoppingCartId shoppingCartId,
+                            ProductId productId, ProductName productName, Money price,
+                            Quantity quantity, Boolean available) {
+        this(new ShoppingCartItemId(), shoppingCartId, productId, productName, price, quantity, available, Money.ZERO);
+        this.recalculateTotals();
+    }
+
+    void refresh(Product product) {
         Objects.requireNonNull(product);
-        Objects.requireNonNull(quantity);
+        Objects.requireNonNull(product.id());
 
-        ShoppingCartItem shoppingCartItem = new ShoppingCartItem(
-                new ShoppingCartItemId(),
-                shoppingCartId,
-                product.id(),
-                product.name(),
-                product.price(),
-                quantity,
-                Money.ZERO,
-                product.inStock()
-        );
+        if (!product.id().equals(this.productId())) {
+            throw new ShoppingCartItemIncompatibleProductException(this.id(), this.productId());
+        }
 
-        shoppingCartItem.recalculateTotals();
+        this.setPrice(product.price());
+        this.setAvailable(product.inStock());
+        this.setProductName(product.name());
+        this.recalculateTotals();
+    }
 
-        return shoppingCartItem;
+    void changeQuantity(Quantity quantity) {
+        this.setQuantity(quantity);
+        this.recalculateTotals();
+    }
+
+    private void recalculateTotals() {
+        this.setTotalAmount(price.multiply(quantity));
     }
 
     public ShoppingCartItemId id() {
@@ -72,8 +80,8 @@ public class ShoppingCartItem {
         return productId;
     }
 
-    public ProductName productName() {
-        return productName;
+    public ProductName name() {
+        return name;
     }
 
     public Money price() {
@@ -84,76 +92,55 @@ public class ShoppingCartItem {
         return quantity;
     }
 
-    public Money totalAmount() {
-        return totalAmount;
-    }
-
     public Boolean isAvailable() {
         return available;
     }
 
-    void refresh(Product product) {
-        Objects.requireNonNull(product);
-
-        if (!this.productId().equals(product.id())) {
-            throw new ShoppingCartItemIncompatibleProductException(this.id(), this.productId());
-        }
-
-        this.setProductName(product.name());
-        this.setPrice(product.price());
-        this.setAvailable(product.inStock());
-
-        this.recalculateTotals();
+    public Money totalAmount() {
+        return totalAmount;
     }
 
-    void changeQuantity(Quantity quantity) {
-        Objects.requireNonNull(quantity);
-
-        this.setQuantity(quantity);
-        this.recalculateTotals();
-    }
-
-    private void recalculateTotals() {
-        this.setTotalAmount(this.price.multiply(this.quantity));
-    }
-
-    public void setId(ShoppingCartItemId id) {
+    private void setId(ShoppingCartItemId id) {
         Objects.requireNonNull(id);
         this.id = id;
     }
 
-    public void setShoppingCartId(ShoppingCartId shoppingCartId) {
+    private void setShoppingCartId(ShoppingCartId shoppingCartId) {
         Objects.requireNonNull(shoppingCartId);
         this.shoppingCartId = shoppingCartId;
     }
 
-    public void setProductId(ProductId productId) {
+    private void setProductId(ProductId productId) {
         Objects.requireNonNull(productId);
         this.productId = productId;
     }
 
-    public void setProductName(ProductName productName) {
+    private void setProductName(ProductName productName) {
         Objects.requireNonNull(productName);
-        this.productName = productName;
+        this.name = productName;
     }
 
-    public void setPrice(Money price) {
+    private void setPrice(Money price) {
         Objects.requireNonNull(price);
         this.price = price;
     }
 
-    public void setQuantity(Quantity quantity) {
+    private void setQuantity(Quantity quantity) {
         Objects.requireNonNull(quantity);
+        if (quantity.equals(Quantity.ZERO)) {
+            throw new IllegalArgumentException();
+        }
         this.quantity = quantity;
     }
 
-    public void setTotalAmount(Money totalAmount) {
+    private void setAvailable(Boolean available) {
+        Objects.requireNonNull(available);
+        this.available = available;
+    }
+
+    private void setTotalAmount(Money totalAmount) {
         Objects.requireNonNull(totalAmount);
         this.totalAmount = totalAmount;
     }
 
-    public void setAvailable(Boolean available) {
-        Objects.requireNonNull(available);
-        this.available = available;
-    }
 }

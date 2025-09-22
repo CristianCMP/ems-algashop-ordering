@@ -1,15 +1,19 @@
 package com.algaworks.algashop.ordering.domain.model.entity;
 
-import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
+import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
+import com.algaworks.algashop.ordering.domain.model.valueobject.ProductName;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Quantity;
+import com.algaworks.algashop.ordering.domain.model.valueobject.id.ProductId;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.ShoppingCartId;
 
 public class ShoppingCartItemTestDataBuilder {
 
-    private ShoppingCartId shoppingCartId = new ShoppingCartId();
+    private ShoppingCartId shoppingCartId = ShoppingCartTestDataBuilder.DEFAULT_SHOPPING_CART_ID;
+    private ProductId productId = ProductTestDataBuilder.DEFAULT_PRODUCT_ID;
+    private ProductName productName = new ProductName("Notebook");
+    private Money price = new Money("1000");
     private Quantity quantity = new Quantity(1);
-    private Boolean avaliable = true;
-    private Product product = ProductTestDataBuilder.aProduct().build();
+    private boolean available = true;
 
     private ShoppingCartItemTestDataBuilder() {
     }
@@ -21,8 +25,11 @@ public class ShoppingCartItemTestDataBuilder {
     public ShoppingCartItem build() {
         return ShoppingCartItem.brandNew()
                 .shoppingCartId(shoppingCartId)
-                .product(product)
+                .productId(productId)
+                .productName(productName)
+                .price(price)
                 .quantity(quantity)
+                .available(available)
                 .build();
     }
 
@@ -31,18 +38,28 @@ public class ShoppingCartItemTestDataBuilder {
         return this;
     }
 
+    public ShoppingCartItemTestDataBuilder productId(ProductId productId) {
+        this.productId = productId;
+        return this;
+    }
+
+    public ShoppingCartItemTestDataBuilder productName(ProductName productName) {
+        this.productName = productName;
+        return this;
+    }
+
+    public ShoppingCartItemTestDataBuilder price(Money price) {
+        this.price = price;
+        return this;
+    }
+
     public ShoppingCartItemTestDataBuilder quantity(Quantity quantity) {
         this.quantity = quantity;
         return this;
     }
 
-    public ShoppingCartItemTestDataBuilder setProduct(Product product) {
-        this.product = product;
-        return this;
-    }
-
-    public ShoppingCartItemTestDataBuilder setAvaliable(Boolean avaliable) {
-        this.avaliable = avaliable;
+    public ShoppingCartItemTestDataBuilder available(boolean available) {
+        this.available = available;
         return this;
     }
 }

@@ -83,7 +83,6 @@ public class OrderPersistenceEntityAssembler {
                     return merge(itemPersistence, orderItem);
                 })
                 .collect(Collectors.toSet());
-
     }
 
     public OrderItemPersistenceEntity fromDomain(OrderItem orderItem) {

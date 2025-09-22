@@ -1,6 +1,7 @@
 package com.algaworks.algashop.ordering.domain.model.entity;
 
-import com.algaworks.algashop.ordering.domain.model.exeption.ShoppingCartDoesNotContainItemException;
+import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartDoesNotContainItemException;
+import com.algaworks.algashop.ordering.domain.model.exception.ShoppingCartDoesNotContainProductException;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Money;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Quantity;
@@ -13,14 +14,10 @@ import lombok.EqualsAndHashCode;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @EqualsAndHashCode(of = "id")
 public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
-
     private ShoppingCartId id;
     private CustomerId customerId;
     private Money totalAmount;
@@ -28,11 +25,12 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
     private OffsetDateTime createdAt;
     private Set<ShoppingCartItem> items;
 
-    @Builder(builderClassName = "ExistingShoppingCartBuilder", buildMethodName = "existing")
-    public ShoppingCart(
-            ShoppingCartId id, CustomerId customerId, Money totalAmount,
-            Quantity totalItems, OffsetDateTime createdAt, Set<ShoppingCartItem> items
-    ) {
+    private Long version;
+
+    @Builder(builderClassName = "ExistingShoppingCartBuilder", builderMethodName = "existing")
+    public ShoppingCart(ShoppingCartId id, Long version, CustomerId customerId,
+                        Money totalAmount, Quantity totalItems, OffsetDateTime createdAt,
+                        Set<ShoppingCartItem> items) {
         this.setId(id);
         this.setCustomerId(customerId);
         this.setTotalAmount(totalAmount);
@@ -42,14 +40,81 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
     }
 
     public static ShoppingCart startShopping(CustomerId customerId) {
-        return new ShoppingCart(
-                new ShoppingCartId(),
-                customerId,
-                Money.ZERO,
-                Quantity.ZERO,
-                OffsetDateTime.now(),
-                new HashSet<>()
-        );
+        return new ShoppingCart(new ShoppingCartId(), null, customerId, Money.ZERO,
+                Quantity.ZERO, OffsetDateTime.now(), new HashSet<>());
+    }
+
+    public void empty() {
+        items.clear();
+        totalAmount = Money.ZERO;
+        totalItems = Quantity.ZERO;
+    }
+
+    public void removeItem(ShoppingCartItemId shoppingCartItemId) {
+        ShoppingCartItem shoppingCartItem = this.findItem(shoppingCartItemId);
+        this.items.remove(shoppingCartItem);
+        this.recalculateTotals();
+    }
+
+    public void addItem(Product product, Quantity quantity) {
+        Objects.requireNonNull(product);
+        Objects.requireNonNull(quantity);
+
+        product.checkOutOfStock();
+
+        ShoppingCartItem shoppingCartItem = ShoppingCartItem.brandNew()
+                .shoppingCartId(this.id())
+                .productId(product.id())
+                .productName(product.name())
+                .price(product.price())
+                .available(product.inStock())
+                .quantity(quantity)
+                .build();
+
+        searchItemByProduct(product.id())
+                .ifPresentOrElse(i -> updateItem(i, product, quantity), () -> insertItem(shoppingCartItem));
+
+        this.recalculateTotals();
+    }
+
+    public ShoppingCartItem findItem(ShoppingCartItemId shoppingCartItemId) {
+        Objects.requireNonNull(shoppingCartItemId);
+        return this.items.stream()
+                .filter(i -> i.id().equals(shoppingCartItemId))
+                .findFirst()
+                .orElseThrow(() -> new ShoppingCartDoesNotContainItemException(this.id(), shoppingCartItemId));
+    }
+
+    public ShoppingCartItem findItem(ProductId productId) {
+        Objects.requireNonNull(productId);
+        return this.items.stream()
+                .filter(i -> i.productId().equals(productId))
+                .findFirst()
+                .orElseThrow(() -> new ShoppingCartDoesNotContainProductException(this.id(), productId));
+    }
+
+    public void refreshItem(Product product) {
+        ShoppingCartItem shoppingCartItem = this.findItem(product.id());
+        shoppingCartItem.refresh(product);
+        this.recalculateTotals();
+    }
+
+    public void changeItemQuantity(ShoppingCartItemId shoppingCartItemId, Quantity quantity) {
+        ShoppingCartItem shoppingCartItem = this.findItem(shoppingCartItemId);
+        shoppingCartItem.changeQuantity(quantity);
+        this.recalculateTotals();
+    }
+
+    public boolean containsUnavailableItems() {
+        return items.stream().anyMatch(i -> !i.isAvailable());
+    }
+
+    public boolean isEmpty() {
+        return this.items().isEmpty();
+    }
+
+    public Set<ShoppingCartItem> items() {
+        return Collections.unmodifiableSet(items);
     }
 
     public ShoppingCartId id() {
@@ -72,154 +137,70 @@ public class ShoppingCart implements AggregateRoot<ShoppingCartId> {
         return createdAt;
     }
 
-    public Set<ShoppingCartItem> items() {
-        return Collections.unmodifiableSet(items);
+    public Long version() {
+        return version;
     }
-
-    public void empty() {
-        this.items.clear();
-        this.setTotalAmount(Money.ZERO);
-        this.setTotalItems(Quantity.ZERO);
-    }
-
-    public void removeItem(ShoppingCartItemId itemId) {
-        Objects.requireNonNull(itemId);
-
-        ShoppingCartItem shoppingCartItem = findItem(itemId);
-
-        this.items.remove(shoppingCartItem);
-        this.recalculateTotals();
-    }
-
-    public void addItem(Product product, Quantity quantity) {
-        Objects.requireNonNull(product);
-        Objects.requireNonNull(quantity);
-
-        product.checkOutOfStock();
-
-        ShoppingCartItem shoppingCartItem = ShoppingCartItem.brandNew()
-                .shoppingCartId(this.id())
-                .product(product)
-                .quantity(quantity)
-                .build();
-
-        if (this.items == null) {
-            this.items = new HashSet<>();
-        }
-
-        if (this.existItem(product.id())){
-            ShoppingCartItem item = findItem(product.id());
-            this.updateItem(item, product, quantity);
-        }else{
-            this.items.add(shoppingCartItem);
-        }
-
-        this.recalculateTotals();
-    }
-
 
     private void updateItem(ShoppingCartItem shoppingCartItem, Product product, Quantity quantity) {
         shoppingCartItem.refresh(product);
         shoppingCartItem.changeQuantity(shoppingCartItem.quantity().add(quantity));
     }
 
-    public void refreshItem(Product product) {
-        Objects.requireNonNull(product);
-
-        ShoppingCartItem shoppingCartItem = findItem(product.id());
-        shoppingCartItem.refresh(product);
-
-        this.recalculateTotals();
+    private void insertItem(ShoppingCartItem shoppingCartItem) {
+        this.items.add(shoppingCartItem);
     }
 
-    public ShoppingCartItem findItem(ShoppingCartItemId itemId) {
-        Objects.requireNonNull(itemId);
-        return this.items()
-                .stream()
-                .filter(i -> i.id().equals(itemId))
-                .findFirst()
-                .orElseThrow(() -> new ShoppingCartDoesNotContainItemException(this.id(), itemId));
-    }
-
-    public ShoppingCartItem findItem(ProductId productId) {
+    private Optional<ShoppingCartItem> searchItemByProduct(ProductId productId) {
         Objects.requireNonNull(productId);
-        return this.items()
-                .stream()
+        return this.items.stream()
                 .filter(i -> i.productId().equals(productId))
-                .findFirst()
-                .orElseThrow(() -> new ShoppingCartDoesNotContainItemException(this.id(), productId));
+                .findFirst();
     }
 
-    public boolean existItem(ProductId productId) {
-        Objects.requireNonNull(productId);
-        return this.items()
-                .stream()
-                .anyMatch(i -> i.productId().equals(productId));
-    }
-
-
-    public void recalculateTotals() {
-        BigDecimal totalItemsAmount = this.items
-                .stream()
+    private void recalculateTotals() {
+        BigDecimal totalAmount = items.stream()
                 .map(i -> i.totalAmount().value())
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        Integer totalItemsQuantity = this.items
-                .stream()
+        Integer totalItems = items.stream()
                 .map(i -> i.quantity().value())
                 .reduce(0, Integer::sum);
 
-        this.setTotalAmount(new Money(totalItemsAmount));
-        this.setTotalItems(new Quantity(totalItemsQuantity));
+        this.totalAmount = new Money(totalAmount);
+        this.totalItems = new Quantity(totalItems);
     }
 
-    public void changeItemQuantity(ShoppingCartItemId itemId, Quantity quantity) {
-        Objects.requireNonNull(itemId);
-        Objects.requireNonNull(quantity);
-
-        ShoppingCartItem shoppingCartItem = findItem(itemId);
-        shoppingCartItem.changeQuantity(quantity);
-
-        this.recalculateTotals();
-    }
-
-    public boolean isContainsUnavailableItems() {
-        return items()
-                .stream()
-                .anyMatch(i -> !i.isAvailable());
-    }
-
-    public boolean isEmpty() {
-        return this.items().isEmpty();
-    }
-
-    public void setId(ShoppingCartId id) {
+    private void setId(ShoppingCartId id) {
         Objects.requireNonNull(id);
         this.id = id;
     }
 
-    public void setCustomerId(CustomerId customerId) {
+    private void setCustomerId(CustomerId customerId) {
         Objects.requireNonNull(customerId);
         this.customerId = customerId;
     }
 
-    public void setTotalAmount(Money totalAmount) {
+    private void setTotalAmount(Money totalAmount) {
         Objects.requireNonNull(totalAmount);
         this.totalAmount = totalAmount;
     }
 
-    public void setTotalItems(Quantity totalItems) {
+    private void setTotalItems(Quantity totalItems) {
         Objects.requireNonNull(totalItems);
         this.totalItems = totalItems;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
+    private void setCreatedAt(OffsetDateTime createdAt) {
         Objects.requireNonNull(createdAt);
         this.createdAt = createdAt;
     }
 
-    public void setItems(Set<ShoppingCartItem> items) {
+    private void setItems(Set<ShoppingCartItem> items) {
         Objects.requireNonNull(items);
         this.items = items;
+    }
+
+    private void setVersion(Long version) {
+        this.version = version;
     }
 }

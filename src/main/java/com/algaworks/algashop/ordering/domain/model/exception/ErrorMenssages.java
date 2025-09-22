@@ -1,4 +1,4 @@
-package com.algaworks.algashop.ordering.domain.model.exeption;
+package com.algaworks.algashop.ordering.domain.model.exception;
 
 public class ErrorMenssages {
     public static final String VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST = "BirthDate must be a past date";

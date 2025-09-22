@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.domain.model.entity;
 
-import com.algaworks.algashop.ordering.domain.model.exeption.CustomerArquivedExeption;
+import com.algaworks.algashop.ordering.domain.model.exception.CustomerArquivedException;
 import com.algaworks.algashop.ordering.domain.model.validator.FieldValidations;
 import com.algaworks.algashop.ordering.domain.model.valueobject.*;
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
@@ -11,7 +11,7 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.algaworks.algashop.ordering.domain.model.exeption.ErrorMenssages.VALIDATION_ERROR_FULLNAME_IS_NULL;
+import static com.algaworks.algashop.ordering.domain.model.exception.ErrorMenssages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Customer implements AggregateRoot<CustomerId> {
@@ -238,7 +238,7 @@ public class Customer implements AggregateRoot<CustomerId> {
 
     private void verifyIfChangeable() {
         if (this.archived) {
-            throw new CustomerArquivedExeption();
+            throw new CustomerArquivedException();
         }
     }
 }

@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.Objects;
 
-import static com.algaworks.algashop.ordering.domain.model.exeption.ErrorMenssages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
+import static com.algaworks.algashop.ordering.domain.model.exception.ErrorMenssages.VALIDATION_ERROR_BIRTHDATE_MUST_IN_PAST;
 
 public record BirthDate(LocalDate value) {
 

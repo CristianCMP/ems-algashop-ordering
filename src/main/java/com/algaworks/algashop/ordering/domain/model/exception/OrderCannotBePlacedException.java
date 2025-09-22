@@ -1,10 +1,10 @@
-package com.algaworks.algashop.ordering.domain.model.exeption;
+package com.algaworks.algashop.ordering.domain.model.exception;
 
 import com.algaworks.algashop.ordering.domain.model.valueobject.id.OrderId;
 
-import static com.algaworks.algashop.ordering.domain.model.exeption.ErrorMenssages.*;
+import static com.algaworks.algashop.ordering.domain.model.exception.ErrorMenssages.*;
 
-public class OrderCannotBePlacedException extends DomainExeption {
+public class OrderCannotBePlacedException extends DomainException {
 
     private OrderCannotBePlacedException(String message) {
         super(message);
