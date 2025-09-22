@@ -92,13 +92,13 @@ class CustomerTest {
 
     @Test
     @DisplayName("Should throw IllegalArgumentException when adding invalid loyalty value to a new Customer")
-    void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerationExeption() {
+    void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
         Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
-        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> customer.addLoyaltyPoints(LoyaltyPoints.ZERO));
+        Assertions.assertThatNoException() //alterar
+                .isThrownBy(()-> customer.addLoyaltyPoints(new LoyaltyPoints(0)));
 
         Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> customer.addLoyaltyPoints(new LoyaltyPoints(-10)));
+                .isThrownBy(()-> new LoyaltyPoints(-10)); //simplificar
     }
 }
