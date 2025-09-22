@@ -13,7 +13,6 @@ public class CustomerRegistrationService {
     private final Customers customers;
 
     public Customer register(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Address address) {
-
         Customer customer = Customer.brandNew()
                 .fullName(fullName)
                 .birthDate(birthDate)
