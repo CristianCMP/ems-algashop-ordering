@@ -6,6 +6,6 @@ import com.algaworks.algashop.ordering.domain.model.valueobject.id.ShoppingCartI
 
 import java.util.Optional;
 
-public interface ShoppingCarts extends Repository<ShoppingCart, ShoppingCartId>{
+public interface ShoppingCarts extends RemoveCapableRepository<ShoppingCart, ShoppingCartId> {
     Optional<ShoppingCart> ofCustomer(CustomerId customerId);
 }

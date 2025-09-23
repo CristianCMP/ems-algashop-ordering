@@ -91,7 +91,7 @@ class ShoppingCartPersistenceEntityAssemblerTest {
 
         Set<ShoppingCartItemPersistenceEntity> shoppingCartItemPersistenceEntities = shoppingCart.items()
                 .stream()
-                .map(assembler::fromDomain)
+                .map(assembler::toOrderItemsEntities)
                 .collect(Collectors.toSet());
 
         ShoppingCartPersistenceEntity persistenceEntity = ShoppingCartPersistenceEntityTestDataBuilder.existingShoppingCart()

@@ -32,36 +32,30 @@ public class ShoppingCartsPersistenceProvider implements ShoppingCarts {
 
     @Override
     public Optional<ShoppingCart> ofId(ShoppingCartId shoppingCartId) {
-        Optional<ShoppingCartPersistenceEntity> possibleEntity = persistenceRepository.findById(shoppingCartId.value());
-        return possibleEntity.map(disassembler::toDomainEntity);
+        return persistenceRepository.findById(shoppingCartId.value())
+                .map(disassembler::toDomainEntity);
     }
 
     @Override
-    public boolean exists(ShoppingCartId orderId) {
-        return persistenceRepository.existsById(orderId.value());
-    }
-
-    @Override
-    public long count() {
-        return persistenceRepository.count();
-    }
-
-    @Override
-    public Optional<ShoppingCart> ofCustomer(CustomerId customerId) {
-        Optional<ShoppingCartPersistenceEntity> possibleEntity = persistenceRepository.findByCustomerId(customerId.value());
-        return possibleEntity.map(disassembler::toDomainEntity);
+    public boolean exists(ShoppingCartId shoppingCartId) {
+        return persistenceRepository.existsById(shoppingCartId.value());
     }
 
     @Override
     @Transactional(readOnly = false)
     public void add(ShoppingCart aggregateRoot) {
-        UUID orderId = aggregateRoot.id().value();
+        UUID ShoppingCartId = aggregateRoot.id().value();
 
-        persistenceRepository.findById(orderId)
+        persistenceRepository.findById(ShoppingCartId)
                 .ifPresentOrElse(
                         (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
-                        () -> insert(aggregateRoot)
+                        ()-> insert(aggregateRoot)
                 );
+    }
+
+    @Override
+    public long count() {
+        return persistenceRepository.count();
     }
 
     private void update(ShoppingCart aggregateRoot, ShoppingCartPersistenceEntity persistenceEntity) {
@@ -83,5 +77,23 @@ public class ShoppingCartsPersistenceProvider implements ShoppingCarts {
         version.setAccessible(true);
         ReflectionUtils.setField(version, aggregateRoot, persistenceEntity.getVersion());
         version.setAccessible(false);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void remove(ShoppingCart shoppingCart) {
+        this.persistenceRepository.deleteById(shoppingCart.id().value());
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public void remove(ShoppingCartId shoppingCartId) {
+        this.persistenceRepository.deleteById(shoppingCartId.value());
+    }
+
+    @Override
+    public Optional<ShoppingCart> ofCustomer(CustomerId customerId) {
+        return persistenceRepository.findByCustomer_Id(customerId.value())
+                .map(disassembler::toDomainEntity);
     }
 }

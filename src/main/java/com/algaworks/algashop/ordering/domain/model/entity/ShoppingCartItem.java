@@ -13,8 +13,9 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ShoppingCartItem {
+    @EqualsAndHashCode.Include
     private ShoppingCartItemId id;
     private ShoppingCartId shoppingCartId;
     private ProductId productId;
