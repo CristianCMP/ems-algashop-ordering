@@ -8,10 +8,8 @@ import com.algaworks.algashop.ordering.domain.model.utility.DomainService;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Billing;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Product;
 import com.algaworks.algashop.ordering.domain.model.valueobject.Shipping;
-import lombok.RequiredArgsConstructor;
 
 @DomainService
-@RequiredArgsConstructor
 public class CheckoutService {
 
     public Order checkout(ShoppingCart shoppingCart, Billing billing, Shipping shipping, PaymentMethod paymentMethod) {
