@@ -13,5 +13,5 @@ public interface ShippingCostService {
     record CalculationRequest(ZipCode origin, ZipCode destination) {}
 
     @Builder
-    record CalculationResult(Money money, LocalDate expectedDate) {}
+    record CalculationResult(Money cost, LocalDate expectedDate) {}
 }
