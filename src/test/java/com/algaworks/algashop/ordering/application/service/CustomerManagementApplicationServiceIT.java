@@ -1,7 +1,8 @@
 package com.algaworks.algashop.ordering.application.service;
 
-import com.algaworks.algashop.ordering.application.model.CustomerInput;
 import com.algaworks.algashop.ordering.application.model.AddressData;
+import com.algaworks.algashop.ordering.application.model.CustomerInput;
+import com.algaworks.algashop.ordering.application.model.CustomerOutput;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 class CustomerManagementApplicationServiceIT {
@@ -38,7 +41,15 @@ class CustomerManagementApplicationServiceIT {
                 .build();
 
         UUID customerId = customerManagementApplicationService.create(input);
-        Assertions.assertThat(customerId).isNotNull();
-    }
+        assertThat(customerId).isNotNull();
 
+        CustomerOutput customerOutput = customerManagementApplicationService.findById(customerId);
+
+        assertThat(customerOutput.getId()).isEqualTo(customerId);
+        assertThat(customerOutput.getFirstName()).isEqualTo("John");
+        assertThat(customerOutput.getLastName()).isEqualTo("Doe");
+        assertThat(customerOutput.getEmail()).isEqualTo("johndoe@email.com");
+        assertThat(customerOutput.getBirthDate()).isEqualTo(LocalDate.of(1991, 7,5));
+        assertThat(customerOutput.getRegisteredAt()).isNotNull();
+    }
 }
