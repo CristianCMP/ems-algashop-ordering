@@ -1,11 +1,9 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.provider;
 
-import com.algaworks.algashop.ordering.domain.model.entity.Customer;
-import com.algaworks.algashop.ordering.domain.model.entity.CustomerTestDataBuilder;
-import com.algaworks.algashop.ordering.domain.model.entity.Order;
-import com.algaworks.algashop.ordering.domain.model.entity.OrderTestDataBuilder;
-import com.algaworks.algashop.ordering.domain.model.valueobject.Email;
-import com.algaworks.algashop.ordering.domain.model.valueobject.id.CustomerId;
+import com.algaworks.algashop.ordering.domain.model.customer.Customer;
+import com.algaworks.algashop.ordering.domain.model.customer.CustomerTestDataBuilder;
+import com.algaworks.algashop.ordering.domain.model.commons.Email;
+import com.algaworks.algashop.ordering.domain.model.customer.CustomerId;
 import com.algaworks.algashop.ordering.infrastructure.persistence.assembler.CustomerPersistenceEntityAssembler;
 import com.algaworks.algashop.ordering.infrastructure.persistence.config.SpringDataAuditingConfig;
 import com.algaworks.algashop.ordering.infrastructure.persistence.disassembler.CustomerPersistenceEntityDisassembler;
@@ -13,7 +11,6 @@ import com.algaworks.algashop.ordering.infrastructure.persistence.entity.Custome
 import com.algaworks.algashop.ordering.infrastructure.persistence.repository.CustomerPersistenceEntityRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;

@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.disassembler;
 
-import com.algaworks.algashop.ordering.domain.model.entity.Customer;
+import com.algaworks.algashop.ordering.domain.model.customer.Customer;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntity;
 import com.algaworks.algashop.ordering.infrastructure.persistence.entity.CustomerPersistenceEntityTestDataBuilder;
 import org.junit.jupiter.api.Test;
