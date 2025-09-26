@@ -52,7 +52,7 @@ public class CustomerManagementApplicationService {
     public CustomerOutput findById(UUID customerId) {
         Objects.requireNonNull(customerId);
         Customer customer = customers.ofId(new CustomerId(customerId))
-                .orElseThrow(CustomerNotFoundException::new);
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         return mapper.convert(customer, CustomerOutput.class);
     }
@@ -63,7 +63,7 @@ public class CustomerManagementApplicationService {
         Objects.requireNonNull(rawCustomerId);
 
         Customer customer = customers.ofId(new CustomerId(rawCustomerId))
-                .orElseThrow(CustomerNotFoundException::new);
+                .orElseThrow(() -> new CustomerNotFoundException());
 
         customer.changeName(new FullName(input.getFirstName(), input.getLastName()));
         customer.changePhone(new Phone(input.getPhone()));
@@ -88,4 +88,14 @@ public class CustomerManagementApplicationService {
 
         customers.add(customer);
     }
+
+    @Transactional
+    public void archive(UUID rawCustomerId) {
+        CustomerId customerId = new CustomerId(rawCustomerId);
+        Customer customer = customers.ofId(new CustomerId(rawCustomerId))
+                .orElseThrow(CustomerNotFoundException::new);
+        customer.archive();
+        customers.add(customer);
+    }
+
 }
