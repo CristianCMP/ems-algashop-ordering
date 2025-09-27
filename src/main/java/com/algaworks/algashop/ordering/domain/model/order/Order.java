@@ -2,8 +2,8 @@ package com.algaworks.algashop.ordering.domain.model.order;
 
 import com.algaworks.algashop.ordering.domain.model.AbstractEventSourceEntity;
 import com.algaworks.algashop.ordering.domain.model.AggregateRoot;
-import com.algaworks.algashop.ordering.domain.model.commons.Quantity;
 import com.algaworks.algashop.ordering.domain.model.commons.Money;
+import com.algaworks.algashop.ordering.domain.model.commons.Quantity;
 import com.algaworks.algashop.ordering.domain.model.product.Product;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerId;
 import lombok.Builder;
@@ -16,7 +16,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Order extends AbstractEventSourceEntity implements AggregateRoot<OrderId> {
+public class Order
+        extends AbstractEventSourceEntity
+        implements AggregateRoot<OrderId> {
 
     private OrderId id;
     private CustomerId customerId;
@@ -109,16 +111,25 @@ public class Order extends AbstractEventSourceEntity implements AggregateRoot<Or
         this.verifyIfCanChangeToPlaced();
         this.changeStatus(OrderStatus.PLACED);
         this.setPlacedAt(OffsetDateTime.now());
+        publishDomainEvent(new OrderPlacedEvent(this.id(), this.customerId(), this.placedAt()));
     }
 
     public void markAsPaid() {
         this.changeStatus(OrderStatus.PAID);
         this.setPaidAt(OffsetDateTime.now());
+        publishDomainEvent(new OrderPaidEvent(this.id(), this.customerId(), this.paidAt()));
     }
 
     public void markAsReady() {
         this.changeStatus(OrderStatus.READY);
         this.setReadyAt(OffsetDateTime.now());
+        publishDomainEvent(new OrderReadyEvent(this.id(), this.customerId(), this.readyAt()));
+    }
+
+    public void cancel() {
+        this.setCanceledAt(OffsetDateTime.now());
+        this.changeStatus(OrderStatus.CANCELED);
+        publishDomainEvent(new OrderCanceledEvent(this.id(), this.customerId(), this.canceledAt()));
     }
 
     public void changePaymentMethod(PaymentMethod paymentMethod) {
@@ -167,11 +178,6 @@ public class Order extends AbstractEventSourceEntity implements AggregateRoot<Or
         this.recalculateTotals();
     }
 
-    public void cancel() {
-        this.setCanceledAt(OffsetDateTime.now());
-        this.changeStatus(OrderStatus.CANCELED);
-    }
-
     public boolean isDraft() {
         return OrderStatus.DRAFT.equals(this.status());
     }
@@ -194,10 +200,6 @@ public class Order extends AbstractEventSourceEntity implements AggregateRoot<Or
 
     public OrderId id() {
         return id;
-    }
-
-    public Long version() {
-        return version;
     }
 
     public CustomerId customerId() {
@@ -305,13 +307,17 @@ public class Order extends AbstractEventSourceEntity implements AggregateRoot<Or
         }
     }
 
-    private void setId(OrderId id) {
-        Objects.requireNonNull(id);
-        this.id = id;
+    public Long version() {
+        return version;
     }
 
     private void setVersion(Long version) {
         this.version = version;
+    }
+
+    private void setId(OrderId id) {
+        Objects.requireNonNull(id);
+        this.id = id;
     }
 
     private void setCustomerId(CustomerId customerId) {
