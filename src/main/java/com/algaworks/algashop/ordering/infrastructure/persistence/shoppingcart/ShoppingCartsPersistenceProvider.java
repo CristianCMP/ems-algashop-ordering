@@ -47,6 +47,8 @@ public class ShoppingCartsPersistenceProvider implements ShoppingCarts {
                         (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
                         ()-> insert(aggregateRoot)
                 );
+
+        aggregateRoot.clearDomainEvents();
     }
 
     @Override
