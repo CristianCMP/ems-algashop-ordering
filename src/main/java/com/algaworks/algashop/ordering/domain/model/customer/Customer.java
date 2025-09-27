@@ -2,8 +2,8 @@ package com.algaworks.algashop.ordering.domain.model.customer;
 
 import com.algaworks.algashop.ordering.domain.model.AbstractEventSourceEntity;
 import com.algaworks.algashop.ordering.domain.model.AggregateRoot;
-import com.algaworks.algashop.ordering.domain.model.commons.*;
 import com.algaworks.algashop.ordering.domain.model.FieldValidations;
+import com.algaworks.algashop.ordering.domain.model.commons.*;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 
@@ -49,7 +49,7 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
                 address
         );
 
-        customer.publishDomainEvent(new CustomerRegisteredEvent(customer.id(), customer.registeredAt()));
+        customer.publishDomainEvent(new CustomerRegisteredEvent(customer.id(), customer.registeredAt(), customer.fullName(), customer.email()));
 
         return customer;
     }

@@ -1,13 +1,11 @@
 package com.algaworks.algashop.ordering.domain.model.customer;
 
 import com.algaworks.algashop.ordering.domain.model.commons.*;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 class CustomerTest {
 
@@ -99,7 +97,7 @@ class CustomerTest {
     @Test
     void givenValidData_whenCreateBrandNewCustomer_shouldGenerateCustomerRegisteredEvent() {
         Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
-        CustomerRegisteredEvent event = new CustomerRegisteredEvent(customer.id(), customer.registeredAt());
+        CustomerRegisteredEvent event = new CustomerRegisteredEvent(customer.id(), customer.registeredAt(), customer.fullName(), customer.email());
         assertThat(customer.domainEvents()).contains(event);
     }
 

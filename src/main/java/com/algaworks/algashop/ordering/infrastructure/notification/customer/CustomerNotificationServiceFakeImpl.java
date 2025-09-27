@@ -12,17 +12,12 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class CustomerNotificationServiceFakeImpl implements CustomerNotificationService {
 
-    private final Customers customers;
-
     @Override
-    public void notifyNewRegistration(UUID customerId) {
-        Customer customer = customers.ofId(new CustomerId(customerId))
-                .orElseThrow(CustomerNotFoundException::new);
-        log.info("Welcome {}", customer.fullName().firstName());
-        log.info("User your email to access your account {}", customer.email());
+    public void notifyNewRegistration(NotifyNewRegistrationInput input) {
+        log.info("Welcome {}", input.firstName());
+        log.info("User your email to access your account {}", input.email());
     }
 }
