@@ -6,13 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CustomerTest {
 
     @Test
     void given_invalidEmail_whenTryCreateCustomer_shouldGenerateException() {
-        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(()-> CustomerTestDataBuilder.brandNewCustomer()
                         .email(new Email("invalid")).build()
                 );
@@ -22,7 +23,7 @@ class CustomerTest {
     void given_invalidEmail_whenTryUpdatedCustomerEmail_shouldGenerateException() {
         Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
-        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(()-> customer.changeEmail(new Email("invalid")));
     }
 
@@ -32,7 +33,7 @@ class CustomerTest {
 
         customer.archive();
 
-        Assertions.assertWith(customer,
+        assertWith(customer,
                 c -> assertThat(c.fullName()).isEqualTo(new FullName("Anonymous","Anonymous")),
                 c -> assertThat(c.email()).isNotEqualTo(new Email("john.doe@gmail.com")),
                 c -> assertThat(c.phone()).isEqualTo(new Phone("000-000-0000")),
@@ -58,19 +59,19 @@ class CustomerTest {
     void given_archivedCustomer_whenTryToUpdate_shouldGenerateException() {
         Customer customer = CustomerTestDataBuilder.existingAnonymizedCustomer().build();
 
-        Assertions.assertThatExceptionOfType(CustomerArchivedException.class)
+        assertThatExceptionOfType(CustomerArchivedException.class)
                 .isThrownBy(customer::archive);
 
-        Assertions.assertThatExceptionOfType(CustomerArchivedException.class)
+        assertThatExceptionOfType(CustomerArchivedException.class)
                 .isThrownBy(()-> customer.changeEmail(new Email("email@gmail.com")));
 
-        Assertions.assertThatExceptionOfType(CustomerArchivedException.class)
+        assertThatExceptionOfType(CustomerArchivedException.class)
                 .isThrownBy(()-> customer.changePhone(new Phone("123-123-1111")));
 
-        Assertions.assertThatExceptionOfType(CustomerArchivedException.class)
+        assertThatExceptionOfType(CustomerArchivedException.class)
                 .isThrownBy(customer::enablePromotionNotifications);
 
-        Assertions.assertThatExceptionOfType(CustomerArchivedException.class)
+        assertThatExceptionOfType(CustomerArchivedException.class)
                 .isThrownBy(customer::disablePromotionNotifications);
     }
 
@@ -81,17 +82,24 @@ class CustomerTest {
         customer.addLoyaltyPoints(new LoyaltyPoints(10));
         customer.addLoyaltyPoints(new LoyaltyPoints(20));
 
-        Assertions.assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(30));
+        assertThat(customer.loyaltyPoints()).isEqualTo(new LoyaltyPoints(30));
     }
 
     @Test
     void given_brandNewCustomer_whenAddInvalidLoyaltyPoints_shouldGenerateException() {
         Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
 
-        Assertions.assertThatNoException()
+        assertThatNoException()
                 .isThrownBy(()-> customer.addLoyaltyPoints(new LoyaltyPoints(0)));
 
-        Assertions.assertThatExceptionOfType(IllegalArgumentException.class)
+        assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(()-> customer.addLoyaltyPoints(new LoyaltyPoints(-10)));
+    }
+
+    @Test
+    void givenValidData_whenCreateBrandNewCustomer_shouldGenerateCustomerRegisteredEvent() {
+        Customer customer = CustomerTestDataBuilder.brandNewCustomer().build();
+        CustomerRegisteredEvent event = new CustomerRegisteredEvent(customer.id(), customer.registeredAt());
+        assertThat(customer.domainEvents()).contains(event);
     }
 }

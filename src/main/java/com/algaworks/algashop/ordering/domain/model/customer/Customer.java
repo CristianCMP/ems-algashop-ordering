@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.domain.model.customer;
 
+import com.algaworks.algashop.ordering.domain.model.AbstractEventSourceEntity;
 import com.algaworks.algashop.ordering.domain.model.AggregateRoot;
 import com.algaworks.algashop.ordering.domain.model.commons.*;
 import com.algaworks.algashop.ordering.domain.model.FieldValidations;
@@ -13,8 +14,8 @@ import java.util.UUID;
 
 import static com.algaworks.algashop.ordering.domain.model.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_NULL;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Customer implements AggregateRoot<CustomerId> {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
+public class Customer extends AbstractEventSourceEntity implements AggregateRoot<CustomerId> {
 
     @EqualsAndHashCode.Include
     private CustomerId id;
@@ -33,7 +34,7 @@ public class Customer implements AggregateRoot<CustomerId> {
 
     @Builder(builderClassName = "BrandNewCustomerBuild", builderMethodName = "brandNew")
     private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Address address) {
-        return new Customer(new CustomerId(),
+        Customer customer = new Customer(new CustomerId(),
                 null,
                 fullName,
                 birthDate,
@@ -47,6 +48,10 @@ public class Customer implements AggregateRoot<CustomerId> {
                 LoyaltyPoints.ZERO,
                 address
         );
+
+        customer.publishDomainEvent(new CustomerRegisteredEvent(customer.id(), customer.registeredAt()));
+
+        return customer;
     }
 
     @Builder(builderClassName = "ExistingCustomerBuild", builderMethodName = "existing")
