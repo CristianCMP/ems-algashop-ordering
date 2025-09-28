@@ -21,9 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest
 @Transactional
 class BuyNowApplicationServiceIT {
@@ -53,9 +50,9 @@ class BuyNowApplicationServiceIT {
     @Test
     public void shouldBuyNow() {
         Product product = ProductTestDataBuilder.aProduct().build();
-        when(productCatalogService.ofId(product.id())).thenReturn(Optional.of(product));
+        Mockito.when(productCatalogService.ofId(product.id())).thenReturn(Optional.of(product));
 
-        when(shippingCostService.calculate(any(ShippingCostService.CalculationRequest.class)))
+        Mockito.when(shippingCostService.calculate(Mockito.any(ShippingCostService.CalculationRequest.class)))
                 .thenReturn(new ShippingCostService.CalculationResult(
                         new Money("10.00"),
                         LocalDate.now().plusDays(3)
@@ -65,8 +62,8 @@ class BuyNowApplicationServiceIT {
 
         String orderId = buyNowApplicationService.buyNow(input);
 
-        assertThat(orderId).isNotBlank();
-        assertThat(orders.exists(new OrderId(orderId))).isTrue();
+        Assertions.assertThat(orderId).isNotBlank();
+        Assertions.assertThat(orders.exists(new OrderId(orderId))).isTrue();
     }
 
 }
