@@ -27,6 +27,7 @@ public class ShoppingCartPersistenceEntityAssembler {
         persistenceEntity.setTotalItems(shoppingCart.totalItems().value());
         persistenceEntity.setCreatedAt(shoppingCart.createdAt());
         persistenceEntity.replaceItems(toOrderItemsEntities(shoppingCart.items()));
+        persistenceEntity.addEvents(shoppingCart.domainEvents());
         return persistenceEntity;
     }
 
@@ -46,7 +47,7 @@ public class ShoppingCartPersistenceEntityAssembler {
         return persistenceEntity;
     }
 
-    public ShoppingCartItemPersistenceEntity toOrderItemsEntities(ShoppingCartItem source) {
+    ShoppingCartItemPersistenceEntity toOrderItemsEntities(ShoppingCartItem source) {
         return ShoppingCartItemPersistenceEntity.builder()
                 .id(source.id().value())
                 .shoppingCart(ShoppingCartPersistenceEntity.builder().id(source.shoppingCartId().value()).build())

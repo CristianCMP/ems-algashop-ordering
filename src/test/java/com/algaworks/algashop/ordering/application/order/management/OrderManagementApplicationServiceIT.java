@@ -1,7 +1,6 @@
 package com.algaworks.algashop.ordering.application.order.management;
 
 import com.algaworks.algashop.ordering.application.customer.loyaltypoints.CustomerLoyaltyPointsApplicationService;
-import com.algaworks.algashop.ordering.domain.model.commons.Money;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerTestDataBuilder;
 import com.algaworks.algashop.ordering.domain.model.customer.Customers;
 import com.algaworks.algashop.ordering.domain.model.order.*;
@@ -18,9 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @Transactional
@@ -61,7 +57,7 @@ class OrderManagementApplicationServiceIT {
         Assertions.assertThat(updatedOrder.get().status()).isEqualTo(OrderStatus.CANCELED);
         Assertions.assertThat(updatedOrder.get().canceledAt()).isNotNull();
 
-        verify(orderEventListener).listen(any(OrderCanceledEvent.class));
+        Mockito.verify(orderEventListener).listen(Mockito.any(OrderCanceledEvent.class));
     }
 
     @Test
@@ -93,11 +89,7 @@ class OrderManagementApplicationServiceIT {
         Assertions.assertThat(updatedOrder.get().status()).isEqualTo(OrderStatus.PAID);
         Assertions.assertThat(updatedOrder.get().paidAt()).isNotNull();
 
-        verify(orderEventListener).listen(any(OrderPaidEvent.class));
-        verify(loyaltyPointsApplicationService).addLoyaltyPoints(
-                any(UUID.class),
-                any(String.class)
-        );
+        Mockito.verify(orderEventListener).listen(Mockito.any(OrderPaidEvent.class));
     }
 
     @Test
@@ -138,7 +130,11 @@ class OrderManagementApplicationServiceIT {
         Assertions.assertThat(updatedOrder.get().status()).isEqualTo(OrderStatus.READY);
         Assertions.assertThat(updatedOrder.get().readyAt()).isNotNull();
 
-        verify(orderEventListener).listen(any(OrderReadyEvent.class));
+        Mockito.verify(orderEventListener).listen(Mockito.any(OrderReadyEvent.class));
+        Mockito.verify(loyaltyPointsApplicationService).addLoyaltyPoints(
+                Mockito.any(UUID.class),
+                Mockito.any(String.class)
+        );
     }
 
     @Test

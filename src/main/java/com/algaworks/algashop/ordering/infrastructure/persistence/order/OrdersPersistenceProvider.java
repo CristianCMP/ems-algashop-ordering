@@ -46,22 +46,6 @@ public class OrdersPersistenceProvider implements Orders {
         return persistenceRepository.count();
     }
 
-    @Override
-    public List<Order> placedByCustomerInYear(CustomerId customerId, Year year) {
-        List<OrderPersistenceEntity> entities = persistenceRepository.placedByCustomerInYear(customerId.value(), year.getValue());
-
-        return entities.stream().map(disassembler::toDomainEntity).collect(Collectors.toList());
-    }
-
-    @Override
-    public long salesQuantityByCustomerInYear(CustomerId customerId, Year year) {
-        return persistenceRepository.salesQuantityByCustomerInYear(customerId.value(), year.getValue());
-    }
-
-    @Override
-    public Money totalSoldForCustomer(CustomerId customerId) {
-        return new Money(persistenceRepository.totalSoldForCustomer(customerId.value()));
-    }
 
     @Override
     @Transactional(readOnly = false)
@@ -73,8 +57,26 @@ public class OrdersPersistenceProvider implements Orders {
                         (persistenceEntity) -> update(aggregateRoot, persistenceEntity),
                         ()-> insert(aggregateRoot)
                 );
+    }
 
-        aggregateRoot.clearDomainEvents();
+    @Override
+    public List<Order> placedByCustomerInYear(CustomerId customerId, Year year) {
+        List<OrderPersistenceEntity> entities = persistenceRepository.placedByCustomerInYear(
+                customerId.value(),
+                year.getValue()
+        );
+
+        return entities.stream().map(disassembler::toDomainEntity).collect(Collectors.toList());
+    }
+
+    @Override
+    public long salesQuantityByCustomerInYear(CustomerId customerId, Year year) {
+        return this.persistenceRepository.salesQuantityByCustomerInYear(customerId.value(), year.getValue());
+    }
+
+    @Override
+    public Money totalSoldForCustomer(CustomerId customerId) {
+        return new Money(this.persistenceRepository.totalSoldForCustomer(customerId.value()));
     }
 
     private void update(Order aggregateRoot, OrderPersistenceEntity persistenceEntity) {
@@ -97,4 +99,5 @@ public class OrdersPersistenceProvider implements Orders {
         ReflectionUtils.setField(version, aggregateRoot, persistenceEntity.getVersion());
         version.setAccessible(false);
     }
+
 }

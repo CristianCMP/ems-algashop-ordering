@@ -6,7 +6,8 @@ import com.algaworks.algashop.ordering.domain.model.commons.ZipCode;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FixedOriginAddressServiceFakeImpl implements OriginAddressService {
+public class FixedOriginAddressService implements OriginAddressService {
+
     @Override
     public Address originAddress() {
         return Address.builder()

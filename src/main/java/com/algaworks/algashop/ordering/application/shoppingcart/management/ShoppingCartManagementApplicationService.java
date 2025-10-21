@@ -42,9 +42,7 @@ public class ShoppingCartManagementApplicationService {
     @Transactional
     public UUID createNew(UUID rawCustomerId) {
         Objects.requireNonNull(rawCustomerId);
-
         ShoppingCart shoppingCart = shoppingService.startShopping(new CustomerId(rawCustomerId));
-
         shoppingCarts.add(shoppingCart);
         return shoppingCart.id().value();
     }
@@ -53,11 +51,9 @@ public class ShoppingCartManagementApplicationService {
     public void removeItem(UUID rawShoppingCartId, UUID rawShoppingCartItemId) {
         Objects.requireNonNull(rawShoppingCartId);
         Objects.requireNonNull(rawShoppingCartItemId);
-
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
                 .orElseThrow(ShoppingCartNotFoundException::new);
-
         shoppingCart.removeItem(new ShoppingCartItemId(rawShoppingCartItemId));
         shoppingCarts.add(shoppingCart);
     }
@@ -66,10 +62,8 @@ public class ShoppingCartManagementApplicationService {
     public void empty(UUID rawShoppingCartId) {
         Objects.requireNonNull(rawShoppingCartId);
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
-
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
                 .orElseThrow(ShoppingCartNotFoundException::new);
-
         shoppingCart.empty();
         shoppingCarts.add(shoppingCart);
     }
@@ -78,10 +72,8 @@ public class ShoppingCartManagementApplicationService {
     public void delete(UUID rawShoppingCartId) {
         Objects.requireNonNull(rawShoppingCartId);
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
-
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
                 .orElseThrow(ShoppingCartNotFoundException::new);
-
         shoppingCarts.remove(shoppingCart);
     }
 

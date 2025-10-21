@@ -2,22 +2,18 @@ package com.algaworks.algashop.ordering.domain.model.customer;
 
 import com.algaworks.algashop.ordering.domain.model.AbstractEventSourceEntity;
 import com.algaworks.algashop.ordering.domain.model.AggregateRoot;
-import com.algaworks.algashop.ordering.domain.model.FieldValidations;
 import com.algaworks.algashop.ordering.domain.model.commons.*;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
-import static com.algaworks.algashop.ordering.domain.model.ErrorMessages.VALIDATION_ERROR_FULLNAME_IS_NULL;
+import static com.algaworks.algashop.ordering.domain.model.ErrorMessages.*;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
-public class Customer extends AbstractEventSourceEntity implements AggregateRoot<CustomerId> {
-
-    @EqualsAndHashCode.Include
+public class Customer
+        extends AbstractEventSourceEntity
+        implements AggregateRoot<CustomerId> {
     private CustomerId id;
     private FullName fullName;
     private BirthDate birthDate;
@@ -30,10 +26,13 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
     private OffsetDateTime archivedAt;
     private LoyaltyPoints loyaltyPoints;
     private Address address;
+
     private Long version;
 
     @Builder(builderClassName = "BrandNewCustomerBuild", builderMethodName = "brandNew")
-    private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Address address) {
+    private static Customer createBrandNew(FullName fullName, BirthDate birthDate, Email email,
+                                           Phone phone, Document document, Boolean promotionNotificationsAllowed,
+                                           Address address) {
         Customer customer = new Customer(new CustomerId(),
                 null,
                 fullName,
@@ -46,16 +45,18 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
                 OffsetDateTime.now(),
                 null,
                 LoyaltyPoints.ZERO,
-                address
-        );
+                address);
 
-        customer.publishDomainEvent(new CustomerRegisteredEvent(customer.id(), customer.registeredAt(), customer.fullName(), customer.email()));
+        customer.publishDomainEvent(new CustomerRegisteredEvent(customer.id(),
+                customer.registeredAt(), customer.fullName(), customer.email()));
 
         return customer;
     }
 
     @Builder(builderClassName = "ExistingCustomerBuild", builderMethodName = "existing")
-    private Customer(CustomerId id, Long version, FullName fullName, BirthDate birthDate, Email email, Phone phone, Document document, Boolean promotionNotificationsAllowed, Boolean archived, OffsetDateTime registeredAt, OffsetDateTime archivedAt, LoyaltyPoints loyaltyPoints, Address address) {
+    private Customer(CustomerId id, Long version, FullName fullName, BirthDate birthDate, Email email, Phone phone,
+                     Document document, Boolean promotionNotificationsAllowed, Boolean archived,
+                     OffsetDateTime registeredAt, OffsetDateTime archivedAt, LoyaltyPoints loyaltyPoints, Address address) {
         this.setId(id);
         this.setVersion(version);
         this.setFullName(fullName);
@@ -73,7 +74,7 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
 
     public void addLoyaltyPoints(LoyaltyPoints loyaltyPointsAdded) {
         verifyIfChangeable();
-        if (loyaltyPointsAdded.equals(LoyaltyPoints.ZERO)){
+        if (loyaltyPointsAdded.equals(LoyaltyPoints.ZERO)) {
             return;
         }
         this.setLoyaltyPoints(this.loyaltyPoints().add(loyaltyPointsAdded));
@@ -81,14 +82,13 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
 
     public void archive() {
         verifyIfChangeable();
-
         this.setArchived(true);
         this.setArchivedAt(OffsetDateTime.now());
         this.setFullName(new FullName("Anonymous", "Anonymous"));
         this.setPhone(new Phone("000-000-0000"));
         this.setDocument(new Document("000-00-0000"));
         this.setEmail(new Email(UUID.randomUUID() + "@anonymous.com"));
-        this.setBirthDate(new BirthDate(LocalDate.of(1900, 1, 1)));
+        this.setBirthDate(null);
         this.setPromotionNotificationsAllowed(false);
         this.setAddress(this.address().toBuilder()
                 .number("Anonymized")
@@ -125,7 +125,6 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
     public void changeAddress(Address address) {
         verifyIfChangeable();
         this.setAddress(address);
-
     }
 
     public CustomerId id() {
@@ -199,12 +198,11 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
             this.birthDate = null;
             return;
         }
-
         this.birthDate = birthDate;
     }
 
     private void setEmail(Email email) {
-        FieldValidations.requiresValidEmail(email.value());
+        Objects.requireNonNull(email);
         this.email = email;
     }
 
@@ -229,6 +227,7 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
     }
 
     private void setRegisteredAt(OffsetDateTime registeredAt) {
+        Objects.requireNonNull(registeredAt);
         this.registeredAt = registeredAt;
     }
 
@@ -247,8 +246,20 @@ public class Customer extends AbstractEventSourceEntity implements AggregateRoot
     }
 
     private void verifyIfChangeable() {
-        if (this.archived) {
+        if (this.isArchived()) {
             throw new CustomerArchivedException();
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(id, customer.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

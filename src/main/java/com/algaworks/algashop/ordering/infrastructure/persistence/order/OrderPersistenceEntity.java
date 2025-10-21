@@ -6,10 +6,12 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -20,12 +22,13 @@ import java.util.UUID;
 @NoArgsConstructor
 @ToString(of = "id")
 @Table(name = "\"order\"")
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @EntityListeners(AuditingEntityListener.class)
-public class OrderPersistenceEntity {
+public class OrderPersistenceEntity
+        extends AbstractAggregateRoot<OrderPersistenceEntity> {
     @Id
     @EqualsAndHashCode.Include
-    private Long id; //TSID
+    private Long id;
 
     @JoinColumn
     @ManyToOne(optional = false)
@@ -54,7 +57,6 @@ public class OrderPersistenceEntity {
     private Long version;
 
     @Embedded
-// Using @configuration in HibernateConfiguration
     @AttributeOverrides({
             @AttributeOverride(name = "firstName", column = @Column(name = "billing_first_name")),
             @AttributeOverride(name = "lastName", column = @Column(name = "billing_last_name")),
@@ -71,7 +73,6 @@ public class OrderPersistenceEntity {
     private BillingEmbeddable billing;
 
     @Embedded
-// Using @configuration in HibernateConfiguration
     @AttributeOverrides({
             @AttributeOverride(name = "cost", column = @Column(name = "shipping_cost")),
             @AttributeOverride(name = "expectedDate", column = @Column(name = "shipping_expected_date")),
@@ -119,7 +120,7 @@ public class OrderPersistenceEntity {
             return;
         }
 
-        items.forEach(item -> item.setOrder(this));
+        items.forEach(i -> i.setOrder(this));
         this.setItems(items);
     }
 
@@ -142,4 +143,17 @@ public class OrderPersistenceEntity {
         }
         return this.customer.getId();
     }
+
+    public Collection<Object> getEvents() {
+        return super.domainEvents();
+    }
+
+    public void addEvents(Collection<Object> events) {
+        if (events != null) {
+            for (Object event : events) {
+                this.registerEvent(event);
+            }
+        }
+    }
+
 }

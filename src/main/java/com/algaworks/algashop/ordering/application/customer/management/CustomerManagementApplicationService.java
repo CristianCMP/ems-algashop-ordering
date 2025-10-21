@@ -94,4 +94,5 @@ public class CustomerManagementApplicationService {
         customerRegistration.changeEmail(customer, new Email(newEmail));
         customers.add(customer);
     }
+
 }

@@ -5,6 +5,7 @@ import com.algaworks.algashop.ordering.domain.model.customer.CustomerTestDataBui
 import com.algaworks.algashop.ordering.domain.model.commons.Email;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerId;
 import com.algaworks.algashop.ordering.infrastructure.persistence.SpringDataAuditingConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -33,6 +34,11 @@ class CustomersPersistenceProviderIT {
     public CustomersPersistenceProviderIT(CustomersPersistenceProvider persistenceProvider, CustomerPersistenceEntityRepository entityRepository) {
         this.persistenceProvider = persistenceProvider;
         this.entityRepository = entityRepository;
+    }
+
+    @BeforeEach
+    public void setUp() {
+        entityRepository.deleteAll();
     }
 
     @Test

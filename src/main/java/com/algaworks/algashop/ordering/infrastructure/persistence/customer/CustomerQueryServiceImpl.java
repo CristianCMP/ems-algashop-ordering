@@ -79,17 +79,37 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
     @Override
     public Page<CustomerSummaryOutput> filter(CustomerFilter filter) {
         Long totalQueryResults = countTotalQueryResults(filter);
+
         if (totalQueryResults.equals(0L)) {
             PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
             return new PageImpl<>(new ArrayList<>(), pageRequest, totalQueryResults);
         }
+
         return filterQuery(filter, totalQueryResults);
+    }
+
+    private Long countTotalQueryResults(CustomerFilter filter) {
+        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+        Root<CustomerPersistenceEntity> root = criteriaQuery.from(CustomerPersistenceEntity.class);
+
+        Expression<Long> count = builder.count(root);
+        Predicate[] predicates = toPredicates(builder, root, filter);
+
+        criteriaQuery.select(count);
+        criteriaQuery.where(predicates);
+
+        TypedQuery<Long> query = entityManager.createQuery(criteriaQuery);
+
+        return query.getSingleResult();
     }
 
     private Page<CustomerSummaryOutput> filterQuery(CustomerFilter filter, Long totalQueryResults) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<CustomerSummaryOutput> criteriaQuery = builder.createQuery(CustomerSummaryOutput.class);
+
         Root<CustomerPersistenceEntity> root = criteriaQuery.from(CustomerPersistenceEntity.class);
+
         criteriaQuery.select(
                 builder.construct(CustomerSummaryOutput.class,
                         root.get("id"),
@@ -108,57 +128,50 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
         );
 
         Predicate[] predicates = toPredicates(builder, root, filter);
-        Order sortOrder = toSorteCustomer(builder, root, filter);
+        Order sortOrder = toSortOrder(builder, root, filter);
+
         criteriaQuery.where(predicates);
         if (sortOrder != null) {
             criteriaQuery.orderBy(sortOrder);
         }
 
-        TypedQuery<CustomerSummaryOutput> query = entityManager.createQuery(criteriaQuery);
-        query.setFirstResult(filter.getSize() * filter.getPage());
-        query.setMaxResults(filter.getSize());
+        TypedQuery<CustomerSummaryOutput> typedQuery = entityManager.createQuery(criteriaQuery);
+
+        typedQuery.setFirstResult(filter.getSize() * filter.getPage());
+        typedQuery.setMaxResults(filter.getSize());
+
         PageRequest pageRequest = PageRequest.of(filter.getPage(), filter.getSize());
-        return new PageImpl<>(query.getResultList(), pageRequest, totalQueryResults);
+
+        return new PageImpl<>(typedQuery.getResultList(), pageRequest, totalQueryResults);
     }
 
-    private Order toSorteCustomer(CriteriaBuilder builder, Root<CustomerPersistenceEntity> root, CustomerFilter filter) {
+    private Order toSortOrder(CriteriaBuilder builder, Root<CustomerPersistenceEntity> root, CustomerFilter filter) {
+        String propertyName = filter.getSortByPropertyOrDefault().getPropertyName();
 
         if (filter.getSortDirectionOrDefault() == Sort.Direction.ASC) {
-            return builder.asc(root.get(filter.getSortByPropertyOrDefault().getPropertyName()));
+            return builder.asc(root.get(propertyName));
         }
 
         if (filter.getSortDirectionOrDefault() == Sort.Direction.DESC) {
-            return builder.desc(root.get(filter.getSortByPropertyOrDefault().getPropertyName()));
+            return builder.desc(root.get(propertyName));
         }
 
         return null;
     }
 
-    private Long countTotalQueryResults(CustomerFilter filter) {
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
-        Root<CustomerPersistenceEntity> root = criteriaQuery.from(CustomerPersistenceEntity.class);
-        Expression<Long> count = builder.count(root);
-
-        Predicate[] predicates = toPredicates(builder, root, filter);
-        criteriaQuery.select(count);
-        criteriaQuery.where(predicates);
-
-        TypedQuery<Long> query = entityManager.createQuery(criteriaQuery);
-        return query.getSingleResult();
-    }
-
-    private Predicate[] toPredicates(CriteriaBuilder builder, Root<CustomerPersistenceEntity> root, CustomerFilter filter) {
+    private Predicate[] toPredicates(CriteriaBuilder builder,
+                                     Root<CustomerPersistenceEntity> root, CustomerFilter filter) {
         List<Predicate> predicates = new ArrayList<>();
 
-        if (filter.getEmail() != null) {
-            predicates.add(builder.like(builder.upper(root.get("email")), "%" + filter.getEmail().toUpperCase() + "%"));
+        if (filter.getFirstName() != null && !filter.getFirstName().isBlank()) {
+            predicates.add(builder.like(builder.lower(root.get("firstName")), "%" + filter.getFirstName().toLowerCase() + "%"));
         }
 
-        if (filter.getFirstName() != null) {
-            predicates.add(builder.like(builder.upper(root.get("firstName")), "%" + filter.getFirstName().toUpperCase() + "%"));
+        if (filter.getEmail() != null && !filter.getEmail().isBlank()) {
+            predicates.add(builder.like(builder.lower(root.get("email")), "%" + filter.getEmail().toLowerCase() + "%"));
         }
 
         return predicates.toArray(new Predicate[]{});
     }
 }
+

@@ -43,7 +43,7 @@ public class BuyNowApplicationService {
         CustomerId customerId = new CustomerId(input.getCustomerId());
         Quantity quantity = new Quantity(input.getQuantity());
 
-        Customer customer = customers.ofId(customerId).orElseThrow(() -> new CustomerNotFoundException());
+        Customer customer = customers.ofId(customerId).orElseThrow(CustomerNotFoundException::new);
 
         Product product = findProduct(new ProductId(input.getProductId()));
 
@@ -69,7 +69,7 @@ public class BuyNowApplicationService {
 
     private Product findProduct(ProductId productId) {
         return productCatalogService.ofId(productId)
-                .orElseThrow(()-> new ProductNotFoundException());
+                .orElseThrow(ProductNotFoundException::new);
     }
 
 }
