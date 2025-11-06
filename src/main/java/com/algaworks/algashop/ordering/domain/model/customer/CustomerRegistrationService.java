@@ -1,7 +1,7 @@
 package com.algaworks.algashop.ordering.domain.model.customer;
 
-import com.algaworks.algashop.ordering.domain.model.commons.*;
 import com.algaworks.algashop.ordering.domain.model.DomainService;
+import com.algaworks.algashop.ordering.domain.model.commons.*;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class CustomerRegistrationService {
 
     private void verifyEmailUnique(Email email, CustomerId customerId) {
         if (!customers.isEmailUnique(email, customerId)){
-            throw new CustomerEmailsIsInUseException();
+            throw new CustomerEmailIsInUseException();
         }
     }
 }
