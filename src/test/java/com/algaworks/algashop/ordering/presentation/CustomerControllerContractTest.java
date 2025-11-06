@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.presentation;
 
+import com.algaworks.algashop.ordering.application.commons.AddressData;
 import com.algaworks.algashop.ordering.application.customer.management.CustomerInput;
 import com.algaworks.algashop.ordering.application.customer.management.CustomerManagementApplicationService;
 import com.algaworks.algashop.ordering.application.customer.query.*;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(controllers = CustomerController.class)
 class CustomerControllerContractTest {
@@ -47,11 +49,11 @@ class CustomerControllerContractTest {
     @Test
     public void createCustomerContract() {
         CustomerOutput customerOutput = CustomerOutputTestDataBuilder.existing().build();
-        UUID customerId = UUID.randomUUID();
 
-        Mockito.when(customerManagementApplicationService.create(Mockito.any(CustomerInput.class)))
+        UUID customerId = UUID.randomUUID();
+        when(customerManagementApplicationService.create(Mockito.any(CustomerInput.class)))
                 .thenReturn(customerId);
-        Mockito.when(customerQueryService.findById(Mockito.any(UUID.class)))
+        when(customerQueryService.findById(Mockito.any(UUID.class)))
                 .thenReturn(customerOutput);
 
         String jsonInput = """
@@ -85,7 +87,7 @@ class CustomerControllerContractTest {
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
-                .header("Location", Matchers.containsString("customers/" + customerId))
+                .header("Location", Matchers.containsString("/api/v1/customers/" + customerId))
                 .body(
                         "id", Matchers.notNullValue(),
                         "registeredAt", Matchers.notNullValue(),
@@ -148,6 +150,7 @@ class CustomerControllerContractTest {
                         "instance", Matchers.notNullValue(),
                         "fields", Matchers.notNullValue()
                 );
+
     }
 
     @Test
@@ -158,7 +161,7 @@ class CustomerControllerContractTest {
         CustomerSummaryOutput customer1 = CustomerSummaryOutputTestDataBuilder.existing().build();
         CustomerSummaryOutput customer2 = CustomerSummaryOutputTestDataBuilder.existingAlt1().build();
 
-        Mockito.when(customerQueryService.filter(Mockito.any(CustomerFilter.class)))
+        when(customerQueryService.filter(Mockito.any(CustomerFilter.class)))
                 .thenReturn(new PageImpl<>(List.of(customer1, customer2)));
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
@@ -206,4 +209,42 @@ class CustomerControllerContractTest {
                 );
     }
 
+    @Test
+    public void findByIdContract() {
+        CustomerOutput customer = CustomerOutputTestDataBuilder.existing().build();
+
+        when(customerQueryService.findById(customer.getId())).thenReturn(customer);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        AddressData address = customer.getAddress();
+
+        given()
+                .accept(MediaType.APPLICATION_JSON)
+                .when()
+                .get("/api/v1/customers/{customerId}", customer.getId())
+                .then()
+                .assertThat()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .statusCode(HttpStatus.OK.value())
+                .body(
+                        "id", Matchers.equalTo(customer.getId().toString()),
+                        "firstName", Matchers.equalTo(customer.getFirstName()),
+                        "lastName", Matchers.is(customer.getLastName()),
+                        "email", Matchers.is(customer.getEmail()),
+                        "document", Matchers.is(customer.getDocument()),
+                        "phone", Matchers.is(customer.getPhone()),
+                        "birthDate", Matchers.is(customer.getBirthDate().toString()),
+                        "loyaltyPoints", Matchers.is(customer.getLoyaltyPoints()),
+                        "promotionNotificationsAllowed", Matchers.is(customer.getPromotionNotificationsAllowed()),
+                        "archived", Matchers.is(customer.getArchived()),
+                        "registeredAt", Matchers.is(formatter.format(customer.getRegisteredAt())),
+                        "address.street", Matchers.is(address.getStreet()),
+                        "address.number", Matchers.is(address.getNumber()),
+                        "address.complement", Matchers.is(address.getComplement()),
+                        "address.neighborhood", Matchers.is(address.getNeighborhood()),
+                        "address.city", Matchers.is(address.getCity()),
+                        "address.state", Matchers.is(address.getState()),
+                        "address.zipCode", Matchers.is(address.getZipCode())
+                );
+    }
 }
