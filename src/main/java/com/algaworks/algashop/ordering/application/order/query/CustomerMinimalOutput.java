@@ -12,10 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class CustomerMinimalOutput {
-    private UUID uuid;
+    private UUID id;
     private String firstName;
     private String lastName;
     private String email;
-    private String documents;
+    private String document;
     private String phone;
 }
