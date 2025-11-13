@@ -69,10 +69,10 @@ Contract.make {
                                 id         : anyNonBlankString(),
                                 productId  : anyUuid(),
                                 orderId    : "01226N0640J7Q",
-                                price      : 19.99,
+                                price      : 20.99,
                                 productName: "Notebook Dive Gamer X11",
                                 quantity   : 2,
-                                totalAmount: 19.99
+                                totalAmount: 41.98
                         ]
                 ]
         ])

@@ -81,9 +81,9 @@ public class OrderDetailOutputTestDataBuilder {
                 .orderId(orderId)
                 .productId(UUID.randomUUID())
                 .productName("Notebook Dive Gamer X11")
-                .price(new BigDecimal("19.99"))
+                .price(new BigDecimal("20.99"))
                 .quantity(2)
-                .totalAmount(new BigDecimal("19.99"))
+                .totalAmount(new BigDecimal("41.98"))
                 .build());
         return items;
     }
