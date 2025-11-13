@@ -9,6 +9,9 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShoppingCartItemOutput {
   private UUID id;
   private UUID productId;
