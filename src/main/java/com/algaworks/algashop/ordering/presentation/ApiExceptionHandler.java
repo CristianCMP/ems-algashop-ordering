@@ -19,9 +19,9 @@ import java.net.URI;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @AllArgsConstructor
 @RestControllerAdvice
+@Slf4j
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
@@ -49,38 +49,38 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(DomainEntityNotFoundException.class)
-    public ProblemDetail handleDomainEntityNotFoundException(DomainEntityNotFoundException ex) {
+    public ProblemDetail handleDomainEntityNotFoundException(DomainEntityNotFoundException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setTitle("Not found");
-        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("/errors/not-found"));
         return problemDetail;
     }
 
-    @ExceptionHandler(DomainException.class)
-    public ProblemDetail handleDomainException(DomainException ex) {
+    @ExceptionHandler({DomainException.class, UnprocessableEntityException.class})
+    public ProblemDetail handleUnprocessableEntityException(Exception e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
-        problemDetail.setTitle("Unprocessable entity");
-        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setTitle("Unprocessable Entity");
+        problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("/errors/unprocessable-entity"));
         return problemDetail;
     }
 
     @ExceptionHandler(CustomerEmailIsInUseException.class)
-    public ProblemDetail handleCustomerEmailIsInUseException(CustomerEmailIsInUseException ex) {
+    public ProblemDetail handleCustomerEmailIsInUseException(CustomerEmailIsInUseException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         problemDetail.setTitle("Conflict");
-        problemDetail.setDetail(ex.getMessage());
+        problemDetail.setDetail(e.getMessage());
         problemDetail.setType(URI.create("/errors/conflict"));
         return problemDetail;
     }
 
     @ExceptionHandler(Exception.class)
-    public ProblemDetail handleException(Exception ex) {
-        log.error(ex.getMessage(), ex);
+    public ProblemDetail handleException(Exception e) {
+        log.error(e.getMessage(), e);
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         problemDetail.setTitle("Internal Server Error");
-        problemDetail.setDetail("An unexpected internal server error occurred.");
+        problemDetail.setDetail("An unexpected internal error occurred.");
         problemDetail.setType(URI.create("/errors/internal"));
         return problemDetail;
     }
