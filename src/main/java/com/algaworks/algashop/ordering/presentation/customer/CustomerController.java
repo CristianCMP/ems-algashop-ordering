@@ -7,6 +7,8 @@ import com.algaworks.algashop.ordering.application.customer.query.CustomerFilter
 import com.algaworks.algashop.ordering.application.customer.query.CustomerOutput;
 import com.algaworks.algashop.ordering.application.customer.query.CustomerQueryService;
 import com.algaworks.algashop.ordering.application.customer.query.CustomerSummaryOutput;
+import com.algaworks.algashop.ordering.application.shoppingcart.query.ShoppingCartOutput;
+import com.algaworks.algashop.ordering.application.shoppingcart.query.ShoppingCartQueryService;
 import com.algaworks.algashop.ordering.presentation.PageModel;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -27,14 +29,15 @@ public class CustomerController {
 
     private final CustomerManagementApplicationService customerManagementApplicationService;
     private final CustomerQueryService customerQueryService;
+    private final ShoppingCartQueryService shoppingCartQueryService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CustomerOutput create(@RequestBody @Valid CustomerInput input, HttpServletResponse response) {
+    public CustomerOutput create(@RequestBody @Valid CustomerInput input, HttpServletResponse httpServletResponse) {
         UUID customerId = customerManagementApplicationService.create(input);
 
         UriComponentsBuilder builder = fromMethodCall(on(CustomerController.class).findById(customerId));
-        response.addHeader("Location", builder.toUriString());
+        httpServletResponse.addHeader("Location", builder.toUriString());
 
         return customerQueryService.findById(customerId);
     }
@@ -49,8 +52,14 @@ public class CustomerController {
         return customerQueryService.findById(customerId);
     }
 
+    @GetMapping("/{customerId}/shopping-cart")
+    public ShoppingCartOutput findShoppingCartByCustomerId(@PathVariable UUID customerId) {
+        return shoppingCartQueryService.findByCustomerId(customerId);
+    }
+
     @PutMapping("/{customerId}")
-    public CustomerOutput update(@PathVariable UUID customerId, @RequestBody @Valid CustomerUpdateInput input) {
+    public CustomerOutput update(@PathVariable UUID customerId,
+                                 @RequestBody @Valid CustomerUpdateInput input) {
         customerManagementApplicationService.update(customerId, input);
         return customerQueryService.findById(customerId);
     }
@@ -60,4 +69,5 @@ public class CustomerController {
     public void delete(@PathVariable UUID customerId) {
         customerManagementApplicationService.archive(customerId);
     }
+
 }

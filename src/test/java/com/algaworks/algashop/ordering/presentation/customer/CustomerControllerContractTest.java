@@ -4,9 +4,11 @@ import com.algaworks.algashop.ordering.application.commons.AddressData;
 import com.algaworks.algashop.ordering.application.customer.management.CustomerInput;
 import com.algaworks.algashop.ordering.application.customer.management.CustomerManagementApplicationService;
 import com.algaworks.algashop.ordering.application.customer.query.*;
+import com.algaworks.algashop.ordering.application.shoppingcart.query.ShoppingCartQueryService;
 import com.algaworks.algashop.ordering.domain.model.DomainException;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerEmailIsInUseException;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerNotFoundException;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,9 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
-import static io.restassured.module.mockmvc.RestAssuredMockMvc.*;
-
-@WebMvcTest(CustomerController.class)
+@WebMvcTest(controllers = CustomerController.class)
 class CustomerControllerContractTest {
 
     @Autowired
@@ -39,12 +39,15 @@ class CustomerControllerContractTest {
     @MockitoBean
     private CustomerQueryService customerQueryService;
 
+    @MockitoBean
+    private ShoppingCartQueryService shoppingCartQueryService;
+
     @BeforeEach
     public void setupAll() {
-        mockMvc(MockMvcBuilders.webAppContextSetup(context)
+        RestAssuredMockMvc.mockMvc(MockMvcBuilders.webAppContextSetup(context)
                 .defaultResponseCharacterEncoding(StandardCharsets.UTF_8)
                 .build());
-        enableLoggingOfRequestAndResponseIfValidationFails();
+        RestAssuredMockMvc.enableLoggingOfRequestAndResponseIfValidationFails();
     }
 
     @Test
@@ -58,33 +61,34 @@ class CustomerControllerContractTest {
                 .thenReturn(customerOutput);
 
         String jsonInput = """
-                {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonInput)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .post("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
@@ -113,33 +117,34 @@ class CustomerControllerContractTest {
     @Test
     public void createCustomerError400Contract() {
         String jsonInput = """
-                {
-                  "firstName": "",
-                  "lastName": "",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "",
+          "lastName": "",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(jsonInput)
-        .when()
+                .when()
                 .post("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
@@ -167,13 +172,14 @@ class CustomerControllerContractTest {
 
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON)
                 .queryParam("size", sizeLimit)
                 .queryParam("page", pageNumber)
-        .when()
+                .when()
                 .get("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.OK.value())
@@ -219,11 +225,12 @@ class CustomerControllerContractTest {
         DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         AddressData address = customer.getAddress();
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON)
-        .when()
+                .when()
                 .get("/api/v1/customers/{customerId}", customer.getId())
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.OK.value())
@@ -256,11 +263,12 @@ class CustomerControllerContractTest {
         Mockito.when(customerQueryService.findById(invalidCustomerId))
                 .thenThrow(CustomerNotFoundException.class);
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON)
-        .when()
+                .when()
                 .get("/api/v1/customers/{customerId}", invalidCustomerId)
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.NOT_FOUND.value())
@@ -279,33 +287,34 @@ class CustomerControllerContractTest {
                 .thenThrow(CustomerEmailIsInUseException.class);
 
         String jsonInput = """
-                {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonInput)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .post("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.CONFLICT.value())
@@ -323,33 +332,34 @@ class CustomerControllerContractTest {
                 .thenThrow(DomainException.class);
 
         String jsonInput = """
-                {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonInput)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .post("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value())
@@ -367,33 +377,34 @@ class CustomerControllerContractTest {
                 .thenThrow(RuntimeException.class);
 
         String jsonInput = """
-                {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonInput)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .post("/api/v1/customers")
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
@@ -416,33 +427,34 @@ class CustomerControllerContractTest {
                 .thenReturn(customer);
 
         String jsonInput = """
-                {
-                  "firstName": "John",
-                  "lastName": "Doe",
-                  "email": "johndoe@email.com",
-                  "document": "12345",
-                  "phone": "1191234564",
-                  "birthDate": "1991-07-05",
-                  "promotionNotificationsAllowed": false,
-                  "address": {
-                    "street": "Bourbon Street",
-                    "number": "2000",
-                    "complement": "apt 122",
-                    "neighborhood": "North Ville",
-                    "city": "Yostfort",
-                    "state": "South Carolina",
-                    "zipCode": "12321"
-                  }
-                }
-                """;
+        {
+          "firstName": "John",
+          "lastName": "Doe",
+          "email": "johndoe@email.com",
+          "document": "12345",
+          "phone": "1191234564",
+          "birthDate": "1991-07-05",
+          "promotionNotificationsAllowed": false,
+          "address": {
+            "street": "Bourbon Street",
+            "number": "2000",
+            "complement": "apt 122",
+            "neighborhood": "North Ville",
+            "city": "Yostfort",
+            "state": "South Carolina",
+            "zipCode": "12321"
+          }
+        }
+        """;
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .body(jsonInput)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .put("/api/v1/customers/{customerId}", customerId)
-        .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.OK.value())
@@ -476,12 +488,14 @@ class CustomerControllerContractTest {
         Mockito.when(customerQueryService.findById(Mockito.any(UUID.class)))
                 .thenReturn(customer);
 
-        given()
+        RestAssuredMockMvc
+                .given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-        .when()
+                .when()
                 .delete("/api/v1/customers/{customerId}", customerId)
-        .then()
+                .then()
                 .assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
     }
+
 }
