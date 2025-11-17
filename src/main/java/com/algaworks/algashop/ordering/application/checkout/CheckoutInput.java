@@ -16,17 +16,19 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class CheckoutInput {
-    @NotNull
-    private UUID shoppingCartId;
+	@NotNull
+	private UUID shoppingCartId;
 
-    @NotBlank
-    private String paymentMethod;
+	@NotBlank
+	private String paymentMethod;
 
-    @Valid
-    @NotNull
-    private ShippingInput shipping;
+	@Valid
+	@NotNull
+	private ShippingInput shipping;
 
-    @Valid
-    @NotNull
-    private BillingData billing;
+	@Valid
+	@NotNull
+	private BillingData billing;
+
+	private UUID creditCardId;
 }

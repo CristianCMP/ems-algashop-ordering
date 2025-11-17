@@ -1,12 +1,10 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.order;
 
 import com.algaworks.algashop.ordering.domain.model.commons.*;
-import com.algaworks.algashop.ordering.domain.model.order.*;
-import com.algaworks.algashop.ordering.domain.model.product.ProductName;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerId;
-import com.algaworks.algashop.ordering.domain.model.order.OrderId;
-import com.algaworks.algashop.ordering.domain.model.order.OrderItemId;
+import com.algaworks.algashop.ordering.domain.model.order.*;
 import com.algaworks.algashop.ordering.domain.model.product.ProductId;
+import com.algaworks.algashop.ordering.domain.model.product.ProductName;
 import com.algaworks.algashop.ordering.infrastructure.persistence.commons.AddressEmbeddable;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +16,12 @@ import java.util.stream.Collectors;
 public class OrderPersistenceEntityDisassembler {
 
     public Order toDomainEntity(OrderPersistenceEntity persistenceEntity) {
+
+        CreditCardId creditCardId = null;
+        if (persistenceEntity.getCreditCardId() != null) {
+            creditCardId = new CreditCardId(persistenceEntity.getCreditCardId());
+        }
+
         return Order.existing()
                 .id(new OrderId(persistenceEntity.getId()))
                 .customerId(new CustomerId(persistenceEntity.getCustomerId()))
@@ -32,11 +36,12 @@ public class OrderPersistenceEntityDisassembler {
                 .items(new HashSet<>())
                 .version(persistenceEntity.getVersion())
                 .items(toDomainEntity(persistenceEntity.getItems()))
+                .creditCardId(creditCardId)
                 .build();
     }
 
     private Set<OrderItem> toDomainEntity(Set<OrderItemPersistenceEntity> items) {
-        return items.stream().map(this::toDomainEntity).collect(Collectors.toSet());
+        return items.stream().map(i -> toDomainEntity(i)).collect(Collectors.toSet());
     }
 
     private OrderItem toDomainEntity(OrderItemPersistenceEntity persistenceEntity) {

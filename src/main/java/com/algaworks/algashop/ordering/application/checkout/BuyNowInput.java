@@ -13,10 +13,11 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class BuyNowInput {
+
     @NotNull
     @Valid
     private ShippingInput shipping;
@@ -37,4 +38,6 @@ public class BuyNowInput {
 
     @NotBlank
     private String paymentMethod;
+
+    private UUID creditCardId;
 }

@@ -10,13 +10,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class ShippingInput {
     @Valid
     @NotNull
     private RecipientData recipient;
+
     @Valid
     @NotNull
     private AddressData address;

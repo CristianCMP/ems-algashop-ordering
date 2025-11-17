@@ -1,9 +1,9 @@
 package com.algaworks.algashop.ordering.domain.model.order;
 
-import com.algaworks.algashop.ordering.domain.model.product.ProductTestDataBuilder;
-import com.algaworks.algashop.ordering.domain.model.product.Product;
 import com.algaworks.algashop.ordering.domain.model.commons.Quantity;
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerId;
+import com.algaworks.algashop.ordering.domain.model.product.Product;
+import com.algaworks.algashop.ordering.domain.model.product.ProductTestDataBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,9 +19,10 @@ class OrderFactoryTest {
 
         Quantity quantity = new Quantity(1);
         CustomerId customerId = new CustomerId();
+        CreditCardId creditCardId = new CreditCardId();
 
         Order order = OrderFactory.filled(
-                customerId, shipping, billing, paymentMethod, product, quantity
+                customerId, shipping, billing, paymentMethod, product, quantity, creditCardId
         );
 
         Assertions.assertWith(order,
