@@ -1,32 +1,22 @@
 package com.algaworks.algashop.ordering.presentation.customer;
 
 import com.algaworks.algashop.ordering.infrastructure.persistence.customer.CustomerPersistenceEntityRepository;
+import com.algaworks.algashop.ordering.presentation.AbstractPresentationIT;
 import com.algaworks.algashop.ordering.utils.AlgaShopResourceUtils;
 import io.restassured.RestAssured;
-import io.restassured.path.json.config.JsonPathConfig;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.UUID;
 
-import static io.restassured.config.JsonConfig.jsonConfig;
-
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Sql(scripts = "classpath:db/testdata/afterMigrate.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-@Sql(scripts = "classpath:db/clean/afterMigrate.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_CLASS)
-public class CustomerControllerIT {
-
-    @LocalServerPort
-    private int port;
+public class CustomerControllerIT extends AbstractPresentationIT {
 
     @Autowired
     private CustomerPersistenceEntityRepository customerRepository;
@@ -35,39 +25,37 @@ public class CustomerControllerIT {
 
     @BeforeEach
     public void setup() {
-        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-        RestAssured.port = port;
-
-        RestAssured.config().jsonConfig(jsonConfig().numberReturnType(JsonPathConfig.NumberReturnType.BIG_DECIMAL));
-
-//        initDatabase();
+        super.beforeEach();
     }
 
-//    Removed because the annotation @TestPropertySource
-//    private void initDatabase() {
-//        customerRepository.saveAndFlush(
-//                CustomerPersistenceEntityTestDataBuilder.aCustomer().id(validCustomerId).build()
-//        );
-//    }
+    @BeforeAll
+    public static void setupBeforeAll() {
+        AbstractPresentationIT.initWireMock();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        AbstractPresentationIT.stopMock();
+    }
 
     @Test
     public void shouldCreateCustomer() {
         String json = AlgaShopResourceUtils.readContent("json/create-customer.json");
 
         UUID createdCustomerId = RestAssured
-            .given()
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
-            .when()
+                .when()
                 .post("/api/v1/customers")
-            .then()
+                .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
                 .body("id", Matchers.not(Matchers.emptyString()))
                 .extract()
-            .jsonPath().getUUID("id");
+                .jsonPath().getUUID("id");
 
         Assertions.assertThat(customerRepository.existsById(createdCustomerId)).isTrue();
     }
@@ -75,11 +63,11 @@ public class CustomerControllerIT {
     @Test
     public void shouldArchiveCustomer() {
         RestAssured
-            .given()
+                .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
-            .when()
+                .when()
                 .delete("/api/v1/customers/{customerId}", validCustomerId)
-            .then()
+                .then()
                 .assertThat()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
