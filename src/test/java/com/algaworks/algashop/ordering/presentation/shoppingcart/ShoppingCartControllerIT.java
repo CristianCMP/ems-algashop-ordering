@@ -40,21 +40,6 @@ public class ShoppingCartControllerIT extends AbstractPresentationIT {
 //        initWireMock();
     }
 
-//    private void initWireMock() {
-//        wireMockRapidex = new WireMockServer(options()
-//                .port(8780)
-//                .usingFilesUnderDirectory("src/test/resources/wiremock/rapidex")
-//                .extensions(new ResponseTemplateTransformer(true)));
-//
-//        wireMockProductCatalog = new WireMockServer(options()
-//                .port(8781)
-//                .usingFilesUnderDirectory("src/test/resources/wiremock/product-catalog")
-//                .extensions(new ResponseTemplateTransformer(true)));
-//
-//        wireMockRapidex.start();
-//        wireMockProductCatalog.start();
-//    }
-
     @BeforeAll
     public static void setupBeforeAll() {
         AbstractPresentationIT.initWireMock();
@@ -64,13 +49,6 @@ public class ShoppingCartControllerIT extends AbstractPresentationIT {
     public static void afterAll() {
         AbstractPresentationIT.stopMock();
     }
-
-//    Removed because the annotation @TestPropertySource
-//    private void initDatabase() {
-//        customerRepository.saveAndFlush(
-//                CustomerPersistenceEntityTestDataBuilder.aCustomer().id(validCustomerId).build()
-//        );
-//    }
 
     @Test
     public void shouldCreateShoppingCart() {

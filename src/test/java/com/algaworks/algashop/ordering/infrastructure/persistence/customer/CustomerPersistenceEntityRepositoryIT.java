@@ -1,20 +1,17 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.customer;
 
-import com.algaworks.algashop.ordering.infrastructure.persistence.SpringDataAuditingConfig;
+import com.algaworks.algashop.ordering.infrastructure.persistence.AbstractPersistenceIT;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 //@SpringBootTest // load the full Spring application context and all beans.
 //@Transactional  // @DataJpaTest has @Transactional inside by default.
-@DataJpaTest  // configuration only JPA.
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // do not change the database's configure.
-@Import(SpringDataAuditingConfig.class)
-class CustomerPersistenceEntityRepositoryIT {
+//@DataJpaTest  // configuration only JPA.
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)  // do not change the database's configure.
+//@Import(SpringDataAuditingConfig.class)
+class CustomerPersistenceEntityRepositoryIT extends AbstractPersistenceIT {
 
     private final CustomerPersistenceEntityRepository customerPersistenceEntityRepository;
 
