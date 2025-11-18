@@ -9,46 +9,48 @@ import com.algaworks.algashop.ordering.domain.model.customer.CustomerNotFoundExc
 import com.algaworks.algashop.ordering.domain.model.customer.CustomerRegisteredEvent;
 import com.algaworks.algashop.ordering.infrastructure.listener.customer.CustomerEventListener;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.UUID;
 
 @SpringBootTest
 @Transactional
+@Testcontainers
 class CustomerManagementApplicationServiceIT {
 
+    @Container
+    @ServiceConnection
     private static final PostgreSQLContainer<?> postgreSQLContainer= new PostgreSQLContainer<>("postgres:17-alpine");
 
-    @BeforeAll
-    public static void beforeAll() {
-        postgreSQLContainer.start();
-    }
-
-    @AfterAll
-    public static void afterAll() {
-        postgreSQLContainer.stop();
-    }
-
-    @DynamicPropertySource
-    private static void configureDatasourceProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        registry.add("spring.flyway.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.flyway.user", postgreSQLContainer::getUsername);
-        registry.add("spring.flyway.password", postgreSQLContainer::getPassword);
-    }
+//    @BeforeAll
+//    public static void beforeAll() {
+//        postgreSQLContainer.start();
+//    }
+//
+//    @AfterAll
+//    public static void afterAll() {
+//        postgreSQLContainer.stop();
+//    }
+//
+//    @DynamicPropertySource
+//    private static void configureDatasourceProperties(DynamicPropertyRegistry registry) {
+//        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+//        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+//        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+//        registry.add("spring.flyway.url", postgreSQLContainer::getJdbcUrl);
+//        registry.add("spring.flyway.user", postgreSQLContainer::getUsername);
+//        registry.add("spring.flyway.password", postgreSQLContainer::getPassword);
+//    }
 
     @Autowired
     private CustomerManagementApplicationService customerManagementApplicationService;
