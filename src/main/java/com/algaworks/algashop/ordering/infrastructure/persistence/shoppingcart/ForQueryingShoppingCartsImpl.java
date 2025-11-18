@@ -1,10 +1,9 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.shoppingcart;
 
-import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartOutput;
-import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartQueryService;
 import com.algaworks.algashop.ordering.core.application.utility.Mapper;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCartId;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCartNotFoundException;
+import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ShoppingCartOutput;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ShoppingCartQueryServiceImpl implements ShoppingCartQueryService {
+public class ForQueryingShoppingCartsImpl {
 
     private final ShoppingCartPersistenceEntityRepository repository;
 

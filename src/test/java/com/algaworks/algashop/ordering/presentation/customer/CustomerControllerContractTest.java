@@ -4,10 +4,10 @@ import com.algaworks.algashop.ordering.core.application.commons.AddressData;
 import com.algaworks.algashop.ordering.core.application.customer.management.CustomerInput;
 import com.algaworks.algashop.ordering.core.application.customer.management.CustomerManagementApplicationService;
 import com.algaworks.algashop.ordering.core.application.customer.query.*;
-import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartQueryService;
 import com.algaworks.algashop.ordering.core.domain.model.DomainException;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerEmailIsInUseException;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerNotFoundException;
+import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ForQueryingShoppingCarts;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ class CustomerControllerContractTest {
     private CustomerQueryService customerQueryService;
 
     @MockitoBean
-    private ShoppingCartQueryService shoppingCartQueryService;
+    private ForQueryingShoppingCarts shoppingCartQueryService;
 
     @BeforeEach
     public void setupAll() {

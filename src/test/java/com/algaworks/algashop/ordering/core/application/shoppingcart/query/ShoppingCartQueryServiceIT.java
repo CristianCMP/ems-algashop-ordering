@@ -6,6 +6,8 @@ import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerId;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerTestDataBuilder;
 import com.algaworks.algashop.ordering.core.domain.model.customer.Customers;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.*;
+import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ForQueryingShoppingCarts;
+import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ShoppingCartOutput;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,10 +19,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class ShoppingCartQueryServiceIT  extends AbstractApplicationIT {
     private final Customers customers;
     private final ShoppingCarts shoppingCarts;
-    private final ShoppingCartQueryService shoppingCartQueryService;
+    private final ForQueryingShoppingCarts shoppingCartQueryService;
 
     @Autowired
-    ShoppingCartQueryServiceIT(Customers customers, ShoppingCarts shoppingCarts, ShoppingCartQueryService shoppingCartQueryService) {
+    ShoppingCartQueryServiceIT(Customers customers, ShoppingCarts shoppingCarts, ForQueryingShoppingCarts shoppingCartQueryService) {
         this.customers = customers;
         this.shoppingCarts = shoppingCarts;
         this.shoppingCartQueryService = shoppingCartQueryService;
