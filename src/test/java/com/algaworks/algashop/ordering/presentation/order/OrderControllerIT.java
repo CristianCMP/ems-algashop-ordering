@@ -57,19 +57,19 @@ public class OrderControllerIT extends AbstractPresentationIT {
         String json = AlgaShopResourceUtils.readContent("json/create-order-with-product.json");
 
         String createdOrderId = RestAssured
-                .given()
+            .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType("application/vnd.order-with-product.v1+json")
                 .body(json)
-                .when()
+            .when()
                 .post("/api/v1/orders")
-                .then()
+            .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
                 .body("id", Matchers.not(Matchers.emptyString()),
                         "customer.id", Matchers.is(validCustomerId.toString()))
-                .extract()
+            .extract()
                 .jsonPath().getString("id");
 
         boolean orderExists = orderRepository.existsById(new OrderId(createdOrderId).value().toLong());
@@ -87,19 +87,19 @@ public class OrderControllerIT extends AbstractPresentationIT {
                 .build();
 
         OrderDetailOutput orderDetailOutput = RestAssured
-                .given()
+            .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType("application/vnd.order-with-product.v1+json")
                 .body(input)
-                .when()
+            .when()
                 .post("/api/v1/orders")
-                .then()
+            .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
                 .body("id", Matchers.not(Matchers.emptyString()),
                         "customer.id", Matchers.is(validCustomerId.toString()))
-                .extract()
+            .extract()
                 .body().as(OrderDetailOutput.class);
 
         Assertions.assertThat(orderDetailOutput.getCustomer().getId()).isEqualTo(validCustomerId);
@@ -114,13 +114,13 @@ public class OrderControllerIT extends AbstractPresentationIT {
         String json = AlgaShopResourceUtils.readContent("json/create-order-with-invalid-product.json");
 
         RestAssured
-                .given()
+            .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType("application/vnd.order-with-product.v1+json")
                 .body(json)
-                .when()
+            .when()
                 .post("/api/v1/orders")
-                .then()
+            .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
@@ -131,13 +131,13 @@ public class OrderControllerIT extends AbstractPresentationIT {
     public void shouldNotCreateOrderUsingProductWhenCustomerWasNotFound() {
         String json = AlgaShopResourceUtils.readContent("json/create-order-with-product-and-invalid-customer.json");
         RestAssured
-                .given()
+            .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType("application/vnd.order-with-product.v1+json")
                 .body(json)
-                .when()
+            .when()
                 .post("/api/v1/orders")
-                .then()
+            .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
@@ -148,19 +148,19 @@ public class OrderControllerIT extends AbstractPresentationIT {
         String json = AlgaShopResourceUtils.readContent("json/create-order-with-shopping-cart.json");
 
         OrderDetailOutput orderDetailOutput = RestAssured
-                .given()
+            .given()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType("application/vnd.order-with-shopping-cart.v1+json")
                 .body(json)
-                .when()
+            .when()
                 .post("/api/v1/orders")
-                .then()
+            .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .statusCode(HttpStatus.CREATED.value())
                 .body("id", Matchers.not(Matchers.emptyString()),
                         "customer.id", Matchers.is(validCustomerId.toString()))
-                .extract()
+            .extract()
                 .body().as(OrderDetailOutput.class);
 
         Assertions.assertThat(orderDetailOutput.getCustomer().getId()).isEqualTo(validCustomerId);
