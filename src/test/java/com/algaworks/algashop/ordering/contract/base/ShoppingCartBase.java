@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.contract.base;
 
-import com.algaworks.algashop.ordering.core.application.shoppingcart.ShoppingCartManagingApplicationService;
+import com.algaworks.algashop.ordering.core.application.shoppingcart.ShoppingCartManagementApplicationService;
 import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartOutputTestDataBuilder;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCartNotFoundException;
 import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ForQueryingShoppingCarts;
@@ -17,14 +17,14 @@ import org.springframework.web.context.WebApplicationContext;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-@WebMvcTest(ShoppingCartController.class)
+@WebMvcTest(controllers = ShoppingCartController.class)
 public class ShoppingCartBase {
 
     @Autowired
     private WebApplicationContext context;
 
     @MockitoBean
-    private ShoppingCartManagingApplicationService managementService;
+    private ShoppingCartManagementApplicationService managementService;
 
     @MockitoBean
     private ForQueryingShoppingCarts queryService;
@@ -47,7 +47,7 @@ public class ShoppingCartBase {
                 .thenReturn(ShoppingCartOutputTestDataBuilder.aShoppingCart().id(validShoppingCartId).build());
 
         Mockito.when(queryService.findById(notFoundShoppingCartId))
-                .thenThrow(new ShoppingCartNotFoundException());
+                .thenThrow(new ShoppingCartNotFoundException(notFoundShoppingCartId));
 
         Mockito.when(managementService.createNew(Mockito.any(UUID.class)))
                 .thenReturn(validShoppingCartId);

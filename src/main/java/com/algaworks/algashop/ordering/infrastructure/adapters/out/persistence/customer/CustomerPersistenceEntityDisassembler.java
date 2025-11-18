@@ -29,7 +29,7 @@ public class CustomerPersistenceEntityDisassembler {
                 .build();
     }
 
-    Address toAddressValueObject(AddressEmbeddable address) {
+    public Address toAddressValueObject(AddressEmbeddable address) {
         return Address.builder()
                 .street(address.getStreet())
                 .number(address.getNumber())

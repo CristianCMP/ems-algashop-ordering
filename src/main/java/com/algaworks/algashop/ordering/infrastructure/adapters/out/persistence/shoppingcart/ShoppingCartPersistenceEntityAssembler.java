@@ -47,7 +47,7 @@ public class ShoppingCartPersistenceEntityAssembler {
         return persistenceEntity;
     }
 
-    ShoppingCartItemPersistenceEntity toOrderItemsEntities(ShoppingCartItem source) {
+    public ShoppingCartItemPersistenceEntity toOrderItemsEntities(ShoppingCartItem source) {
         return ShoppingCartItemPersistenceEntity.builder()
                 .id(source.id().value())
                 .shoppingCart(ShoppingCartPersistenceEntity.builder().id(source.shoppingCartId().value()).build())

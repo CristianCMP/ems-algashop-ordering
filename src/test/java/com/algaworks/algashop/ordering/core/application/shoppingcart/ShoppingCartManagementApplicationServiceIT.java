@@ -17,10 +17,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import java.util.Optional;
 import java.util.UUID;
 
-class ShoppingCartManagementApplicationServiceIT extends AbstractApplicationIT {
+class ShoppingCartManagementApplicationServiceIT
+        extends AbstractApplicationIT {
 
     @Autowired
-    private ShoppingCartManagingApplicationService service;
+    private ShoppingCartManagementApplicationService service;
 
     @Autowired
     private ShoppingCarts shoppingCarts;

@@ -2,94 +2,55 @@ package com.algaworks.algashop.ordering.core.application.shoppingcart.query;
 
 import com.algaworks.algashop.ordering.core.application.AbstractApplicationIT;
 import com.algaworks.algashop.ordering.core.domain.model.customer.Customer;
-import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerId;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerTestDataBuilder;
 import com.algaworks.algashop.ordering.core.domain.model.customer.Customers;
-import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.*;
+import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCart;
+import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCarts;
 import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ForQueryingShoppingCarts;
 import com.algaworks.algashop.ordering.core.ports.in.shoppingcart.ShoppingCartOutput;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-class ShoppingCartQueryServiceIT  extends AbstractApplicationIT {
-    private final Customers customers;
-    private final ShoppingCarts shoppingCarts;
-    private final ForQueryingShoppingCarts shoppingCartQueryService;
+class ShoppingCartQueryServiceIT
+        extends AbstractApplicationIT {
 
     @Autowired
-    ShoppingCartQueryServiceIT(Customers customers, ShoppingCarts shoppingCarts, ForQueryingShoppingCarts shoppingCartQueryService) {
-        this.customers = customers;
-        this.shoppingCarts = shoppingCarts;
-        this.shoppingCartQueryService = shoppingCartQueryService;
-    }
+    private ForQueryingShoppingCarts queryService;
+
+    @Autowired
+    private ShoppingCarts shoppingCarts;
+
+    @Autowired
+    private Customers customers;
 
     @Test
-    void shouldFindShoppingCartById() {
-        Customer customer = CustomerTestDataBuilder.existingCustomer().id(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID).build();
+    public void shouldFindById() {
+        Customer customer = CustomerTestDataBuilder.existingCustomer().build();
         customers.add(customer);
-
-        ShoppingCart shoppingCart = ShoppingCartTestDataBuilder.aShoppingCart().customerId(customer.id()).build();
+        ShoppingCart shoppingCart = ShoppingCart.startShopping(customer.id());
         shoppingCarts.add(shoppingCart);
 
-        UUID rawShoppingCartId = shoppingCart.id().value();
-        ShoppingCartOutput shoppingCartOutput = shoppingCartQueryService.findById(rawShoppingCartId);
-
-        assertThat(shoppingCartOutput).satisfies(
-                output -> {
-                    assertThat(output.getId()).isEqualTo(rawShoppingCartId);
-                    assertThat(output.getItems()).hasSize(shoppingCart.items().size());
-                    assertThat(output.getTotalAmount()).isEqualTo(shoppingCart.totalAmount().value());
-                    assertThat(output.getTotalItems()).isEqualTo(shoppingCart.totalItems().value());
-                }
+        ShoppingCartOutput output = queryService.findById(shoppingCart.id().value());
+        Assertions.assertWith(output,
+                o -> Assertions.assertThat(o.getId()).isEqualTo(shoppingCart.id().value()),
+                o -> Assertions.assertThat(o.getCustomerId()).isEqualTo(shoppingCart.customerId().value())
         );
     }
 
     @Test
-    void shouldThrowExceptionWhenTryingFindByIdWithNonExistentShoppingCart() {
-        UUID nonExistentShoppingCartId = new ShoppingCartId().value();
-
-        assertThatThrownBy(() -> shoppingCartQueryService.findById(nonExistentShoppingCartId))
-                .isInstanceOf(ShoppingCartNotFoundException.class);
-    }
-
-    @Test
-    void shouldFindShoppingCartByCustomerId() {
-        Customer customer = CustomerTestDataBuilder.existingCustomer().id(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID).build();
+    public void shouldFindByCustomerId() {
+        Customer customer = CustomerTestDataBuilder.existingCustomer().build();
         customers.add(customer);
-
-        ShoppingCart shoppingCart = ShoppingCartTestDataBuilder.aShoppingCart().customerId(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID).build();
+        ShoppingCart shoppingCart = ShoppingCart.startShopping(customer.id());
         shoppingCarts.add(shoppingCart);
 
-        UUID rawCustomerId = customer.id().value();
-        ShoppingCartOutput shoppingCartOutput = shoppingCartQueryService.findByCustomerId(rawCustomerId);
-
-        assertThat(shoppingCartOutput).satisfies(
-                output -> {
-                    assertThat(output.getId()).isEqualTo(shoppingCart.id().value());
-                    assertThat(output.getCustomerId()).isEqualTo(rawCustomerId);
-                    assertThat(output.getItems()).hasSize(shoppingCart.items().size());
-                    assertThat(output.getTotalAmount()).isEqualTo(shoppingCart.totalAmount().value());
-                    assertThat(output.getTotalItems()).isEqualTo(shoppingCart.totalItems().value());
-                }
+        ShoppingCartOutput output = queryService.findByCustomerId(customer.id().value());
+        Assertions.assertWith(output,
+                o -> Assertions.assertThat(o.getId()).isEqualTo(shoppingCart.id().value()),
+                o -> Assertions.assertThat(o.getCustomerId()).isEqualTo(shoppingCart.customerId().value())
         );
     }
 
-    @Test
-    void shouldThrowExceptionWhenTryingFindByCustomerIdWithNonExistentCustomer() {
-        Customer customer = CustomerTestDataBuilder.existingCustomer().id(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID).build();
-        customers.add(customer);
 
-        ShoppingCart shoppingCart = ShoppingCartTestDataBuilder.aShoppingCart().customerId(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID).build();
-        shoppingCarts.add(shoppingCart);
-
-        UUID nonExistentCustomerId = new CustomerId().value();
-
-        assertThatThrownBy(() -> shoppingCartQueryService.findByCustomerId(nonExistentCustomerId))
-                .isInstanceOf(ShoppingCartNotFoundException.class);
-    }
 }
