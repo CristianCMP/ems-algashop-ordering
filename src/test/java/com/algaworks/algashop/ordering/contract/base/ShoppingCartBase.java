@@ -1,6 +1,6 @@
 package com.algaworks.algashop.ordering.contract.base;
 
-import com.algaworks.algashop.ordering.core.application.shoppingcart.management.ShoppingCartManagementApplicationService;
+import com.algaworks.algashop.ordering.core.application.shoppingcart.ShoppingCartManagingApplicationService;
 import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartOutputTestDataBuilder;
 import com.algaworks.algashop.ordering.core.application.shoppingcart.query.ShoppingCartQueryService;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCartNotFoundException;
@@ -24,7 +24,7 @@ public class ShoppingCartBase {
     private WebApplicationContext context;
 
     @MockitoBean
-    private ShoppingCartManagementApplicationService managementService;
+    private ShoppingCartManagingApplicationService managementService;
 
     @MockitoBean
     private ShoppingCartQueryService queryService;
