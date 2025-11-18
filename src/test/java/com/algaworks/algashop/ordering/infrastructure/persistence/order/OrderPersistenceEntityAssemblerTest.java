@@ -1,11 +1,11 @@
 package com.algaworks.algashop.ordering.infrastructure.persistence.order;
 
 
-import com.algaworks.algashop.ordering.domain.model.order.Order;
-import com.algaworks.algashop.ordering.domain.model.order.OrderItem;
-import com.algaworks.algashop.ordering.domain.model.order.OrderTestDataBuilder;
-import com.algaworks.algashop.ordering.infrastructure.persistence.customer.CustomerPersistenceEntityTestDataBuilder;
+import com.algaworks.algashop.ordering.core.domain.model.order.Order;
+import com.algaworks.algashop.ordering.core.domain.model.order.OrderItem;
+import com.algaworks.algashop.ordering.core.domain.model.order.OrderTestDataBuilder;
 import com.algaworks.algashop.ordering.infrastructure.persistence.customer.CustomerPersistenceEntityRepository;
+import com.algaworks.algashop.ordering.infrastructure.persistence.customer.CustomerPersistenceEntityTestDataBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
