@@ -1,5 +1,6 @@
 package com.algaworks.algashop.ordering.core.domain.model.order.shipping;
 
+import com.algaworks.algashop.ordering.core.domain.model.AbstractDomainIT;
 import com.algaworks.algashop.ordering.core.domain.model.commons.ZipCode;
 import com.algaworks.algashop.ordering.core.domain.model.order.shipping.ShippingCostService.CalculationRequest;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -9,12 +10,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.springframework.cloud.contract.wiremock.WireMockSpring.options;
 
-@SpringBootTest
-class ShippingCostServiceIT {
+class ShippingCostServiceIT extends AbstractDomainIT {
 
     @Autowired
     private ShippingCostService shippingCostService;

@@ -39,7 +39,7 @@ public class ForObtainingCustomersEntityManagerImpl implements ForObtainingCusto
 //    }
 
     private static final String findByIdAsOutputJPQL = """
-            SELECT new com.algaworks.algashop.ordering.core.ports.in.CustomerOutput(
+            SELECT new com.algaworks.algashop.ordering.core.ports.in.customer.CustomerOutput(
                 c.id,
                 c.firstName,
                 c.lastName,

@@ -1,22 +1,14 @@
 package com.algaworks.algashop.ordering.core.domain.model.order;
 
+import com.algaworks.algashop.ordering.core.domain.model.AbstractDomainIT;
 import com.algaworks.algashop.ordering.core.domain.model.commons.Money;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerId;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerTestDataBuilder;
 import com.algaworks.algashop.ordering.core.domain.model.customer.Customers;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.customer.CustomerPersistenceEntityAssembler;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.customer.CustomerPersistenceEntityDisassembler;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.customer.CustomersPersistenceProvider;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.order.OrderPersistenceEntityAssembler;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.order.OrderPersistenceEntityDisassembler;
-import com.algaworks.algashop.ordering.infrastructure.adapters.out.persistence.order.OrdersPersistenceProvider;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import java.time.Year;
@@ -25,20 +17,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
-@Import({
-        OrdersPersistenceProvider.class,
-        OrderPersistenceEntityAssembler.class,
-        OrderPersistenceEntityDisassembler.class,
-        CustomersPersistenceProvider.class,
-        CustomerPersistenceEntityAssembler.class,
-        CustomerPersistenceEntityDisassembler.class
-})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class OrdersIT {
+class OrdersIT extends AbstractDomainIT {
 
-    private Orders orders;
-    private Customers customers;
+    private final Orders orders;
+    private final Customers customers;
 
     @Autowired
     public OrdersIT(Orders orders, Customers customers) {
@@ -152,7 +134,7 @@ class OrdersIT {
         orders.add(
                 OrderTestDataBuilder.anOrder().status(OrderStatus.PLACED).build()
         );
-        
+
         orders.add(
                 OrderTestDataBuilder.anOrder().status(OrderStatus.CANCELED).build()
         );
@@ -223,4 +205,4 @@ class OrdersIT {
         Assertions.assertThat(orders.salesQuantityByCustomerInYear(customerId, Year.now().minusYears(1))).isZero();
     }
 
- }
+}
