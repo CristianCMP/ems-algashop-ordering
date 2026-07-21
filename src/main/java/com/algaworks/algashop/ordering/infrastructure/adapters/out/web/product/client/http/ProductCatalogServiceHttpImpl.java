@@ -9,6 +9,7 @@ import com.algaworks.algashop.ordering.infrastructure.adapters.in.web.exceptionh
 import com.algaworks.algashop.ordering.infrastructure.adapters.in.web.exceptionhandler.GatewayTimeoutException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.resilience.annotation.ConcurrencyLimit;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -16,6 +17,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 
 import java.net.SocketTimeoutException;
+import java.time.Duration;
 import java.util.Optional;
 
 @Slf4j
@@ -25,6 +27,7 @@ public class ProductCatalogServiceHttpImpl implements ProductCatalogService {
 
     private final ProductCatalogAPIClient productCatalogAPIClient;
 
+    @ConcurrencyLimit(10) // The @ConcurrencyLimit always executes before @Retryable
     @Retryable(
             maxRetries = 3,
             delayString = "3s", // 1° = 3s, 2° = 6s, 3° = 12s
@@ -33,6 +36,13 @@ public class ProductCatalogServiceHttpImpl implements ProductCatalogService {
     )
     @Override
     public Optional<Product> ofId(ProductId productId) {
+        log.info("Trying to load product {}",productId);
+        try {
+            Thread.sleep(Duration.ofSeconds(3));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         ProductResponse productResponse;
         log.info("Loading product {}",productId);
         try {
