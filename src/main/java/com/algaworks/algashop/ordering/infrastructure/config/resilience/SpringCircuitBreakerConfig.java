@@ -39,13 +39,12 @@ public class SpringCircuitBreakerConfig {
                     .build(),"productCatalogCB"
             );
 
-//            You can have more than one
-//            factory.configure(builder -> builder
-//                    .retryPolicy(retryPolicy)
-//                    .openTimeout(Duration.ofSeconds(10))
-//                    .resetTimeout(Duration.ofSeconds(25))
-//                    .build(),"rapidexAPICB"
-//            );
+            factory.configure(builder -> builder
+                    .retryPolicy(retryPolicy)
+                    .openTimeout(Duration.ofSeconds(10))
+                    .resetTimeout(Duration.ofSeconds(25))
+                    .build(),"rapidexAPICB"
+            );
         };
     }
 }
