@@ -23,7 +23,7 @@ import java.util.UUID;
 public class CustomerManagementApplicationServiceIT extends AbstractApplicationIT {
 
     @Autowired
-    private CustomerManagementApplicationService customerManagementApplicationService;
+    private CustomersManagementApplicationService customerManagementApplicationService;
 
     @MockitoSpyBean
     private CustomerEventListener customerEventListener;

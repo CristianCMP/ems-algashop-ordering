@@ -5,7 +5,7 @@ import com.algaworks.algashop.ordering.core.domain.model.customer.*;
 import com.algaworks.algashop.ordering.core.ports.in.commons.AddressData;
 import com.algaworks.algashop.ordering.core.ports.in.customer.CustomerInput;
 import com.algaworks.algashop.ordering.core.ports.in.customer.CustomerUpdateInput;
-import com.algaworks.algashop.ordering.core.ports.in.customer.ForManagingCustomer;
+import com.algaworks.algashop.ordering.core.ports.in.customer.ForManagingCustomers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerManagementApplicationService implements ForManagingCustomer {
+public class CustomersManagementApplicationService implements ForManagingCustomers {
 
     private final CustomerRegistrationService customerRegistration;
     private final Customers customers;

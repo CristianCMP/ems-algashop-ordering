@@ -1,8 +1,8 @@
 package com.algaworks.algashop.ordering.infrastructure.adapters.in.web.customer;
 
-import com.algaworks.algashop.ordering.core.application.customer.CustomerManagementApplicationService;
 import com.algaworks.algashop.ordering.core.application.customer.CustomerOutputTestDataBuilder;
 import com.algaworks.algashop.ordering.core.application.customer.CustomerSummaryOutputTestDataBuilder;
+import com.algaworks.algashop.ordering.core.application.customer.CustomersManagementApplicationService;
 import com.algaworks.algashop.ordering.core.domain.model.DomainException;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerEmailIsInUseException;
 import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerNotFoundException;
@@ -35,7 +35,7 @@ class CustomerControllerContractTest {
     private WebApplicationContext context;
 
     @MockitoBean
-    private CustomerManagementApplicationService customerManagementApplicationService;
+    private CustomersManagementApplicationService customerManagementApplicationService;
 
     @MockitoBean
     private ForQueryingCustomers forQueryingCustomers;
