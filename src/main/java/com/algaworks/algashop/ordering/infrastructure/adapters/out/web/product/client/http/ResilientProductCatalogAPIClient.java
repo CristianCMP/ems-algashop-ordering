@@ -37,7 +37,7 @@ public class ResilientProductCatalogAPIClient {
     }
 
     //    Spring execution order: @Cacheable, @ConcurrencyLimit, and @Retryable
-    @Cacheable(cacheNames = "algashop:product-catalog-api:v1",key = "#productId")
+    @Cacheable(cacheNames = "algashop:product-catalog-api:v1",key = "#productId", unless = "#result == null")
     @ConcurrencyLimit(10) // The @ConcurrencyLimit always executes before @Retryable
 //    When using CircuitBreaker, you don't need @Retryable, as it is already configured
 //    @Retryable(
@@ -84,10 +84,10 @@ public class ResilientProductCatalogAPIClient {
         log.info("Loading product {}", productId);
         try {
             return Optional.ofNullable(productCatalogAPIClient.getById(productId));
-        } catch (HttpClientErrorException e) {
-            if (!(e instanceof HttpClientErrorException.NotFound)) {
-                log.error("Client HTTP error when loading product {}", productId, e);
-            }
+        } catch (HttpClientErrorException.NotFound e) {
+//            if (!(e instanceof HttpClientErrorException.NotFound)) {
+//                log.error("Client HTTP error when loading product {}", productId, e);
+//            }
             return Optional.empty();
         } catch (RestClientException e) {
             throw translateException(e);

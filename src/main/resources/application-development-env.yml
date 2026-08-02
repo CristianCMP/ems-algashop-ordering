@@ -43,6 +43,8 @@ algashop:
   integrations:
     shipping.provider: RAPIDEX
     rapidex.url: http://localhost:8787
-    product-catalog.url: http://localhost:8083
+    product-catalog:
 #    product-catalog.url: http://wiremock:8080
 #    product-catalog.url: http://localhost:8787
+      url: http://localhost:8083
+      oauth2-client-registration-id: algashop-ordering-service-client
