@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ProductCatalogServiceHttpImpl implements ProductCatalogService {
 
     private final ResilientProductCatalogAPIClient productCatalogAPIClient;
@@ -28,6 +28,6 @@ public class ProductCatalogServiceHttpImpl implements ProductCatalogService {
                                 .inStock(productResponse.getInStock())
                                 .price(new Money(productResponse.getSalePrice()))
                                 .build()
-        );
+                );
     }
 }

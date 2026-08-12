@@ -11,22 +11,22 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 import java.util.UUID;
 
-@Service(value = "securityCheck")
+@Service("securityCheck")
 @Slf4j
 public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckApplicationService {
 
-    private final static String ROLE_CUSTOMER = "ROLE_CUSTOMER";
+    private static final String ROLE_CUSTOMER = "ROLE_CUSTOMER";
 
     @Override
     public UUID getAuthenticatedUserId() {
         if (isMachineAuthenticated()) {
             throw new AccessDeniedException("Machine users do not have user ID");
         }
-        Jwt jwt = getJwt();
 
+        Jwt jwt = getJwt();
         try {
             return UUID.fromString(jwt.getSubject());
-        } catch (IllegalAccessError e) {
+        } catch (IllegalArgumentException e) {
             log.error("Invalid user ID in JWT subject: {}", jwt.getSubject(), e);
             throw new AccessDeniedException("Invalid user ID in JWT subject");
         }
@@ -51,6 +51,7 @@ public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckA
             log.debug(e.getMessage(), e);
             return false;
         }
+
         return jwt.getAudience().contains(jwt.getSubject());
     }
 
@@ -77,6 +78,7 @@ public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckA
         if (authentication.getPrincipal() instanceof Jwt jwt) {
             return jwt;
         }
+
         throw new IllegalStateException("Authentication principal is not a JWT");
     }
 
@@ -85,6 +87,7 @@ public class OAuth2SecurityCheckApplicationServiceImpl implements SecurityCheckA
         if (authentication == null) {
             throw new IllegalStateException("No authentication found");
         }
+
         return authentication;
     }
 }

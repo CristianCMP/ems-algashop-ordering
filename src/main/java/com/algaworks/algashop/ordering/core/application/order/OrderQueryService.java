@@ -19,7 +19,6 @@ public class OrderQueryService implements ForQueryingOrders {
     private final SecurityCheckApplicationService securityCheck;
 
     public OrderDetailOutput findById(String id) {
-
         OrderDetailOutput order = forObtainingOrders.findById(id);
 
         if (!canAccess(order)) {

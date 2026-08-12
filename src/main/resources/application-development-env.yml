@@ -30,7 +30,7 @@ spring:
 #          algashop-auth-server:
           algashop-as:
 #            issuer-uri: http://auth.algashop.local:8081
-            token-uri: ${algashop.integrations.authorization-server.url}/oauth/token
+            token-uri: ${algashop.integrations.authorization-server.url}/oauth2/token
         registration:
           algashop-ordering-service-client:
             provider: algashop-as

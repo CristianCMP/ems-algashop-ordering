@@ -31,13 +31,13 @@ public class ResilientProductCatalogAPIClient {
     //    private final CircuitBreaker circuitBreaker;
     private final FrameworkRetryCircuitBreaker circuitBreaker;
 
-    public ResilientProductCatalogAPIClient(ProductCatalogAPIClient productCatalogAPIClient, CircuitBreakerFactory<FrameworkRetryConfig, FrameworkRetryConfigBuilder> circuitBreakerFactory) {
+    public ResilientProductCatalogAPIClient(CircuitBreakerFactory<FrameworkRetryConfig, FrameworkRetryConfigBuilder> circuitBreakerFactory, ProductCatalogAPIClient productCatalogAPIClient) {
         this.productCatalogAPIClient = productCatalogAPIClient;
         this.circuitBreaker = (FrameworkRetryCircuitBreaker) circuitBreakerFactory.create(productCatalogCBId);
     }
 
     //    Spring execution order: @Cacheable, @ConcurrencyLimit, and @Retryable
-    @Cacheable(cacheNames = "algashop:product-catalog-api:v1",key = "#productId", unless = "#result == null")
+    @Cacheable(cacheNames = "algashop:product-catalog-api:v1", key = "#productId", unless = "#result == null")
     @ConcurrencyLimit(10) // The @ConcurrencyLimit always executes before @Retryable
 //    When using CircuitBreaker, you don't need @Retryable, as it is already configured
 //    @Retryable(
@@ -61,6 +61,7 @@ public class ResilientProductCatalogAPIClient {
 //        }
         log.info("Trying to load product {}", productId);
         log.info("Product catalog API CB state is {}", circuitBreaker.getCircuitBreakerPolicy().getState());
+
         try {
             return circuitBreaker.run(() -> loadProduct(productId));
         } catch (NoFallbackAvailableException e) {
@@ -68,7 +69,7 @@ public class ResilientProductCatalogAPIClient {
         }
     }
 
-    private  RuntimeException unwrapException(NoFallbackAvailableException e) {
+    private RuntimeException unwrapException(NoFallbackAvailableException e) {
         if (e.getCause() instanceof RetryException re) {
             if (re.getCause() instanceof GatewayTimeoutException gte) {
                 return gte;
