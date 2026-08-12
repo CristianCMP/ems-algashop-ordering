@@ -135,7 +135,7 @@ public class OrderControllerIT extends AbstractPresentationIT {
             .then()
                 .assertThat()
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-                .statusCode(HttpStatus.UNPROCESSABLE_ENTITY.value());
+                .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test

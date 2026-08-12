@@ -28,16 +28,12 @@ class OrderPersistenceEntityRepositoryIT extends AbstractPersistenceIT {
 
     @BeforeEach
     public void setup() {
+        super.setup();
         UUID customerId = CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value();
-
         if (!customerPersistenceEntityRepository.existsById(customerId)) {
-            customerPersistenceEntity =
-                    customerPersistenceEntityRepository.saveAndFlush(
-                            CustomerPersistenceEntityTestDataBuilder.aCustomer().build()
-                    );
-        } else {
-            customerPersistenceEntity =
-                    customerPersistenceEntityRepository.findById(customerId).orElseThrow();
+            customerPersistenceEntity = customerPersistenceEntityRepository.saveAndFlush(
+                    CustomerPersistenceEntityTestDataBuilder.aCustomer().build()
+            );
         }
     }
 
