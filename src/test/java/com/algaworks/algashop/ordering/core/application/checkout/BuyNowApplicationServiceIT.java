@@ -21,6 +21,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import java.time.LocalDate;
 import java.util.Optional;
 
+//@WithMockUser
 class BuyNowApplicationServiceIT  extends AbstractApplicationIT {
 
     @Autowired
