@@ -8,5 +8,5 @@ public interface SecurityCheckApplicationService {
     boolean isAuthenticated();
 
     boolean isMachineAuthenticated();
-    boolean canAccessOwnProfile();
+    boolean isCustomer();
 }
