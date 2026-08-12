@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 //@WithMockUser
+//@WithMockJwt
 class BuyNowApplicationServiceIT  extends AbstractApplicationIT {
 
     @Autowired

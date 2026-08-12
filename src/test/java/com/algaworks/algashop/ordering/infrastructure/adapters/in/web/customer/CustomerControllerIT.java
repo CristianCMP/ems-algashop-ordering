@@ -73,7 +73,7 @@ public class CustomerControllerIT extends AbstractPresentationIT {
     }
 
     @Test
-    public void shouldReturnForbiddenWhenCreatingCustomerWithoutWriteScope(){
+    public void shouldReturnForbiddenWhenCreatingCustomerWithoutWriteScope() {
         String json = AlgaShopResourceUtils.readContent("json/create-customer.json");
 
         givenAuthenticatedWithNoScopeToken()
@@ -88,10 +88,10 @@ public class CustomerControllerIT extends AbstractPresentationIT {
     }
 
     @Test
-    public void shouldReturnUnauthorizedWhenExpiredTokenIsGiven(){
+    public void shouldReturnUnauthorizedWhenExpiredTokenIsGiven() {
         String json = AlgaShopResourceUtils.readContent("json/create-customer.json");
 
-        givenAuthenticatedWithExpiredToken()
+        givenWithExpiredToken()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(json)
