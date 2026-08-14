@@ -6,13 +6,10 @@ import com.algaworks.algashop.ordering.core.domain.model.product.Product;
 import com.algaworks.algashop.ordering.core.domain.model.product.ProductId;
 import com.algaworks.algashop.ordering.core.domain.model.product.ProductName;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ShoppingCartItem {
-    @EqualsAndHashCode.Include
     private ShoppingCartItemId id;
     private ShoppingCartId shoppingCartId;
     private ProductId productId;
@@ -139,6 +136,19 @@ public class ShoppingCartItem {
     private void setTotalAmount(Money totalAmount) {
         Objects.requireNonNull(totalAmount);
         this.totalAmount = totalAmount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ShoppingCartItem that = (ShoppingCartItem) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
 }

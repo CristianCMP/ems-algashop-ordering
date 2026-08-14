@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ShoppingService {
 
-    private final Customers customers;
     private final ShoppingCarts shoppingCarts;
+    private final Customers customers;
 
     public ShoppingCart startShopping(CustomerId customerId) {
         if (!customers.exists(customerId)) {
@@ -25,4 +25,5 @@ public class ShoppingService {
 
         return ShoppingCart.startShopping(customerId);
     }
+
 }

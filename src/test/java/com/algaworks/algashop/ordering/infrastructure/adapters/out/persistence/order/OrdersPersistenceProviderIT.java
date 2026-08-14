@@ -28,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource(properties = "spring.flyway.locations=classpath:db/migration,classpath:db/testdata")
 class OrdersPersistenceProviderIT extends AbstractPersistenceIT {
 
-    private final OrdersPersistenceProvider persistenceProvider;
-    private final OrderPersistenceEntityRepository entityRepository;
+    private OrdersPersistenceProvider persistenceProvider;
+    private OrderPersistenceEntityRepository entityRepository;
 
     @Autowired
     public OrdersPersistenceProviderIT(OrdersPersistenceProvider persistenceProvider,
@@ -83,7 +83,7 @@ class OrdersPersistenceProviderIT extends AbstractPersistenceIT {
         persistenceProvider.add(order);
 
         Assertions.assertThatNoException().isThrownBy(
-                ()-> persistenceProvider.ofId(order.id()).orElseThrow()
+                () -> persistenceProvider.ofId(order.id()).orElseThrow()
         );
     }
 }

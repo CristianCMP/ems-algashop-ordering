@@ -23,7 +23,7 @@ public class CustomerPersistenceEntityAssembler {
         customerPersistenceEntity.setPromotionNotificationsAllowed(customer.isPromotionNotificationsAllowed());
         customerPersistenceEntity.setArchived(customer.isArchived());
         customerPersistenceEntity.setRegisteredAt(customer.registeredAt());
-        customerPersistenceEntity.setArchivedAt(customer.registeredAt());
+        customerPersistenceEntity.setArchivedAt(customer.archivedAt());
         customerPersistenceEntity.setLoyaltyPoints(customer.loyaltyPoints().value());
         customerPersistenceEntity.setAddress(toAddressEmbeddable(customer.address()));
         customerPersistenceEntity.setVersion(customer.version());
@@ -31,7 +31,7 @@ public class CustomerPersistenceEntityAssembler {
         return customerPersistenceEntity;
     }
 
-    public static AddressEmbeddable toAddressEmbeddable(Address address) {
+    public AddressEmbeddable toAddressEmbeddable(Address address) {
         return AddressEmbeddable.builder()
                 .city(address.city())
                 .state(address.state())

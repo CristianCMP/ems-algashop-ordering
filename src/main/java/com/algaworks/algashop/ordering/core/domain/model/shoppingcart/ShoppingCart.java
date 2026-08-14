@@ -9,7 +9,6 @@ import com.algaworks.algashop.ordering.core.domain.model.product.Product;
 import com.algaworks.algashop.ordering.core.domain.model.product.ProductId;
 import lombok.Builder;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -181,16 +180,16 @@ public class ShoppingCart
     }
 
     private void recalculateTotals() {
-        BigDecimal totalAmount = items.stream()
-                .map(i -> i.totalAmount().value())
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        Money totalAmount = this.items.stream()
+                .map(ShoppingCartItem::totalAmount)
+                .reduce(Money.ZERO, Money::add);
 
-        Integer totalItems = items.stream()
-                .map(i -> i.quantity().value())
-                .reduce(0, Integer::sum);
+        Quantity totalItems = this.items.stream()
+                .map(ShoppingCartItem::quantity)
+                .reduce(Quantity.ZERO, Quantity::add);
 
-        this.totalAmount = new Money(totalAmount);
-        this.totalItems = new Quantity(totalItems);
+        this.totalAmount = totalAmount;
+        this.totalItems = totalItems;
     }
 
     private void setId(ShoppingCartId id) {

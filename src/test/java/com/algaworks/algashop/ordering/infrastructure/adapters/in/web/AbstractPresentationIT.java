@@ -45,7 +45,8 @@ public abstract class AbstractPresentationIT {
 
     protected RequestSpecification givenAuthenticated(String tokenValue) {
         return RestAssured.given()
-                .header("Authorization", "Bearer " + tokenValue);
+                .header("Authorization",
+                        "Bearer " + tokenValue);
     }
 
     protected RequestSpecification givenAuthenticated() {
@@ -72,16 +73,14 @@ public abstract class AbstractPresentationIT {
         wireMockRapidex = new WireMockServer(options()
                 .templatingEnabled(true)
                 .port(8780)
-                .usingFilesUnderDirectory("src/test/resources/wiremock/rapidex")
 //                .extensions(new ResponseTemplateTransformer(true)) //old version spring > 4
-        );
+                .usingFilesUnderDirectory("src/test/resources/wiremock/rapidex"));
 
         wireMockProductCatalog = new WireMockServer(options()
                 .templatingEnabled(true)
                 .port(8781)
-                .usingFilesUnderDirectory("src/test/resources/wiremock/product-catalog")
 //                .extensions(new ResponseTemplateTransformer(true)) //old version spring > 4
-        );
+                .usingFilesUnderDirectory("src/test/resources/wiremock/product-catalog"));
 
         wireMockRapidex.start();
         wireMockProductCatalog.start();

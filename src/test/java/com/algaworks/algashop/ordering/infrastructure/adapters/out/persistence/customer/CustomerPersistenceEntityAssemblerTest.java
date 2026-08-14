@@ -23,7 +23,7 @@ class CustomerPersistenceEntityAssemblerTest {
                 c -> assertThat(c.getDocument()).isEqualTo(customer.document().value()),
                 c -> assertThat(c.getPromotionNotificationsAllowed()).isEqualTo(customer.isPromotionNotificationsAllowed()),
                 c -> assertThat(c.getArchived()).isEqualTo(customer.isArchived()),
-                c -> assertThat(c.getAddress()).isEqualTo(CustomerPersistenceEntityAssembler.toAddressEmbeddable(customer.address()))
+                c -> assertThat(c.getAddress()).isEqualTo(assembler.toAddressEmbeddable(customer.address()))
         );
     }
 }
