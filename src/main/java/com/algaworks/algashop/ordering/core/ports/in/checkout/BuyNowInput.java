@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.minidev.json.annotate.JsonIgnore;
 
 import java.util.UUID;
 
@@ -29,7 +30,7 @@ public class BuyNowInput {
     @NotNull
     private UUID productId;
 
-    @NotNull
+    @JsonIgnore
     private UUID customerId;
 
     @NotNull
