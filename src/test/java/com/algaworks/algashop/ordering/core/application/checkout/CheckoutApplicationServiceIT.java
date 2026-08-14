@@ -24,9 +24,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.UUID;
 
-class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
+class CheckoutApplicationServiceIT
+        extends AbstractApplicationIT {
 
     @Autowired
     private CheckoutApplicationService service;
@@ -53,7 +53,7 @@ class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
     private OrderEventListener orderEventListener;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         Mockito.when(shippingCostService.calculate(Mockito.any(ShippingCostService.CalculationRequest.class)))
                 .thenReturn(new ShippingCostService.CalculationResult(
                         new Money("10.00"),
@@ -73,9 +73,7 @@ class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
         shoppingCart.addItem(product, new Quantity(1));
         shoppingCarts.add(shoppingCart);
 
-        CheckoutInput input = CheckoutInputTestDataBuilder.aCheckoutInput()
-                .shoppingCartId(shoppingCart.id().value())
-                .build();
+        CheckoutInput input = CheckoutInputTestDataBuilder.aCheckoutInput().build();
 
 
         String orderId = service.checkout(input);
@@ -98,7 +96,6 @@ class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
     @Test
     void shouldThrowShoppingCartNotFoundExceptionWhenCheckoutWithNonExistingShoppingCart() {
         CheckoutInput input = CheckoutInputTestDataBuilder.aCheckoutInput()
-                .shoppingCartId(UUID.randomUUID())
                 .build();
 
         Assertions.assertThatExceptionOfType(ShoppingCartNotFoundException.class)
@@ -111,7 +108,6 @@ class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
         shoppingCarts.add(shoppingCart);
 
         CheckoutInput input = CheckoutInputTestDataBuilder.aCheckoutInput()
-                .shoppingCartId(shoppingCart.id().value())
                 .build();
 
         Assertions.assertThatExceptionOfType(ShoppingCartCantProceedToCheckoutException.class)
@@ -129,7 +125,6 @@ class CheckoutApplicationServiceIT  extends AbstractApplicationIT {
         shoppingCarts.add(shoppingCart);
 
         CheckoutInput input = CheckoutInputTestDataBuilder.aCheckoutInput()
-                .shoppingCartId(shoppingCart.id().value())
                 .build();
 
         Assertions.assertThatExceptionOfType(ShoppingCartCantProceedToCheckoutException.class)

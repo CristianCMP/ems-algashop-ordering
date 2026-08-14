@@ -1,10 +1,7 @@
 package com.algaworks.algashop.ordering.core.application.customer;
 
 import com.algaworks.algashop.ordering.core.application.AbstractApplicationIT;
-import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerArchivedEvent;
-import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerArchivedException;
-import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerNotFoundException;
-import com.algaworks.algashop.ordering.core.domain.model.customer.CustomerRegisteredEvent;
+import com.algaworks.algashop.ordering.core.domain.model.customer.*;
 import com.algaworks.algashop.ordering.core.ports.in.customer.CustomerInput;
 import com.algaworks.algashop.ordering.core.ports.in.customer.CustomerOutput;
 import com.algaworks.algashop.ordering.core.ports.in.customer.CustomerUpdateInput;
@@ -20,10 +17,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public class CustomerManagementApplicationServiceIT extends AbstractApplicationIT {
+class CustomerManagementApplicationServiceIT extends AbstractApplicationIT {
 
     @Autowired
-    private CustomersManagementApplicationService customerManagementApplicationService;
+    private CustomerManagementApplicationService customerManagementApplicationService;
 
     @MockitoSpyBean
     private CustomerEventListener customerEventListener;
@@ -38,7 +35,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     public void shouldRegister() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
 
-        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
+        UUID customerId = customerManagementApplicationService.create(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value(),input);
         Assertions.assertThat(customerId).isNotNull();
 
         CustomerOutput customerOutput = queryService.findById(customerId);
@@ -75,7 +72,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
         CustomerUpdateInput updateInput = CustomerUpdateInputTestDataBuilder.aCustomerUpdate().build();
 
-        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
+        UUID customerId = customerManagementApplicationService.create(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value(),input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.update(customerId, updateInput);
@@ -103,7 +100,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     @Test
     public void shouldArchiveCustomer() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
-        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
+        UUID customerId = customerManagementApplicationService.create(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value(),input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.archive(customerId);
@@ -148,7 +145,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     @Test
     public void shouldThrowCustomerArchivedExceptionWhenArchivingAlreadyArchivedCustomer() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
-        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
+        UUID customerId = customerManagementApplicationService.create(CustomerTestDataBuilder.DEFAULT_CUSTOMER_ID.value(),input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.archive(customerId);

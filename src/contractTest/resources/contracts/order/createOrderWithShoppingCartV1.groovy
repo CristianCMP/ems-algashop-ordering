@@ -5,14 +5,13 @@ import org.springframework.cloud.contract.spec.Contract
 Contract.make {
     request {
         method POST()
-        url "/api/v1/orders"
+        url "/api/v1/customers/me/orders"
         headers {
             contentType("application/vnd.order-with-shopping-cart.v1+json")
         }
         body([
-                shoppingCartId: value(test(anyUuid()), stub(anyUuid())),
-                paymentMethod : "GATEWAY_BALANCE",
-                shipping      : [
+                paymentMethod: "GATEWAY_BALANCE",
+                shipping     : [
                         recipient: [
                                 firstName: "John",
                                 lastName : "Doe",
@@ -29,7 +28,7 @@ Contract.make {
                                 zipCode     : "62704"
                         ]
                 ],
-                billing       : [
+                billing      : [
                         firstName: "Matt",
                         lastName : "Damon",
                         phone    : "123-321-1112",

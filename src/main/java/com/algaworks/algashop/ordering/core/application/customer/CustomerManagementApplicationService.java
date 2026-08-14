@@ -15,7 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class CustomersManagementApplicationService implements ForManagingCustomers {
+public class CustomerManagementApplicationService implements ForManagingCustomers {
 
     private final CustomerRegistrationService customerRegistration;
     private final Customers customers;
