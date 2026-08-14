@@ -38,7 +38,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     public void shouldRegister() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
 
-        UUID customerId = customerManagementApplicationService.create(input);
+        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
         Assertions.assertThat(customerId).isNotNull();
 
         CustomerOutput customerOutput = queryService.findById(customerId);
@@ -75,7 +75,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
         CustomerUpdateInput updateInput = CustomerUpdateInputTestDataBuilder.aCustomerUpdate().build();
 
-        UUID customerId = customerManagementApplicationService.create(input);
+        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.update(customerId, updateInput);
@@ -103,7 +103,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     @Test
     public void shouldArchiveCustomer() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
-        UUID customerId = customerManagementApplicationService.create(input);
+        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.archive(customerId);
@@ -148,7 +148,7 @@ public class CustomerManagementApplicationServiceIT extends AbstractApplicationI
     @Test
     public void shouldThrowCustomerArchivedExceptionWhenArchivingAlreadyArchivedCustomer() {
         CustomerInput input = CustomerInputTestDataBuilder.aCustomer().build();
-        UUID customerId = customerManagementApplicationService.create(input);
+        UUID customerId = customerManagementApplicationService.create(securityChecks.getAuthenticatedUserId(), input);
         Assertions.assertThat(customerId).isNotNull();
 
         customerManagementApplicationService.archive(customerId);
