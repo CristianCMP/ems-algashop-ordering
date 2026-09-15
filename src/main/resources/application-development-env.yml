@@ -50,3 +50,13 @@ algashop:
 #    product-catalog.url: http://localhost:8787
       url: http://localhost:8083
       oauth2-client-registration-id: algashop-ordering-service-client
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://service-registry:8761/eureka
+    healthcheck:
+      enabled: true
+  instance:
+    instance-id: ${random.uuid}
+    prefer-ip-address: true
