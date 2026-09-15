@@ -48,7 +48,7 @@ algashop:
     product-catalog:
 #    product-catalog.url: http://wiremock:8080
 #    product-catalog.url: http://localhost:8787
-      url: http://localhost:8083
+      url: ${ordering.params.integrations.product-catalog-url}
       oauth2-client-registration-id: algashop-ordering-service-client
 
 eureka:

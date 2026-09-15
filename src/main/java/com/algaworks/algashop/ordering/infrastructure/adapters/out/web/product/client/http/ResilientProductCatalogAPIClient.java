@@ -90,12 +90,12 @@ public class ResilientProductCatalogAPIClient {
 //                log.error("Client HTTP error when loading product {}", productId, e);
 //            }
             return Optional.empty();
-        } catch (RestClientException e) {
+        } catch (Exception e) {
             throw translateException(e);
         }
     }
 
-    private RuntimeException translateException(RestClientException e) {
+    private RuntimeException translateException(Exception e) {
         if (e.getCause() instanceof SocketTimeoutException || e instanceof ResourceAccessException) {
             return new GatewayTimeoutException("Product Catalog API Timeout", e);
         }
