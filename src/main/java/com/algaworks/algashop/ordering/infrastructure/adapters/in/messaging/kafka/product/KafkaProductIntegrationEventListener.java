@@ -15,16 +15,16 @@ public class KafkaProductIntegrationEventListener {
 
     @KafkaHandler
     public void handle(@Payload ProductListedIntegrationEvent event,
-                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messagekey){
-        log.info("Received "+event.getClass());
-        log.info("Messagekey "+messagekey);
+                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messageKey) {
+        log.info("Received " + event.getClass());
+        log.info("MessageKey " + messageKey);
     }
-
 
     @KafkaHandler
     public void handle(@Payload ProductDelistedIntegrationEvent event,
-                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messagekey){
-        log.info("Received "+event.getClass());
-        log.info("Messagekey "+messagekey);
+                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messageKey) {
+        log.info("Received " + event.getClass());
+        log.info("MessageKey " + messageKey);
     }
+
 }
