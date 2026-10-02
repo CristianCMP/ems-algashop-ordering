@@ -3,18 +3,16 @@ package com.algaworks.algashop.ordering.infrastructure.adapters.in.messaging.kaf
 import com.algaworks.algashop.ordering.core.application.product.event.ProductDelistedIntegrationEvent;
 import com.algaworks.algashop.ordering.core.application.product.event.ProductListedIntegrationEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import tools.jackson.databind.node.ObjectNode;
 
 @Component
 @Slf4j
-@KafkaListener(topics = {"product-catalog.product.events"})
+@KafkaListener(topics = {"#{algaShopMessagingKafkaProperties.productEventTopicName}"})
 public class KafkaProductIntegrationEventListener {
 
     @KafkaHandler(isDefault = true)
