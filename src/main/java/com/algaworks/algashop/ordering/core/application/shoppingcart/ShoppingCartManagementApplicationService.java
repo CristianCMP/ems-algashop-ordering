@@ -13,7 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -32,10 +34,10 @@ public class ShoppingCartManagementApplicationService implements ForManagingShop
         ProductId productId = new ProductId(input.getProductId());
 
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
-                .orElseThrow(()-> new ShoppingCartNotFoundException(shoppingCartId.value()));
+                .orElseThrow(() -> new ShoppingCartNotFoundException(shoppingCartId.value()));
 
         Product product = productCatalogService.ofId(productId)
-                .orElseThrow(()-> new ProductNotFoundException(productId));
+                .orElseThrow(() -> new ProductNotFoundException(productId));
 
         shoppingCart.addItem(product, new Quantity(input.getQuantity()));
 
@@ -58,7 +60,7 @@ public class ShoppingCartManagementApplicationService implements ForManagingShop
         Objects.requireNonNull(rawShoppingCartItemId);
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
-                .orElseThrow(()-> new ShoppingCartNotFoundException(rawShoppingCartId));
+                .orElseThrow(() -> new ShoppingCartNotFoundException(rawShoppingCartId));
         shoppingCart.removeItem(new ShoppingCartItemId(rawShoppingCartItemId));
         shoppingCarts.add(shoppingCart);
     }
@@ -69,7 +71,7 @@ public class ShoppingCartManagementApplicationService implements ForManagingShop
         Objects.requireNonNull(rawShoppingCartId);
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
-                .orElseThrow(()-> new ShoppingCartNotFoundException(rawShoppingCartId));
+                .orElseThrow(() -> new ShoppingCartNotFoundException(rawShoppingCartId));
         shoppingCart.empty();
         shoppingCarts.add(shoppingCart);
     }
@@ -80,8 +82,40 @@ public class ShoppingCartManagementApplicationService implements ForManagingShop
         Objects.requireNonNull(rawShoppingCartId);
         ShoppingCartId shoppingCartId = new ShoppingCartId(rawShoppingCartId);
         ShoppingCart shoppingCart = shoppingCarts.ofId(shoppingCartId)
-                .orElseThrow(()-> new ShoppingCartNotFoundException(rawShoppingCartId));
+                .orElseThrow(() -> new ShoppingCartNotFoundException(rawShoppingCartId));
         shoppingCarts.remove(shoppingCart);
+    }
+
+    @Override
+    public void changeProductAvailability(UUID productId, boolean available) {
+        List<ShoppingCart> affectedShoppingCarts = shoppingCarts.findAllContainingItem(new ProductId(productId));
+
+        if (affectedShoppingCarts.isEmpty()) {
+            return;
+        }
+
+        affectedShoppingCarts.forEach(shoppingCart -> {
+            shoppingCart.changeItemAvailability(new ProductId(productId), available);
+            shoppingCarts.add(shoppingCart);
+        });
+    }
+
+    @Override
+    public void refreshProductPrice(UUID productId) {
+        ProductId domainProductId = new ProductId(productId);
+        List<ShoppingCart> affectedShoppingCarts = shoppingCarts.findAllContainingItem(domainProductId);
+
+        if (affectedShoppingCarts.isEmpty()) {
+            return;
+        }
+
+        Product product = productCatalogService.ofId(domainProductId)
+                .orElseThrow(() -> new ProductNotFoundException(domainProductId));
+
+        affectedShoppingCarts.forEach(shoppingCart -> {
+            shoppingCart.refreshItem(product);
+            shoppingCarts.add(shoppingCart);
+        });
     }
 
 }
