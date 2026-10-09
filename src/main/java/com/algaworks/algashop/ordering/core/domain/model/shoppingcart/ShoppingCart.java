@@ -133,6 +133,13 @@ public class ShoppingCart
         shoppingCartItem.changeAvailability(available);
     }
 
+
+    public void changeItemPrice(ProductId productId, Money money) {
+        ShoppingCartItem shoppingCartItem = findItem(productId);
+        shoppingCartItem.changePrice(money);
+        this.recalculateTotals();
+    }
+
     public boolean containsUnavailableItems() {
         return items.stream().anyMatch(i -> !i.isAvailable());
     }

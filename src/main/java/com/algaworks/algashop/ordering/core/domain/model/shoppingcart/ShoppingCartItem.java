@@ -63,6 +63,11 @@ public class ShoppingCartItem {
         this.setAvailable(available);
     }
 
+    void changePrice(Money price) {
+        this.setPrice(price);
+        this.recalculateTotals();
+    }
+
     public ShoppingCartItemId id() {
         return id;
     }
