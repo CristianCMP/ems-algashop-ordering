@@ -23,7 +23,12 @@ import java.time.Duration;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@KafkaListener(topics = {"#{algaShopMessagingKafkaProperties.productEventTopicName}"})
+@KafkaListener(
+        id = "ordering.product-events",
+        idIsGroup = false,
+        concurrency = "3",
+        topics = {"#{algaShopMessagingKafkaProperties.productEventTopicName}"}
+)
 public class KafkaProductIntegrationEventListener {
 
     private final ForManagingShoppingCarts forManagingShoppingCarts;
@@ -39,25 +44,27 @@ public class KafkaProductIntegrationEventListener {
                        @Header(value = KafkaHeaders.OFFSET, required = false) String messageOffset
     ) {
         log.info("Event ignored: key={} offset={}", messageKey, messageOffset);
-        simulateProcessing();
+//        simulateProcessing();
     }
 
     @KafkaHandler
     public void handle(@Payload ProductListedIntegrationEvent event,
-                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messageKey) {
-        log.info("Received " + event.getClass());
-        log.info("MessageKey " + messageKey);
-        simulateProcessing();
+                       @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String messageKey,
+                       @Header(value = KafkaHeaders.RECEIVED_PARTITION, required = false) Integer partition,
+                       @Header(value = KafkaHeaders.OFFSET, required = false) Integer offset) {
+        logReceived(event, messageKey, partition, offset);
+//        simulateProcessing();
         productCacheManager.evict(event.getProductId());
         forManagingShoppingCarts.changeProductAvailability(event.getProductId(), true);
     }
 
     @KafkaHandler
     public void handle(@Payload ProductDelistedIntegrationEvent event,
-                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messageKey) {
-        log.info("Received " + event.getClass());
-        log.info("MessageKey " + messageKey);
-        simulateProcessing();
+                       @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String messageKey,
+                       @Header(value = KafkaHeaders.RECEIVED_PARTITION, required = false) Integer partition,
+                       @Header(value = KafkaHeaders.OFFSET, required = false) Integer offset) {
+        logReceived(event, messageKey, partition, offset);
+//        simulateProcessing();
         productCacheManager.evict(event.getProductId());
         forManagingShoppingCarts.changeProductAvailability(event.getProductId(), false);
     }
@@ -73,9 +80,10 @@ public class KafkaProductIntegrationEventListener {
 
     @KafkaHandler
     public void handle(@Payload @Valid ProductPriceChangedV2IntegrationEvent event,
-                       @Header(value = KafkaHeaders.RECEIVED_KEY) String messageKey) {
-        log.info("Received " + event.getClass());
-        log.info("MessageKey " + messageKey);
+                       @Header(value = KafkaHeaders.RECEIVED_KEY, required = false) String messageKey,
+                       @Header(value = KafkaHeaders.RECEIVED_PARTITION, required = false) Integer partition,
+                       @Header(value = KafkaHeaders.OFFSET, required = false) Integer offset) {
+        logReceived(event, messageKey, partition, offset);
 
         simulateProcessing();
 
@@ -83,12 +91,12 @@ public class KafkaProductIntegrationEventListener {
         forManagingShoppingCarts.refreshProductPrice(event.getProductId(), event.getNewSalePrice());
     }
 
-    public void simulateProcessing() {
+    private void simulateProcessing() {
         switch (simulate) {
             case "slow" -> {
                 log.warn("Simulate: Slow call");
                 try {
-                    Thread.sleep(Duration.ofSeconds(90));
+                    Thread.sleep(Duration.ofSeconds(30));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -96,6 +104,12 @@ public class KafkaProductIntegrationEventListener {
             case "technical" -> throw new RuntimeException("Simulated failure: database is down");
             case "business" -> throw new DomainException("Simulated business: rule violation");
         }
+    }
+
+    private void logReceived(Object event, String messageKey, Integer partition, Integer offset) {
+        log.info("Received {} | key={} | partiton={} | offset={} | thread={}",
+                event.getClass().getSimpleName(), messageKey, partition, offset,
+                Thread.currentThread().getName());
     }
 
 }
