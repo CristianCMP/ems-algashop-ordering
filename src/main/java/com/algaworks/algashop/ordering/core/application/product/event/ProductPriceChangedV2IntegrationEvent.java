@@ -19,7 +19,7 @@ public class ProductPriceChangedV2IntegrationEvent implements IntegrationEvent {
     @NotNull
     private UUID productId;
     @NotNull
-    private OffsetDateTime changeAt;
+    private OffsetDateTime changedAt;
     @NotNull
     private BigDecimal oldRegularPrice;
     @NotNull
