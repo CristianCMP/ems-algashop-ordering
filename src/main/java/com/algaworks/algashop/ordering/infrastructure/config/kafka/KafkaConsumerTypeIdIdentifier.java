@@ -25,7 +25,8 @@ public class KafkaConsumerTypeIdIdentifier {
 	private static KafkaConsumerTypeIdIdentifier instance;
 
 	public KafkaConsumerTypeIdIdentifier(
-			@Value("${spring.kafka.consumer.properties.spring.json.type.mapping}")
+//			@Value("${spring.kafka.consumer.properties.spring.json.type.mapping}")
+			@Value("${spring.kafka.properties.spring.json.type.mapping:}")
 			String typeMappings) {
 		javaTypeMap = createMappings(typeMappings);
 		instance = this;
