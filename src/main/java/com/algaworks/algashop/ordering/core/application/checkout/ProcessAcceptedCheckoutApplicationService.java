@@ -1,8 +1,8 @@
 package com.algaworks.algashop.ordering.core.application.checkout;
 
-import com.algaworks.algashop.ordering.core.application.order.event.CheckoutAcceptedIntegrationEvent;
+import com.algaworks.algashop.ordering.core.application.checkout.command.OrderSnapshotAssembler;
+import com.algaworks.algashop.ordering.core.application.checkout.command.ProcessAcceptedCheckoutIntegrationCommand;
 import com.algaworks.algashop.ordering.core.application.order.event.OrderPlacedIntegrationEvent;
-import com.algaworks.algashop.ordering.core.application.order.event.OrderSnapshotAssembler;
 import com.algaworks.algashop.ordering.core.domain.model.order.Order;
 import com.algaworks.algashop.ordering.core.domain.model.order.OrderId;
 import com.algaworks.algashop.ordering.core.domain.model.order.Orders;
@@ -29,7 +29,7 @@ public class ProcessAcceptedCheckoutApplicationService implements ForProcessingC
 
 	@Override
 	@Transactional
-	public void process(CheckoutAcceptedIntegrationEvent event) {
+	public void process(ProcessAcceptedCheckoutIntegrationCommand event) {
 		OrderId orderId = new OrderId(event.getAggregateId());
 
 		if (orders.exists(orderId)) {

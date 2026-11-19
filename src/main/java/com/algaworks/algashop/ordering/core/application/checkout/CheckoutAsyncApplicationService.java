@@ -2,9 +2,9 @@ package com.algaworks.algashop.ordering.core.application.checkout;
 
 import com.algaworks.algashop.ordering.core.application.order.BillingInputDisassembler;
 import com.algaworks.algashop.ordering.core.application.order.ShippingInputDisassembler;
-import com.algaworks.algashop.ordering.core.application.order.event.CheckoutAcceptedIntegrationEvent;
-import com.algaworks.algashop.ordering.core.application.order.event.OrderSnapshot;
-import com.algaworks.algashop.ordering.core.application.order.event.OrderSnapshotAssembler;
+import com.algaworks.algashop.ordering.core.application.order.event.ProcessAcceptedCheckoutIntegrationCommand;
+import com.algaworks.algashop.ordering.core.application.checkout.command.OrderSnapshot;
+import com.algaworks.algashop.ordering.core.application.checkout.command.OrderSnapshotAssembler;
 import com.algaworks.algashop.ordering.core.application.security.SecurityChecks;
 import com.algaworks.algashop.ordering.core.domain.model.DomainException;
 import com.algaworks.algashop.ordering.core.domain.model.commons.ZipCode;
@@ -23,7 +23,6 @@ import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCa
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCartNotFoundException;
 import com.algaworks.algashop.ordering.core.domain.model.shoppingcart.ShoppingCarts;
 import com.algaworks.algashop.ordering.core.ports.in.checkout.CheckoutInput;
-import com.algaworks.algashop.ordering.core.ports.in.checkout.ForBuyingWithShoppingCart;
 import com.algaworks.algashop.ordering.core.ports.in.checkout.ForBuyingWithShoppingCartAsync;
 import com.algaworks.algashop.ordering.core.ports.in.checkout.ShippingInput;
 import com.algaworks.algashop.ordering.core.ports.out.order.ForPublishingOrderIntegrationEvents;
@@ -79,7 +78,7 @@ public class CheckoutAsyncApplicationService implements ForBuyingWithShoppingCar
 
 		OrderSnapshot snapshot = orderSnapshotAssembler.toSnapshot(order, shoppingCart.id().value());
 
-		CheckoutAcceptedIntegrationEvent integrationEvent = new CheckoutAcceptedIntegrationEvent(snapshot);
+		ProcessAcceptedCheckoutIntegrationCommand integrationEvent = new ProcessAcceptedCheckoutIntegrationCommand(snapshot);
 		forPublishingOrderIntegrationEvents.send(integrationEvent);
 
 		return order.id().toString();
