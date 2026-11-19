@@ -32,7 +32,8 @@ public class KafkaConfig {
 	}
 
 	@Bean
-	public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(KafkaTemplate<String, Object> kafkaTemplate) {
+	public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(
+			KafkaTemplate<String, Object> kafkaTemplate) {
 		DeadLetterPublishingRecoverer recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate,
 				(consumerRecord, exception) -> new TopicPartition(
 						DLT_PREFIX + consumerRecord.topic(),
@@ -44,7 +45,16 @@ public class KafkaConfig {
 
 	@Bean
 	public NewTopic productEventsDlt(AlgaShopMessagingKafkaProperties properties) {
-		return TopicBuilder.name(DLT_PREFIX + properties.getProductEventTopicName())
+		return createDeadLetterTopic(properties.getProductEventTopicName());
+	}
+
+	@Bean
+	public NewTopic orderEventsDlt(AlgaShopMessagingKafkaProperties properties) {
+		return createDeadLetterTopic(properties.getOrderEventTopicName());
+	}
+
+	private NewTopic createDeadLetterTopic(String originTopicName) {
+		return TopicBuilder.name(DLT_PREFIX + originTopicName)
 				.partitions(3) //same quantity as the source topic
 				.replicas(3)
 				.configs(Map.of(
@@ -55,7 +65,7 @@ public class KafkaConfig {
 	}
 
 	@Bean
-	public NewTopic ordersEventsTopic(AlgaShopMessagingKafkaProperties properties) {
+	public NewTopic ordersEventTopic(AlgaShopMessagingKafkaProperties properties) {
 		return TopicBuilder.name(properties.getOrderEventTopicName())
 				.partitions(3)
 				.replicas(3)
@@ -64,4 +74,5 @@ public class KafkaConfig {
 				))
 				.build();
 	}
+
 }
