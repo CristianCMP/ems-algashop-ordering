@@ -1,4 +1,4 @@
-package com.algaworks.algashop.ordering.core.ports.out.messaging.kafka.order;
+package com.algaworks.algashop.ordering.infrastructure.adapters.out.messaging.kafka.order;
 
 import com.algaworks.algashop.ordering.core.application.EventPublishingException;
 import com.algaworks.algashop.ordering.core.application.IntegrationEvent;
@@ -36,6 +36,11 @@ public class KafkaOrderIntegrationEventPublisher implements ForPublishingOrderIn
 					properties.getOrderEventTopicName(),
 					event.getAggregateId(),
 					event);
+
+			if (event.getIdempotencyKey() != null) {
+				record.headers().add("idempotency-key", event.getIdempotencyKey().toString().getBytes());
+			}
+
 			result = kafkaTemplate.send(record).get(40, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
